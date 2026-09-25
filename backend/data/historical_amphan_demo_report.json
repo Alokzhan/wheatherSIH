@@ -57,7 +57,7 @@
     "stage5_gnn_tracker": {
       "objectId": "EV-AMPHAN-2020",
       "anomalyType": "Tropical Cyclone / Severe Convective System",
-      "detectionTimestamp": "2026-09-25T19:52:21.355950Z",
+      "detectionTimestamp": "2026-09-25T19:56:59.722573Z",
       "originCentroid": [
         21.65,
         88.35
