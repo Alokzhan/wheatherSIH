@@ -17,6 +17,18 @@ export interface DatasetRecord {
   region: string;
 }
 
+export async function fetchAppConfig(): Promise<{ mapbox_token: string }> {
+  try {
+    const res = await fetch('/api/v1/config/maps');
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.error('Failed to fetch app config', e);
+  }
+  return { mapbox_token: '' };
+}
+
 /**
  * Initialize Alert Database with local persistence
  */
@@ -43,6 +55,21 @@ export function saveStoredAlerts(alerts: AlertItem[]): void {
  * GET /api/v1/alerts
  */
 export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: 'success'; count: number; alerts: AlertItem[] }> {
+  try {
+    const res = await fetch('/api/v1/alerts');
+    if (res.ok) {
+      const data: AlertItem[] = await res.json();
+      const filtered = regionFilter && regionFilter !== 'all' 
+        ? data.filter(a => a.regionId === regionFilter)
+        : data;
+      // Also update local storage for fallback
+      saveStoredAlerts(data);
+      return { status: 'success', count: filtered.length, alerts: filtered };
+    }
+  } catch (e) {
+    console.warn('Backend alerts failed, using local storage:', e);
+  }
+
   const alerts = getStoredAlerts();
   const filtered = regionFilter && regionFilter !== 'all' 
     ? alerts.filter(a => a.regionId === regionFilter)
@@ -54,11 +81,8 @@ export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: '
   };
 }
 
-/**
- * GET /api/v1/alerts/{id}
- */
 export async function fetchApiAlertById(alertId: string): Promise<{ status: 'success' | 'not_found'; alert?: AlertItem }> {
-  const alerts = getStoredAlerts();
+  const { alerts } = await fetchApiAlerts();
   const found = alerts.find(a => a.id === alertId);
   if (!found) return { status: 'not_found' };
   return { status: 'success', alert: found };
@@ -180,6 +204,20 @@ export async function executeModelInferenceApi(spatialResolutionKm: number = 5.0
     modelHash: string;
   };
 }> {
+  try {
+    const res = await fetch('/api/v1/model/inference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spatialResolutionKm })
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn('Backend inference failed, falling back:', e);
+  }
+  
+  // Fallback if backend is down
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

@@ -21,11 +21,11 @@ export const AdminPanel: React.FC = () => {
   const [isRunningModel, setIsRunningModel] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  // User's Live API Keys initialized from API_CONFIG
-  const [openWeatherKey, setOpenWeatherKey] = useState<string>(API_CONFIG.openWeatherMapKey);
-  const [tomorrowKey, setTomorrowKey] = useState<string>(API_CONFIG.tomorrowIoKey);
+  // User's Live API Keys (now managed in backend, just UI mocks here)
+  const [openWeatherKey, setOpenWeatherKey] = useState<string>('Moved to backend .env');
+  const [tomorrowKey, setTomorrowKey] = useState<string>('Moved to backend .env');
   const [mapboxToken, setMapboxToken] = useState<string>(API_CONFIG.mapboxPublicToken);
-  const [huggingfaceToken, setHuggingfaceToken] = useState<string>(API_CONFIG.huggingFaceToken);
+  const [huggingfaceToken, setHuggingfaceToken] = useState<string>('Moved to backend .env');
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
   const [logs, setLogs] = useState<string[]>([
@@ -54,10 +54,7 @@ export const AdminPanel: React.FC = () => {
   };
 
   const handleSaveApiKeys = () => {
-    API_CONFIG.openWeatherMapKey = openWeatherKey;
-    API_CONFIG.tomorrowIoKey = tomorrowKey;
     API_CONFIG.mapboxPublicToken = mapboxToken;
-    API_CONFIG.huggingFaceToken = huggingfaceToken;
 
     setSavedSuccess(true);
     setLogs(prev => [

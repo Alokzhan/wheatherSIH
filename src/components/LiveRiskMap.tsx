@@ -96,7 +96,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     mapboxgl.accessToken = API_CONFIG.mapboxPublicToken;
 
     const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
+      container: mapContainerRef.current!,
       style: mapStyle === 'dark' 
         ? 'mapbox://styles/mapbox/dark-v11' 
         : 'mapbox://styles/mapbox/satellite-streets-v12',
