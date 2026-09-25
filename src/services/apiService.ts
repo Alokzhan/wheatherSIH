@@ -164,11 +164,21 @@ export async function fetchApiLocationRisk(query: string): Promise<{ status: 'su
   return { status: 'success', data };
 }
 
-/**
- * GET /api/v1/trajectory/{event_id}
- */
 export async function fetchApiTrajectory(eventId: string): Promise<{ status: 'success' | 'not_found'; event?: ThreatObject }> {
-  const found = MOCK_THREAT_OBJECTS.find(t => t.id === eventId) || MOCK_THREAT_OBJECTS[0];
+  try {
+    const res = await fetch(getApiEndpoint(`/api/events/${eventId}`));
+    if (res.ok) {
+      updateBackendStatus(true);
+      const raw = await res.json();
+      if (raw) {
+        return { status: 'success', event: mapRawToThreatObject(raw, 0) };
+      }
+    }
+  } catch (e) {
+    updateBackendStatus(false);
+  }
+  const threats = await fetchApiThreatObjects();
+  const found = threats.find(t => t.id === eventId) || threats[0];
   return { status: 'success', event: found };
 }
 
@@ -280,6 +290,91 @@ export async function executeModelInferenceApi(spatialResolutionKm: number = 5.0
   });
 }
 
+export function mapRawToThreatObject(raw: any, index: number = 0): ThreatObject {
+  const id = raw.id || raw.event_id || `EV-2026-${String(index + 1).padStart(3, '0')}`;
+  
+  let name = raw.name || raw.event_name || raw.title;
+  if (!name && raw.event_type) {
+    name = `${raw.event_type.replace(/_/g, ' ').toUpperCase()} Threat Cell`;
+  } else if (!name) {
+    name = `Prayagraj Confluence Flash Cell #${index + 1}`;
+  }
+
+  const district = raw.district || 'Prayagraj';
+  const region = raw.region || 'Uttar Pradesh - Ganges/Yamuna River Basin';
+  const regionId = (raw.regionId || 'up_ganges') as any;
+
+  let lat = 25.4410;
+  let lng = 81.8650;
+  if (Array.isArray(raw.centroid) && raw.centroid.length >= 2) {
+    lat = Number(raw.centroid[0]);
+    lng = Number(raw.centroid[1]);
+  } else if (raw.centroid && typeof raw.centroid === 'object') {
+    lat = Number(raw.centroid.lat ?? raw.centroid.latitude ?? 25.4410);
+    lng = Number(raw.centroid.lon ?? raw.centroid.lng ?? raw.centroid.longitude ?? 81.8650);
+  }
+
+  let bbox: [[number, number], [number, number]] = [[lat - 0.15, lng - 0.15], [lat + 0.15, lng + 0.15]];
+  if (Array.isArray(raw.bbox) && raw.bbox.length === 2 && Array.isArray(raw.bbox[0])) {
+    bbox = [[Number(raw.bbox[0][0]), Number(raw.bbox[0][1])], [Number(raw.bbox[1][0]), Number(raw.bbox[1][1])]];
+  } else if (raw.bbox && typeof raw.bbox === 'object') {
+    const minLat = Number(raw.bbox.min_lat ?? lat - 0.15);
+    const maxLat = Number(raw.bbox.max_lat ?? lat + 0.15);
+    const minLng = Number(raw.bbox.min_lon ?? raw.bbox.min_lng ?? lng - 0.15);
+    const maxLng = Number(raw.bbox.max_lon ?? raw.bbox.max_lng ?? lng + 0.15);
+    bbox = [[minLat, minLng], [maxLat, maxLng]];
+  }
+
+  let riskLevel: ThreatObject['riskLevel'] = 'critical';
+  if (raw.riskLevel && ['low', 'moderate', 'severe', 'critical'].includes(raw.riskLevel)) {
+    riskLevel = raw.riskLevel;
+  } else if (typeof raw.efiScore === 'number' && Math.abs(raw.efiScore) < 0.5) {
+    riskLevel = 'moderate';
+  }
+
+  const polygonCoords: [number, number][] = Array.isArray(raw.polygonCoords) ? raw.polygonCoords : [
+    [bbox[0][0], bbox[0][1]],
+    [bbox[1][0], bbox[0][1]],
+    [bbox[1][0], bbox[1][1]],
+    [bbox[0][0], bbox[1][1]],
+  ];
+
+  const trajectoryPoints = Array.isArray(raw.trajectoryPoints) ? raw.trajectoryPoints : [
+    { lat: Number((lat - 0.04).toFixed(4)), lng: Number((lng - 0.04).toFixed(4)), timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'severe' as const },
+    { lat: Number(lat.toFixed(4)), lng: Number(lng.toFixed(4)), timestamp: '03:00 PM (+3h)', forecastHour: 3, riskLevel },
+    { lat: Number((lat + 0.04).toFixed(4)), lng: Number((lng + 0.04).toFixed(4)), timestamp: '06:00 PM (+6h)', forecastHour: 6, riskLevel },
+  ];
+
+  const rawIntensity = Math.abs(Number(raw.peakIntensityMmH || raw.peak_intensity || 118.4));
+  const peakIntensity = rawIntensity > 1 ? rawIntensity : Number((rawIntensity * 100).toFixed(1));
+
+  return {
+    id,
+    name,
+    district,
+    region,
+    regionId,
+    riskLevel,
+    centroid: [lat, lng],
+    bbox,
+    areaKm2: Number(raw.areaKm2 || raw.area || 380),
+    speedKmH: Number(raw.speedKmH || 18.5),
+    direction: raw.direction || 'ENE (75°)',
+    peakIntensityMmH: peakIntensity,
+    hazardType: raw.hazardType || raw.event_type || 'Convective storm',
+    hazardMetricDisplay: raw.hazardMetricDisplay || `${peakIntensity} mm/h Rain`,
+    efiScore: Number(raw.efiScore ?? raw.confidence ?? 0.92),
+    probabilityExceedance: Number(raw.probabilityExceedance ?? 94),
+    timestamp: raw.timestamp || raw.start_time || new Date().toISOString(),
+    forecastStep: raw.forecastStep || raw.end_time || '+12h',
+    polygonCoords,
+    trajectoryPoints,
+    affectedVillages: Array.isArray(raw.affectedVillages) ? raw.affectedVillages : ['Sangam Temp Ghats', 'Naini Tehsil', 'Phulpur', 'Handia'],
+    affectedPopulationEstimate: Number(raw.affectedPopulationEstimate || 345000),
+    advisory: raw.advisory || raw.summary || 'CRITICAL WARNING: Intense convective rain cell active.',
+  };
+}
+
 /**
  * GET /api/events or /api/v1/anomalies
  */
@@ -290,8 +385,7 @@ export async function fetchApiThreatObjects(): Promise<ThreatObject[]> {
       updateBackendStatus(true);
       const rawEvents = await res.json();
       if (Array.isArray(rawEvents) && rawEvents.length > 0) {
-        // Map raw backend events to ThreatObject schema if needed
-        return MOCK_THREAT_OBJECTS;
+        return rawEvents.map((raw: any, idx: number) => mapRawToThreatObject(raw, idx));
       }
     }
   } catch (e) {

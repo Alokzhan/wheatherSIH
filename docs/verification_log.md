@@ -90,7 +90,22 @@ python -m pipeline.run --config configs/demo.yaml
 
 ---
 
-## 3. Frontend Production Build Verification (100% Backend-First Integration)
+## 3. Real Backend API Endpoint & Schema Mapper Verification
+
+**Command:**
+```bash
+python -c "import requests; r = requests.get('http://127.0.0.1:8000/api/events'); print('STATUS:', r.status_code); print('DATA:', r.json())"
+```
+
+**Output:**
+```text
+STATUS: 200
+DATA: [{'event_id': 'EV-2026-001', 'event_type': 'extreme_rainfall', 'start_time': 'T+0', 'end_time': 'T+240h', 'centroid': {'lat': 21.65, 'lon': 88.35}, 'bbox': {'min_lat': 20.65, 'max_lat': 22.65, 'min_lon': 87.35, 'max_lon': 89.35}, 'area': 576.0, 'peak_intensity': -0.68, 'confidence': 0.92}]
+```
+
+---
+
+## 4. Production Build Verification (with `mapRawToThreatObject` Live Mapper)
 
 **Command:**
 ```bash
@@ -110,30 +125,30 @@ computing gzip size...
 dist/index.html                                3.67 kB │ gzip:   1.48 kB
 dist/assets/LiveRiskMap-DsZBW-Fw.css          48.82 kB │ gzip:   5.85 kB
 dist/assets/index-ls17qdzz.css               114.07 kB │ gzip:  22.17 kB
-dist/assets/check-y_KegkRQ.js                  0.15 kB │ gzip:   0.16 kB
-dist/assets/loader-circle-CK_-7cqk.js          0.19 kB │ gzip:   0.18 kB
-dist/assets/user-GxNXf7WU.js                   0.22 kB │ gzip:   0.20 kB
-dist/assets/lock-Dol7lk0l.js                   0.23 kB │ gzip:   0.21 kB
-dist/assets/download-BDIL5Fpq.js               0.26 kB │ gzip:   0.21 kB
-dist/assets/compass-BZYHuOs5.js                0.28 kB │ gzip:   0.23 kB
-dist/assets/droplets-CVdOnE-q.js               0.40 kB │ gzip:   0.30 kB
-dist/assets/building-complex-xnXrhoFJ.js       0.44 kB │ gzip:   0.27 kB
-dist/assets/sliders-vertical-DeK4ygyB.js       0.47 kB │ gzip:   0.27 kB
-dist/assets/eye-CdQ3dLxc.js                    0.68 kB │ gzip:   0.37 kB
+dist/assets/check-1vRDN0tk.js                  0.15 kB │ gzip:   0.16 kB
+dist/assets/loader-circle-B6OxMqwg.js          0.19 kB │ gzip:   0.18 kB
+dist/assets/user-zqCcWWnP.js                   0.22 kB │ gzip:   0.20 kB
+dist/assets/lock-WCRV2n6s.js                   0.23 kB │ gzip:   0.21 kB
+dist/assets/download-CqjSrWMR.js               0.26 kB │ gzip:   0.21 kB
+dist/assets/compass-DJ4eAO6O.js                0.28 kB │ gzip:   0.22 kB
+dist/assets/droplets-DJpZnyDp.js               0.40 kB │ gzip:   0.30 kB
+dist/assets/building-complex-DAHOsiE1.js       0.44 kB │ gzip:   0.27 kB
+dist/assets/sliders-vertical-B6zYQB8_.js       0.47 kB │ gzip:   0.26 kB
+dist/assets/eye-iWOAGZ1e.js                    0.68 kB │ gzip:   0.36 kB
 dist/assets/exportUtils-BSFd92CP.js            3.43 kB │ gzip:   1.44 kB
-dist/assets/ApiExplorer-BmD9w1z1.js            5.35 kB │ gzip:   2.06 kB
-dist/assets/DisasterDashboard-BSGfdy6T.js      7.12 kB │ gzip:   1.95 kB
-dist/assets/HowItWorks-ahYkRJIu.js             7.92 kB │ gzip:   2.06 kB
-dist/assets/LocalityExplorer-Bo33N78H.js       9.11 kB │ gzip:   2.35 kB
-dist/assets/FarmerAdvisory-QWicPX_h.js        12.55 kB │ gzip:   4.48 kB
-dist/assets/AdminPanel-DhYzrBMf.js            13.63 kB │ gzip:   3.41 kB
-dist/assets/AlertCenter-DgkrRs8I.js           14.32 kB │ gzip:   3.63 kB
-dist/assets/LocationRisk-TjbTsv3P.js          14.37 kB │ gzip:   3.67 kB
-dist/assets/EventDetail-DDQWqoJ8.js           14.92 kB │ gzip:   4.42 kB
-dist/assets/AiModelHub-Bs9GMvHb.js            20.77 kB │ gzip:   4.89 kB
-dist/assets/AuthPage-4sn5wOEL.js              22.05 kB │ gzip:   5.48 kB
-dist/assets/index-_VZRzEdU.js                322.24 kB │ gzip:  97.76 kB
-dist/assets/LiveRiskMap-Cw-SfrHS.js        1,869.46 kB │ gzip: 518.35 kB
+dist/assets/ApiExplorer-C45I_yQN.js            5.35 kB │ gzip:   2.06 kB
+dist/assets/DisasterDashboard-DBZ7f7xI.js      7.12 kB │ gzip:   1.94 kB
+dist/assets/HowItWorks-D5-jCaQo.js             7.92 kB │ gzip:   2.06 kB
+dist/assets/LocalityExplorer-DaJLG-Ns.js       9.11 kB │ gzip:   2.35 kB
+dist/assets/FarmerAdvisory-BSC5hbN2.js        12.55 kB │ gzip:   4.48 kB
+dist/assets/AdminPanel-DQYYEW8O.js            13.63 kB │ gzip:   3.41 kB
+dist/assets/AlertCenter-BWUeqWK3.js           14.32 kB │ gzip:   3.63 kB
+dist/assets/LocationRisk-DVBP3YWz.js          14.37 kB │ gzip:   3.67 kB
+dist/assets/EventDetail-DXabcgYL.js           14.92 kB │ gzip:   4.42 kB
+dist/assets/AiModelHub-ffn-NnhI.js            20.77 kB │ gzip:   4.89 kB
+dist/assets/AuthPage-DG03mnf6.js              22.05 kB │ gzip:   5.48 kB
+dist/assets/index-B58aZ_H3.js                324.99 kB │ gzip:  98.65 kB
+dist/assets/LiveRiskMap-qeNEePA5.js        1,869.46 kB │ gzip: 518.35 kB
 
-✓ built in 2.77s
+✓ built in 2.53s
 ```
