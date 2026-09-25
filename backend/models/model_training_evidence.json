@@ -1,21 +1,31 @@
 {
-  "timestamp": "2026-09-25T21:59:11.182840Z",
+  "timestamp": "2026-09-25T22:46:18.528044Z",
   "verification_status": "PROVED_REAL_TRAINED_WEIGHTS",
   "models": {
     "st_gnn": {
       "file_path": "E:\\wheatherSIH\\backend\\models\\st_gnn_checkpoint.pt",
-      "file_size_bytes": 142529,
-      "total_trainable_parameters": 34243,
-      "layer_count": 14,
+      "file_size_bytes": 235533,
+      "total_trainable_parameters": 55752,
+      "layer_count": 34,
       "sample_layer_weight_norms": {
-        "gat1.W_src.weight": 3.2745,
-        "gat1.W_dst.weight": 3.3323,
-        "gat2.W_src.weight": 7.9648,
-        "gat2.W_dst.weight": 7.9536,
-        "gru.weight_ih_l0": 8.039,
-        "gru.weight_hh_l0": 8.0142,
-        "fc_track.weight": 0.7358,
-        "fc_intensity.weight": 0.6531
+        "spatial_gat1.W_src.weight": 3.3715,
+        "spatial_gat1.W_dst.weight": 3.2533,
+        "spatial_gat1.W_edge.weight": 2.8072,
+        "spatial_gat1.proj_out.weight": 4.6579,
+        "spatial_gat2.W_src.weight": 8.1454,
+        "spatial_gat2.W_dst.weight": 7.9732,
+        "spatial_gat2.W_edge.weight": 2.7073,
+        "spatial_gat2.proj_out.weight": 4.6842,
+        "temporal_transformer.mha.in_proj_weight": 9.8032,
+        "temporal_transformer.mha.out_proj.weight": 4.6464,
+        "temporal_transformer.norm1.weight": 8.0095,
+        "temporal_transformer.norm2.weight": 8.0664,
+        "temporal_transformer.ffn.0.weight": 6.607,
+        "temporal_transformer.ffn.2.weight": 4.7391,
+        "trajectory_head.0.weight": 3.2762,
+        "trajectory_head.2.weight": 0.7958,
+        "intensity_head.0.weight": 3.3026,
+        "intensity_head.2.weight": 1.2945
       },
       "architecture": "Multi-Head Spherical Graph Attention + Temporal Self-Attention Transformer (GATv2 + MultiheadAttention)",
       "verified": true
