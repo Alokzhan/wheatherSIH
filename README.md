@@ -191,7 +191,7 @@ Quantitative evaluation comparing **Raw 12km NWP**, **Standard U-Net Downscaling
 * **`data_pipeline.py`**: `RealERA5DataPipeline` connecting to Copernicus ERA5 & Open-Meteo APIs for India domain ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$) with 30-year climatology quantiles ($P_{90}, P_{95}, P_{99}$).
 * **`stage1_gnn/`**:
   * `icosahedral_mesh.py`: 3D Cartesian spherical geodesic graph generator on $\mathbb{S}^2$ with Great-Circle distance tensors (`edge_index`, `edge_attr`).
-  * `efi_compute.py`: Analytical integral solver computing Extreme Forecast Index against 30-year ERA5 baseline and generating 4D spatio-temporal bounding boxes.
+  * `efi_compute.py`: Dynamic grid-wide Extreme Forecast Index (EFI) solver & Scipy `ndimage.label` connected-component analysis dynamically extracting extreme anomaly centroids $(\text{lat}_{\text{centroid}}, \text{lon}_{\text{centroid}})$ and 4D bounding boxes $[ \text{lat}_{\min}, \text{lat}_{\max}, \text{lon}_{\min}, \text{lon}_{\max} ]$.
   * `gnn_model.py`: PyTorch `SphericalMeshGraphNet` with Geodesic Edge Bias Attention layers and training loop saving checkpoint `backend/models/gnn_checkpoint.pt`.
 * **`stage2_diffusion/`**:
   * `ddpm.py`: PyTorch `ConditionalUNetDownscaler` with linear noise scheduler and training loop saving checkpoint `backend/models/ddpm_checkpoint.pt`.
