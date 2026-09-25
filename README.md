@@ -1,178 +1,87 @@
-# 🛡️ StormTrace AI — Multi-hazard extreme anomaly tracking + downscaling engine
+# 🌩️ StormTrace AI
+**3D Pan-India GIS Engine & Extreme Weather Forecaster**
 
-> **Smarter Forecasts. Safer Tomorrow.**  
-> **SIH Problem Statement:** Ensemble-based 5 km & 1 km extreme weather anomaly tracking and downscaling.  
-> **GitHub Repository:** [`https://github.com/Alokzhan/wheatherSIH`](https://github.com/Alokzhan/wheatherSIH)  
-> **Live Web Application:** `http://localhost:5173/`
+![StormTrace AI](https://img.shields.io/badge/Status-Hackathon_Ready-success?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Mapbox](https://img.shields.io/badge/Mapbox-000000?style=for-the-badge&logo=Mapbox&logoColor=white)
 
-**One-Line Reframe:**  
-StormTrace AI is a two-stage hybrid AI — Spherical GNN for 4D anomaly tracking + Conditional Diffusion for amplitude-preserving 12→5km downscaling — that turns massive global NWP ensembles into pinpoint 5km impact alerts in 12 seconds.
+StormTrace AI is a full-stack, AI-powered extreme weather tracking and hyperlocal alert dispatch system. Designed for disaster officers and emergency responders, it provides early warnings by downscaling coarse global weather predictions (NWP) to a hyperlocal resolution and evaluating them against historical climatology.
 
----
+## 🚀 Key Features
 
-## 📌 Executive Summary
-
-Extreme weather events such as cyclones, heat domes, cold waves, and mesoscale cloudbursts affect hyper-local geographic zones. Standard Numerical Weather Prediction (NWP) models (such as GFS 13 km or NCUM 12 km) output coarse grids that average weather anomalies over 144–169 km² cells, smoothing out upper-tail extremes by **40–50%**.
-
-**StormTrace AI** is a state-of-the-art AI decision-support platform. It ingests massive **Global NWP ensembles (NEPS-G 12km)**, reanalysis climatology (ERA5/IMDAA), and Digital Elevation Models (DEM), applying a **Dual-Stage Physics-Informed Deep Learning Engine** with a **Global NWP ingestion, Pan-India focus** to:
-1. Generate terrain-aware **5 km and 1 km probabilistic risk maps** using **Conditional DDPM/DDIM (HuggingFace Diffusers)**.
-2. Track dynamic storm trajectories and anomalies over a **+240h (10-day medium range)** timeline using a **Spherical Icosahedral GNN (DGL)**.
-3. Broadcast **4D Anomaly Bounding Box (x,y,z,t) + trajectory cones** to eliminate NDRF alert-fatigue through pinpoint 5km impacts.
+* **🌍 3D Pan-India GIS Dashboard**: A fully responsive React-based interface utilizing Mapbox GL JS to render real-time weather layers, terrain, and tracking data in an immersive 3D environment.
+* **📈 Extreme Forecast Index (EFI)**: A lightweight, `SciPy`-based statistical anomaly engine that compares current precipitation forecasts against a 30-year climatological percentile rank to flag unprecedented weather anomalies.
+* **🧠 AI-Powered Downscaling**: Leverages PyTorch-driven logic (simulated/optimized for the demo) to downscale 12km coarse grids to a 5km hyperlocal resolution while preserving extreme weather peaks.
+* **🚨 Automated Rule-Engine & Alerts**: A robust Python rule-engine that triggers critical disaster alerts when multi-hazard combinations (e.g., Extreme Rainfall + High Vulnerability Index) cross predefined thresholds.
+* **📱 Mobile Responsive UI**: Modern glassmorphism UI with sidebars, mobile drawers, and dark/light modes built with Tailwind CSS.
 
 ---
 
-## ✅ SIH26078 Compliance Matrix
+## 🛠️ Technology Stack
 
-| Requirement | Implementation Status |
-| :--- | :--- |
-| **Track exact geographic footprints** | ✅ 4D-ABB implemented |
-| **Cyclones, heat domes, cold waves** | ✅ Multi-hazard modules |
-| **Process massive global NWP** | ✅ Xarray + Dask pipeline |
-| **Medium-range 3–10 days** | ✅ +240h forecast horizon |
-| **Spherical mesh GNN** | ✅ DGL icosahedral tracking |
-| **EFI vs 30-yr ERA5** | ✅ EFI anomaly engine |
-| **Avoid spectral smoothing** | ✅ PSD loss + diffusion architecture |
-| **Amplitude-preserving downscaling**| ✅ Conditional DDPM |
-| **12km → 5km** | ✅ High-res downscaling |
-| **Physics-informed constraints** | ✅ 4 laws (Mass, Moisture, Energy, Vorticity) |
-| **Production REST API** | ✅ FastAPI anomaly-centric |
-| **NDRF alert fatigue solution** | ✅ 5km pinpoint alerts |
-| **Gen AI Incident Reporting** | ✅ LLaMA-3 Auto-Copilot |
-| **Agentic Resource Dispatch** | ✅ Autonomous SDRF Routing |
-| **Rural economy protection** | ✅ 3–10 day advisories |
-| **Democratized supercomputing** | ✅ Cloud GPU, 12s inference |
+**Frontend**
+* React 18 (Vite)
+* TypeScript
+* Tailwind CSS 
+* Mapbox GL JS & Lucide Icons
+
+**Backend**
+* Python (FastAPI)
+* PyTorch & SciPy (Machine Learning & Statistics)
+* NumPy (Grid Data Processing)
+* Uvicorn (ASGI Server)
 
 ---
 
-## 🌟 Multi-Hazard Tracking & Advanced Case Studies
+## ⚙️ How to Run Locally
 
-StormTrace AI goes beyond rainfall. It features comprehensive multi-hazard modules:
-- 🌀 **Cyclone track & intensity** (e.g., Cyclone Amphan)
-- 🔥 **Heat dome detection** (e.g., North India Heatwave)
-- ❄️ **Cold wave anomaly** (e.g., Himalayan Cold Wave)
-- 💨 **Wind extremes**
-- 🌧️ **Extreme rainfall**
-- 🏔️ **Orographic/landslide tracking**
+To run this project locally, you will need two separate terminal windows.
 
-### 🔍 Real-World Case Studies
-1. **Cyclone Amphan:** Tracked 4D-ABB with wind anomalies accurately 7 days in advance.
-2. **Heatwave & Cold Wave:** Detected spatial extents of temperature extremes via EFI compared against 30-yr ERA5 baselines.
-3. **Hyperlocal Rainfall:** Continuous rain monitoring with specific exceedance probabilities.
-
----
-
-## 🧠 AI/ML Methodology & Mathematical Formulation
-
-### Stage 1: Spherical Icosahedral GNN (DGL) / Statistical EFI Engine
-To avoid distortions from flat-grid projections, the full vision uses a **Spherical Icosahedral GNN**. However, for hackathon deployability and rapid inference, a **lightweight statistical version is implemented**. We compute the Extreme Forecast Index (EFI) vs a 30-yr ERA5 baseline (via real integral equations in SciPy) to find anomalies, yielding **4D Anomaly Bounding Boxes (x,y,z,t)**.
-
-### Stage 2: Physics-Informed CNN Downscaler
-We completely eliminated the U-Net architecture due to its tendency for **spectral smoothing**. Instead, we employ a **Statistical Baseline (Bicubic) + Residual CNN**. This generates amplitude-preserving high-frequency details trained in under 2 hours.
-
-#### Physics-Informed Loss (Mass Conservation)
-The downscaling model is guided by physical conservation laws. We implemented a robust and achievable constraint:
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{recon}} + \lambda_1 \mathcal{L}_{\text{mass}}$$
-Where:
-- $\mathcal{L}_{\text{mass}}$: Mass conservation between coarse and downscaled grids (ensuring total precipitation volume remains physically valid across resolutions).
-
-### Stage 3: Generative AI & Agentic Workflows
-To transition from mere "prediction" to "action", StormTrace AI features two autonomous workflows:
-- **Gen AI Incident Copilot (LLaMA-3 / Mistral):** Automatically generates detailed, hyper-local incident reports by synthesizing the 4D-ABB impact geometry with live demographic data.
-- **Agentic Resource Dispatch:** An autonomous AI Agent evaluates the downscaled risk severity and triggers automated resource dispatch workflows (routing SDRF units, Medical Helicopters) to exact vulnerable tehsils.
-
----
-
-## 📊 Benchmark & Spectral Preservation Proof
-
-To prove we avoid spectral smoothing, we benchmark Power Spectral Density (PSD) preservation:
-
-| Model Architecture | Grid Resolution | PSD Preservation % | 4D-ABB IoU | Physics Residual | RMSE (mm) | Hit Rate (POD) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **StormTrace Conditional DDPM (Ours)**| **5 km / 1 km** | **98.5%** | **0.89** | **0.002** | **4.12** | **95.0%** |
-| Standard U-Net (Legacy) | 5 km | 55.8% (Smoothed) | 0.65 | 0.015 | 4.80 | 85.0% |
-| Standard NCUM Operational | 12 km | 44.2% (Smoothed) | N/A | N/A | 12.80 | 72.0% |
-
----
-
-## 🌍 Societal Impact
-
-- **NDRF Alert-Fatigue Reduction:** Traditional systems blast state-wide alerts. Our 5km pinpoint impact GeoJSONs ensure disaster response forces deploy only where exactly needed.
-- **Rural Economy Protection:** Medium-range (3-10 day) forecasting safeguards agricultural planning, livestock, and localized rural supply chains.
-- **Democratized Supercomputing:** Achieves what previously required massive HPC clusters in just 12 seconds of inference on consumer-grade Cloud GPUs.
-
----
-
-## 🏗️ Technical Architecture & Data Pipeline
-
-We utilize **Xarray + Dask** for distributed parallel processing of NetCDF/GRIB2 files, efficiently loading NEPS-G 12km ensemble fields and ERA5/IMDAA baselines.
-
-### Model Training Pipeline
-- **Dataset:** 4.5 TB of historical ERA5 & NWP ensembles (1991-2020).
-- **Compute:** Trained over 120 GPU hours on 4x NVIDIA A100s.
-- **Optimization:** Mixed precision (FP16), distributed data parallel (DDP).
-
-### Limitations & Future Work
-- **Limitations:** Dependency on high-quality real-time DEMs; inference time grows non-linearly with ultra-high (1km) resolution domains.
-- **Future Work:** Integrating real-time satellite radiance assimilation (INSAT-3D) directly into the diffusion latent space.
-
----
-
-## 🔑 Datasets & Tools (Tech Stack)
-
-| Category | Tools & Libraries |
-|:------|:-----------|
-| **Deep Learning** | PyTorch, JAX, HuggingFace Diffusers |
-| **Graph Neural Nets** | DGL (Deep Graph Library) |
-| **Data Processing** | Xarray, Dask, NetCDF4 |
-| **Meteorology / Geospatial**| MetPy, Cartopy, Rasterio, Shapely |
-| **Backend API** | FastAPI, Uvicorn |
-| **Frontend Framework** | React 19, TypeScript 6, Vite 8, Tailwind CSS |
-| **3D GIS Mapping** | Mapbox GL JS |
-
----
-
-## 📡 Anomaly-Centric REST API (FastAPI)
-
-| Endpoint | Method | Purpose |
-| :--- | :--- | :--- |
-| `/api/v1/anomalies` | `GET` | List all active 4D-ABBs globally |
-| `/api/v1/anomalies/{id}/centroid` | `GET` | Pinpoint anomaly coordinate |
-| `/api/v1/anomalies/{id}/impact-radius` | `GET` | 5km impact GeoJSON for alerting |
-| `/api/v1/psd-compare` | `GET` | Spectral preservation proof metrics |
-| `/api/v1/ndrf-brief` | `GET` | PDF deployment brief generation |
-
----
-
-## 🛠️ Local Installation & Setup Guide
-
-### Step 1: Clone Repository
-```bash
-git clone https://github.com/Alokzhan/wheatherSIH.git
-cd wheatherSIH
+### 1. Environment Setup
+Create a `.env` file in the root directory (where `package.json` exists) for frontend Mapbox configuration:
+```env
+VITE_MAPBOX_TOKEN=your_mapbox_public_token
 ```
 
-### Step 2: Install Dependencies (Frontend & Backend)
-```bash
-# Frontend
-npm install
+Create a `.env` file inside the `backend/` directory for backend secrets:
+```env
+OWM_KEY=your_openweathermap_api_key
+MAPBOX_TOKEN=your_mapbox_token
+# Note: In the codebase, API keys are securely proxied.
+```
 
-# Backend
+### 2. Start the Backend API
+Open your first terminal and run the FastAPI server:
+```bash
 cd backend
 pip install -r requirements.txt
+python -m uvicorn api.main:app --reload --port 8000
 ```
+*The backend will be available at `http://localhost:8000` and API docs at `http://localhost:8000/docs`.*
 
-### Step 3: Launch Services
+### 3. Start the Frontend Application
+Open a second terminal and run the React frontend:
 ```bash
-# Frontend (Terminal 1)
+npm install
 npm run dev
-
-# Backend (Terminal 2)
-cd backend
-uvicorn api.main:app --reload
 ```
-Open **`http://localhost:5173/`** in your browser.
+*The app will launch at `http://localhost:5173`. Open this URL in your browser to interact with the 3D map.*
+
+### 4. Run the Real-time Pipeline Demo
+To simulate the entire EFI and AI downscaling pipeline independently from the UI:
+```bash
+python demo.py
+```
+This script will output the entire pipeline execution log (fetching data -> EFI computation -> PyTorch downscaling -> Dispatching Alert) in your terminal.
 
 ---
-## 📄 License & Attribution
-Developed for **Smart India Hackathon (SIH 26078)**.
-© 2026 StormTrace AI Project. MIT License.
+
+## 🏗️ Hackathon Specifics
+
+For the purpose of the Smart India Hackathon:
+- **GNN/Diffusion Model Note**: Full continuous training of the spherical icosahedral GNN and Diffusion models is highly time-intensive and requires significant compute. For this demo, a lightweight statistical version (`SciPy` implementation) has been developed and integrated in `backend/stage1_gnn/efi_compute.py` which computes anomalies. This ensures the demo is highly stable and works flawlessly in front of judges!
+- **Data Source**: Real-world statistical integration logic has been established, avoiding heavy 4.5TB downloads while maintaining pipeline integrity.
+
+---
+*Built with ❤️ for Smart India Hackathon*
