@@ -1,0 +1,548 @@
+import type { ThreatObject, GridCell5km, LocationRiskData, AlertItem, HistoricalEvent, ModelConfig, IndiaRegionId } from '../types/weather';
+
+export const INITIAL_MODEL_CONFIG: ModelConfig = {
+  w1_efi_anomaly: 0.35,
+  w2_prob_exceedance: 0.30,
+  w3_severity_magnitude: 0.20,
+  w4_vulnerability_exposure: 0.15,
+  extremeQuantileThreshold: 0.95,
+  spatialResolutionKm: 5.0,
+};
+
+export const INDIA_REGION_PRESETS: { id: IndiaRegionId; name: string; center: [number, number]; zoom: number; description: string }[] = [
+  { id: 'all', name: '🇮🇳 Pan-India Overview', center: [22.5937, 78.9629], zoom: 5, description: 'National Multi-Hazard & Extreme Rainfall Radar' },
+  { id: 'up_ganges', name: 'Uttar Pradesh / Ganges Basin', center: [25.4358, 81.8463], zoom: 9, description: 'Prayagraj, Varanasi, Mirzapur, Kaushambi Confluence' },
+  { id: 'mumbai_west', name: 'Mumbai & Konkan Coast', center: [19.0760, 72.8777], zoom: 10, description: 'Mumbai Suburban River Basin, Thane, Ratnagiri' },
+  { id: 'wayanad_south', name: 'Wayanad / Western Ghats', center: [11.6854, 76.1320], zoom: 10, description: 'Kerala Orographic Extreme Rain & Landslide Zone' },
+  { id: 'assam_east', name: 'Assam & Brahmaputra Basin', center: [26.1445, 91.7362], zoom: 9, description: 'Guwahati, Silchar, Majuli Riverine Inundation' },
+  { id: 'himalaya_north', name: 'Uttarakhand / Himalayan Ridge', center: [30.3165, 78.0322], zoom: 9, description: 'Chamoli, Rishikesh, Kedarnath Ridge Surge' },
+];
+
+export const MOCK_THREAT_OBJECTS: ThreatObject[] = [
+  {
+    id: 'EV-UP-2026-001',
+    name: 'Prayagraj Sangam Confluence Flash Flood Threat',
+    district: 'Prayagraj',
+    region: 'Uttar Pradesh - Ganges/Yamuna River Basin',
+    regionId: 'up_ganges',
+    riskLevel: 'critical',
+    centroid: [25.4410, 81.8650],
+    bbox: [[25.3200, 81.7200], [25.5600, 82.0200]],
+    areaKm2: 380,
+    speedKmH: 18.5,
+    direction: 'ENE (75°)',
+    peakIntensityMmH: 118.4,
+    efiScore: 0.92,
+    probabilityExceedance: 94,
+    timestamp: '2026-09-25T12:00:00Z',
+    forecastStep: '+12h',
+    polygonCoords: [
+      [25.3800, 81.7400],
+      [25.4900, 81.7600],
+      [25.5500, 81.8800],
+      [25.5100, 82.0100],
+      [25.4200, 82.0000],
+      [25.3500, 81.8900],
+    ],
+    trajectoryPoints: [
+      { lat: 25.3800, lng: 81.7100, timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'severe' },
+      { lat: 25.4110, lng: 81.7850, timestamp: '03:00 PM (+3h)', forecastHour: 3, riskLevel: 'critical' },
+      { lat: 25.4410, lng: 81.8650, timestamp: '06:00 PM (+6h)', forecastHour: 6, riskLevel: 'critical' },
+      { lat: 25.4720, lng: 81.9450, timestamp: '09:00 PM (+9h)', forecastHour: 9, riskLevel: 'critical' },
+      { lat: 25.5030, lng: 82.0250, timestamp: '12:00 AM (+12h)', forecastHour: 12, riskLevel: 'severe' },
+    ],
+    affectedVillages: ['Sangam Temp Ghats', 'Naini Tehsil', 'Phulpur', 'Handia', 'Karchhana', 'Jhusi'],
+    affectedPopulationEstimate: 345000,
+    advisory: 'CRITICAL WARNING: Intense convective rain cell over Ganges-Yamuna confluence. Heavy localized waterlogging & flash inundation expected in Naini & Phulpur within 3 to 6 hours.',
+  },
+  {
+    id: 'EV-MH-2026-008',
+    name: 'Mumbai Suburban Mithi River Urban Inundation Cell',
+    district: 'Mumbai Suburban',
+    region: 'Maharashtra - Konkan West Coast',
+    regionId: 'mumbai_west',
+    riskLevel: 'critical',
+    centroid: [19.0800, 72.8800],
+    bbox: [[18.9500, 72.7800], [19.2000, 72.9800]],
+    areaKm2: 410,
+    speedKmH: 22.4,
+    direction: 'NE (35°)',
+    peakIntensityMmH: 135.0,
+    efiScore: 0.95,
+    probabilityExceedance: 97,
+    timestamp: '2026-09-25T12:00:00Z',
+    forecastStep: '+06h',
+    polygonCoords: [
+      [18.9800, 72.8000],
+      [19.1200, 72.8200],
+      [19.1800, 72.9400],
+      [19.0900, 72.9800],
+      [18.9900, 72.9000],
+    ],
+    trajectoryPoints: [
+      { lat: 18.9600, lng: 72.8000, timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'severe' },
+      { lat: 19.0800, lng: 72.8800, timestamp: '03:00 PM (+3h)', forecastHour: 3, riskLevel: 'critical' },
+      { lat: 19.1600, lng: 72.9500, timestamp: '06:00 PM (+6h)', forecastHour: 6, riskLevel: 'critical' },
+    ],
+    affectedVillages: ['Kurla Mithi Channel', 'Andheri East', 'Bandra-Kurla Complex', 'Sion Lowlands', 'Dharavi'],
+    affectedPopulationEstimate: 820000,
+    advisory: 'RED ALERT: Extreme monsoon cloud burst over Mumbai Suburban catchment. Mithi River overflow risk combined with high tide surge at 4:30 PM.',
+  },
+  {
+    id: 'EV-KL-2026-014',
+    name: 'Wayanad Ghats Orographic Extreme Downpour & Slope Cell',
+    district: 'Wayanad',
+    region: 'Kerala - Western Ghats Escarpment',
+    regionId: 'wayanad_south',
+    riskLevel: 'critical',
+    centroid: [11.6500, 76.1200],
+    bbox: [[11.5000, 76.0000], [11.8000, 76.2500]],
+    areaKm2: 320,
+    speedKmH: 12.0,
+    direction: 'E (90°)',
+    peakIntensityMmH: 148.2,
+    efiScore: 0.96,
+    probabilityExceedance: 98,
+    timestamp: '2026-09-25T12:00:00Z',
+    forecastStep: '+18h',
+    polygonCoords: [
+      [11.5200, 76.0200],
+      [11.7200, 76.0500],
+      [11.7800, 76.2000],
+      [11.6200, 76.2400],
+    ],
+    trajectoryPoints: [
+      { lat: 11.5500, lng: 76.0400, timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'critical' },
+      { lat: 11.6500, lng: 76.1200, timestamp: '06:00 PM (+6h)', forecastHour: 6, riskLevel: 'critical' },
+      { lat: 11.7200, lng: 76.1800, timestamp: '12:00 AM (+12h)', forecastHour: 12, riskLevel: 'critical' },
+    ],
+    affectedVillages: ['Meppadi', 'Chooralmala', 'Mundakkai', 'Vellarmala', 'Kalpetta'],
+    affectedPopulationEstimate: 165000,
+    advisory: 'EXTREME LANDSLIDE & FLASH SURGE ALERT: Orographic moisture trapping along Western Ghats ridge producing >140mm/h localized rainfall. Immediate evacuation of hill slopes required.',
+  },
+  {
+    id: 'EV-AS-2026-005',
+    name: 'Brahmaputra Floodplain Surge & Island Inundation',
+    district: 'Kamrup Metropolitan / Majuli',
+    region: 'Assam - Middle Brahmaputra Plain',
+    regionId: 'assam_east',
+    riskLevel: 'severe',
+    centroid: [26.1800, 91.7500],
+    bbox: [[26.0500, 91.6000], [26.3000, 91.9000]],
+    areaKm2: 520,
+    speedKmH: 15.0,
+    direction: 'SW (225°)',
+    peakIntensityMmH: 92.0,
+    efiScore: 0.88,
+    probabilityExceedance: 91,
+    timestamp: '2026-09-25T12:00:00Z',
+    forecastStep: '+24h',
+    polygonCoords: [
+      [26.0800, 91.6200],
+      [26.2400, 91.6500],
+      [26.2800, 91.8500],
+      [26.1200, 91.8800],
+    ],
+    trajectoryPoints: [
+      { lat: 26.2200, lng: 91.8200, timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'severe' },
+      { lat: 26.1800, lng: 91.7500, timestamp: '06:00 PM (+6h)', forecastHour: 6, riskLevel: 'severe' },
+    ],
+    affectedVillages: ['Guwahati Lowlands', 'Dispur Channel', 'North Guwahati', 'Majuli Char Islands'],
+    affectedPopulationEstimate: 410000,
+    advisory: 'SEVERE FLOOD ALERT: Heavy catchment downpours in Eastern Himalayas flowing into Brahmaputra. River levels rising 0.45m above danger mark.',
+  },
+  {
+    id: 'EV-UK-2026-009',
+    name: 'Chamoli Alaknanda Ridge Surge & Cloudburst Band',
+    district: 'Chamoli',
+    region: 'Uttarakhand - Garhwal Himalayas',
+    regionId: 'himalaya_north',
+    riskLevel: 'critical',
+    centroid: [30.4000, 79.3200],
+    bbox: [[30.2500, 79.1500], [30.5500, 79.4500]],
+    areaKm2: 260,
+    speedKmH: 28.0,
+    direction: 'SE (135°)',
+    peakIntensityMmH: 125.0,
+    efiScore: 0.94,
+    probabilityExceedance: 95,
+    timestamp: '2026-09-25T12:00:00Z',
+    forecastStep: '+12h',
+    polygonCoords: [
+      [30.2800, 79.1800],
+      [30.4800, 79.2200],
+      [30.5200, 79.3800],
+      [30.3500, 79.4200],
+    ],
+    trajectoryPoints: [
+      { lat: 30.4500, lng: 79.2500, timestamp: '12:00 PM (Now)', forecastHour: 0, riskLevel: 'critical' },
+      { lat: 30.4000, lng: 79.3200, timestamp: '03:00 PM (+3h)', forecastHour: 3, riskLevel: 'critical' },
+    ],
+    affectedVillages: ['Joshimath Lower Slopes', 'Pipalkoti', 'Chamoli Sadar', 'Rishikesh Valley Stream'],
+    affectedPopulationEstimate: 85000,
+    advisory: 'HIMALAYAN CLOUDBURST ALERT: Extreme rain cell trapped along high Himalayan escarpment. Severe flash flood & debris flow risk along Alaknanda River.',
+  }
+];
+
+// Generate 5km grid cells across Pan-India nodes
+export const MOCK_5KM_GRID: GridCell5km[] = [];
+let gridIdCounter = 1;
+
+// Node 1: Prayagraj / UP East
+for (let lat = 25.10; lat <= 25.70; lat += 0.05) {
+  for (let lng = 81.35; lng <= 82.15; lng += 0.05) {
+    const distToSangam = Math.hypot(lat - 25.4410, lng - 81.8650);
+    const baseRain = Math.max(15, Math.round(130 * Math.exp(-distToSangam * 4.5) + 30));
+    const score = Math.min(99, Math.round((baseRain / 130) * 100));
+    let riskLevel: GridCell5km['riskLevel'] = 'low';
+    if (score >= 80) riskLevel = 'critical';
+    else if (score >= 60) riskLevel = 'severe';
+    else if (score >= 35) riskLevel = 'moderate';
+
+    MOCK_5KM_GRID.push({
+      id: `GRID-UP-${gridIdCounter++}`,
+      lat: Number(lat.toFixed(4)),
+      lng: Number(lng.toFixed(4)),
+      rainfallForecastMm: baseRain,
+      anomalyPercentile: Number((90 + (baseRain / 130) * 9.8).toFixed(1)),
+      probabilityGt50mm: Math.min(99, Math.round((baseRain / 120) * 100)),
+      downscaledRiskScore: score,
+      riskLevel,
+      elevationMeters: Math.round(92 + Math.random() * 35),
+      vulnerabilityIndex: 0.82,
+      district: 'Prayagraj',
+      tehsil: lng > 81.9 ? 'Handia' : (lng > 81.7 ? 'Phulpur' : 'Naini'),
+      regionId: 'up_ganges',
+    });
+  }
+}
+
+// Node 2: Mumbai / Konkan
+for (let lat = 18.95; lat <= 19.25; lat += 0.05) {
+  for (let lng = 72.75; lng <= 73.05; lng += 0.05) {
+    const distToMithi = Math.hypot(lat - 19.0800, lng - 72.8800);
+    const baseRain = Math.max(20, Math.round(155 * Math.exp(-distToMithi * 5.0) + 40));
+    const score = Math.min(99, Math.round((baseRain / 155) * 100));
+    let riskLevel: GridCell5km['riskLevel'] = 'low';
+    if (score >= 80) riskLevel = 'critical';
+    else if (score >= 60) riskLevel = 'severe';
+    else if (score >= 35) riskLevel = 'moderate';
+
+    MOCK_5KM_GRID.push({
+      id: `GRID-MH-${gridIdCounter++}`,
+      lat: Number(lat.toFixed(4)),
+      lng: Number(lng.toFixed(4)),
+      rainfallForecastMm: baseRain,
+      anomalyPercentile: 99.2,
+      probabilityGt50mm: 97,
+      downscaledRiskScore: score,
+      riskLevel,
+      elevationMeters: Math.round(12 + Math.random() * 20),
+      vulnerabilityIndex: 0.95,
+      district: 'Mumbai Suburban',
+      tehsil: 'Kurla / Andheri',
+      regionId: 'mumbai_west',
+    });
+  }
+}
+
+// Node 3: Wayanad / Kerala
+for (let lat = 11.50; lat <= 11.80; lat += 0.05) {
+  for (let lng = 76.00; lng <= 76.30; lng += 0.05) {
+    const distToWayanad = Math.hypot(lat - 11.6500, lng - 76.1200);
+    const baseRain = Math.max(25, Math.round(165 * Math.exp(-distToWayanad * 5.5) + 35));
+    const score = Math.min(99, Math.round((baseRain / 165) * 100));
+    let riskLevel: GridCell5km['riskLevel'] = 'low';
+    if (score >= 80) riskLevel = 'critical';
+    else if (score >= 60) riskLevel = 'severe';
+    else if (score >= 35) riskLevel = 'moderate';
+
+    MOCK_5KM_GRID.push({
+      id: `GRID-KL-${gridIdCounter++}`,
+      lat: Number(lat.toFixed(4)),
+      lng: Number(lng.toFixed(4)),
+      rainfallForecastMm: baseRain,
+      anomalyPercentile: 99.7,
+      probabilityGt50mm: 98,
+      downscaledRiskScore: score,
+      riskLevel,
+      elevationMeters: Math.round(750 + Math.random() * 450),
+      vulnerabilityIndex: 0.91,
+      district: 'Wayanad',
+      tehsil: 'Meppadi / Vythiri',
+      regionId: 'wayanad_south',
+    });
+  }
+}
+
+export const MOCK_LOCATION_RISKS: Record<string, LocationRiskData> = {
+  prayagraj: {
+    locationName: 'Prayagraj (Sangam City)',
+    district: 'Prayagraj',
+    state: 'Uttar Pradesh',
+    pinCode: '211001',
+    coordinates: [25.4358, 81.8463],
+    regionId: 'up_ganges',
+    currentRiskLevel: 'critical',
+    riskScore: 92,
+    forecast24h: { rainMm: 142.5, prob: 94, risk: 'critical' },
+    forecast48h: { rainMm: 86.0, prob: 78, risk: 'severe' },
+    forecast72h: { rainMm: 35.0, prob: 45, risk: 'moderate' },
+    forecast5d: { rainMm: 12.0, prob: 20, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 45, rainMm: 8.5 },
+      { hour: '03:00 PM', prob: 78, rainMm: 24.0 },
+      { hour: '06:00 PM', prob: 94, rainMm: 48.5 },
+      { hour: '09:00 PM', prob: 91, rainMm: 36.0 },
+      { hour: '12:00 AM', prob: 82, rainMm: 18.0 },
+      { hour: '03:00 AM', prob: 65, rainMm: 12.0 },
+    ],
+    nearestThreatDistanceKm: 3.2,
+    nearestThreatName: 'EV-UP-2026-001 (Prayagraj Confluence Flash Flood Threat)',
+    safetyAdvisory: {
+      public: 'High risk of severe urban waterlogging around Civil Lines, Naini Bridge road, and Sangam temporary ghats.',
+      farmer: 'Paddy & sugarcane fields in Phulpur/Handia belt face 24-36h standing water inundation.',
+      official: 'Deploy NDRF Team 4 to Naini Ghat. Issue siren advisory for Sangam temporary settlements.',
+    },
+  },
+  mumbai: {
+    locationName: 'Mumbai Suburban (BKC & Mithi)',
+    district: 'Mumbai Suburban',
+    state: 'Maharashtra',
+    pinCode: '400051',
+    coordinates: [19.0760, 72.8777],
+    regionId: 'mumbai_west',
+    currentRiskLevel: 'critical',
+    riskScore: 97,
+    forecast24h: { rainMm: 210.0, prob: 98, risk: 'critical' },
+    forecast48h: { rainMm: 115.0, prob: 85, risk: 'severe' },
+    forecast72h: { rainMm: 45.0, prob: 50, risk: 'moderate' },
+    forecast5d: { rainMm: 18.0, prob: 25, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 60, rainMm: 15.0 },
+      { hour: '03:00 PM', prob: 95, rainMm: 65.0 },
+      { hour: '06:00 PM', prob: 98, rainMm: 75.0 },
+      { hour: '09:00 PM', prob: 90, rainMm: 35.0 },
+      { hour: '12:00 AM', prob: 80, rainMm: 20.0 },
+    ],
+    nearestThreatDistanceKm: 1.5,
+    nearestThreatName: 'EV-MH-2026-008 (Mumbai Suburban Mithi River Inundation)',
+    safetyAdvisory: {
+      public: 'CRITICAL HIGH TIDE & URBAN FLOOD WARNING: Avoid Mithi river vicinity and low-lying railway underpasses.',
+      farmer: 'Horticulture & rice fields in Thane/Palghar border face high waterlogging.',
+      official: 'Activate Mumbai Emergency Operations Room. Keep water de-pumping stations at 100% capacity.',
+    },
+  },
+  wayanad: {
+    locationName: 'Wayanad (Meppadi & Chooralmala)',
+    district: 'Wayanad',
+    state: 'Kerala',
+    pinCode: '673577',
+    coordinates: [11.6854, 76.1320],
+    regionId: 'wayanad_south',
+    currentRiskLevel: 'critical',
+    riskScore: 99,
+    forecast24h: { rainMm: 245.0, prob: 99, risk: 'critical' },
+    forecast48h: { rainMm: 130.0, prob: 90, risk: 'critical' },
+    forecast72h: { rainMm: 50.0, prob: 60, risk: 'moderate' },
+    forecast5d: { rainMm: 20.0, prob: 30, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 75, rainMm: 25.0 },
+      { hour: '03:00 PM', prob: 98, rainMm: 85.0 },
+      { hour: '06:00 PM', prob: 99, rainMm: 95.0 },
+      { hour: '09:00 PM', prob: 92, rainMm: 40.0 },
+    ],
+    nearestThreatDistanceKm: 2.1,
+    nearestThreatName: 'EV-KL-2026-014 (Wayanad Ghats Orographic Extreme Downpour)',
+    safetyAdvisory: {
+      public: 'EXTREME LANDSLIDE HAZARD: Immediate evacuation required for steep hill slope inhabitants in Chooralmala.',
+      farmer: 'Tea & cardamom plantation workers must vacate riverbank estate quarters immediately.',
+      official: 'Deploy NDRF 4th Battalion with K9 search units. Clear landslides along NH-766.',
+    },
+  },
+  guwahati: {
+    locationName: 'Guwahati (Kamrup Metro)',
+    district: 'Kamrup Metropolitan',
+    state: 'Assam',
+    pinCode: '781001',
+    coordinates: [26.1445, 91.7362],
+    regionId: 'assam_east',
+    currentRiskLevel: 'severe',
+    riskScore: 86,
+    forecast24h: { rainMm: 135.0, prob: 91, risk: 'severe' },
+    forecast48h: { rainMm: 90.0, prob: 80, risk: 'severe' },
+    forecast72h: { rainMm: 40.0, prob: 50, risk: 'moderate' },
+    forecast5d: { rainMm: 15.0, prob: 20, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 50, rainMm: 12.0 },
+      { hour: '03:00 PM', prob: 80, rainMm: 38.0 },
+      { hour: '06:00 PM', prob: 91, rainMm: 55.0 },
+      { hour: '09:00 PM', prob: 85, rainMm: 30.0 },
+    ],
+    nearestThreatDistanceKm: 4.8,
+    nearestThreatName: 'EV-AS-2026-005 (Brahmaputra Floodplain Surge)',
+    safetyAdvisory: {
+      public: 'Urban flooding in Anil Nagar, Nabin Nagar, and Zoo Road. Exercise extreme caution near open drains.',
+      farmer: 'Move harvested Boro paddy to high-ground granaries.',
+      official: 'Keep sluice gates operational along Bharalu river outlet into Brahmaputra.',
+    },
+  },
+  chamoli: {
+    locationName: 'Chamoli / Joshimath Ridge',
+    district: 'Chamoli',
+    state: 'Uttarakhand',
+    pinCode: '246443',
+    coordinates: [30.4000, 79.3200],
+    regionId: 'himalaya_north',
+    currentRiskLevel: 'critical',
+    riskScore: 96,
+    forecast24h: { rainMm: 185.0, prob: 95, risk: 'critical' },
+    forecast48h: { rainMm: 95.0, prob: 75, risk: 'severe' },
+    forecast72h: { rainMm: 30.0, prob: 40, risk: 'moderate' },
+    forecast5d: { rainMm: 10.0, prob: 15, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 55, rainMm: 15.0 },
+      { hour: '03:00 PM', prob: 90, rainMm: 60.0 },
+      { hour: '06:00 PM', prob: 95, rainMm: 75.0 },
+      { hour: '09:00 PM', prob: 82, rainMm: 35.0 },
+    ],
+    nearestThreatDistanceKm: 1.2,
+    nearestThreatName: 'EV-UK-2026-009 (Chamoli Alaknanda Ridge Surge)',
+    safetyAdvisory: {
+      public: 'FLASH FLOOD & DEBRIS FLOW RED ALERT: Avoid riverbeds along Alaknanda and Dhauliganga valleys.',
+      farmer: 'Move livestock from terraced hillside pastures to reinforced shelters.',
+      official: 'Pre-position State Disaster Response Teams at Pipalkoti and Joshimath.',
+    },
+  },
+};
+
+export const MOCK_ALERTS: AlertItem[] = [
+  {
+    id: 'ALT-IN-2026-101',
+    title: 'NATIONAL RED ALERT: EXTREME OROGRAPHIC RAINFALL & LANDSLIDE SURGE',
+    district: 'Wayanad',
+    state: 'Kerala',
+    regionId: 'wayanad_south',
+    riskLevel: 'critical',
+    issuedAt: '2026-09-25 11:30 AM IST',
+    validUntil: '2026-09-26 11:30 AM IST (24 Hours)',
+    summary: 'AstraWatch AI 5 km downscaling model detects 99% probability of >200mm/24h rainfall over Western Ghats slope. Extreme debris flow hazard for Meppadi & Chooralmala.',
+    affectedTehsils: ['Meppadi', 'Vythiri', 'Kalpetta'],
+    recommendedActions: [
+      'Disaster Operations: Evacuate steep terrain settlements to relief camps.',
+      'NDRF: Pre-position search & rescue teams with satellite comms.',
+      'Public: Stay away from swollen mountain streams.',
+    ],
+    status: 'active',
+  },
+  {
+    id: 'ALT-IN-2026-102',
+    title: 'CRITICAL URBAN FLOOD & HIGH TIDE SURGE WARNING',
+    district: 'Mumbai Suburban',
+    state: 'Maharashtra',
+    regionId: 'mumbai_west',
+    riskLevel: 'critical',
+    issuedAt: '2026-09-25 10:45 AM IST',
+    validUntil: '2026-09-26 06:00 PM IST',
+    summary: 'Mithi River basin cloudburst cell combined with 4.5m afternoon astronomical high tide. Heavy inundation predicted in Kurla, BKC & Andheri East.',
+    affectedTehsils: ['Kurla', 'Andheri', 'Bandra'],
+    recommendedActions: [
+      'Stop suburban train services through waterlogged tracks.',
+      'Deploy high-capacity dewatering pumps at Sion & Milan subway.',
+    ],
+    status: 'active',
+  },
+  {
+    id: 'ALT-IN-2026-103',
+    title: 'CRITICAL CONFLUENCE FLASH FLOOD RED ALERT',
+    district: 'Prayagraj',
+    state: 'Uttar Pradesh',
+    regionId: 'up_ganges',
+    riskLevel: 'critical',
+    issuedAt: '2026-09-25 11:00 AM IST',
+    validUntil: '2026-09-26 11:00 AM IST',
+    summary: '94% Exceedance probability for >100mm/24h rain over Ganges-Yamuna confluence. Heavy localized inundation in Naini, Phulpur & Handia.',
+    affectedTehsils: ['Naini', 'Phulpur', 'Handia', 'Sadar'],
+    recommendedActions: [
+      'Activate District Emergency Operation Centre (DEOC).',
+      'NDRF / SDRF: Deploy motorboats at Naini and Sangam ghats.',
+    ],
+    status: 'active',
+  },
+  {
+    id: 'ALT-IN-2026-104',
+    title: 'HIMALAYAN CLOUDBURST & RIVERINE FLASH SURGE ALERT',
+    district: 'Chamoli',
+    state: 'Uttarakhand',
+    regionId: 'himalaya_north',
+    riskLevel: 'critical',
+    issuedAt: '2026-09-25 09:30 AM IST',
+    validUntil: '2026-09-26 09:30 AM IST',
+    summary: 'Cloudburst cell over Alaknanda catchment producing 125mm/h peak intensity. High debris flow threat for Joshimath valley.',
+    affectedTehsils: ['Joshimath', 'Chamoli', 'Karnaprayag'],
+    recommendedActions: [
+      'Halt Badrinath Yatra pilgrimage traffic along NH-58.',
+      'Alert hydel dam authorities to regulate floodgate spillways.',
+    ],
+    status: 'active',
+  }
+];
+
+export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
+  {
+    id: 'HIST-2025-07-14',
+    title: 'July 2025 Extreme Prayagraj Cloudburst Event',
+    dateRange: '14 July 2025 - 16 July 2025',
+    location: 'Prayagraj / Phulpur Region, UP East',
+    regionId: 'up_ganges',
+    peakRainfallObservedMm: 184.2,
+    peakRainfallCoarseNwpMm: 98.0,
+    peakRainfallAstraWatchMm: 176.5,
+    metrics: {
+      rmse: 4.12,
+      mae: 2.75,
+      pod: 0.93,
+      far: 0.11,
+      csi: 0.84,
+      threatIoU: 0.88,
+      peakPreservationErrorPercent: 4.1,
+    },
+    description: 'Coarse 12 km operational forecasts smoothed out peak rainfall under 100mm, failing to trigger local alerts. AstraWatch AI PI-UNet downscaling preserved upper-tail quantile extremes, accurately predicting 176.5 mm peak rainfall.',
+  },
+  {
+    id: 'HIST-2024-07-30',
+    title: 'July 2024 Wayanad Orographic Cloudburst Disaster',
+    dateRange: '29 July 2024 - 31 July 2024',
+    location: 'Chooralmala & Meppadi, Wayanad, Kerala',
+    regionId: 'wayanad_south',
+    peakRainfallObservedMm: 372.0,
+    peakRainfallCoarseNwpMm: 165.0,
+    peakRainfallAstraWatchMm: 358.4,
+    metrics: {
+      rmse: 5.80,
+      mae: 3.90,
+      pod: 0.96,
+      far: 0.08,
+      csi: 0.89,
+      threatIoU: 0.92,
+      peakPreservationErrorPercent: 3.6,
+    },
+    description: 'Extreme orographic lifting along Western Ghats caused historic landslides. AstraWatch GNN Spatio-Temporal tracker identified threat centroid trajectory 12 hours prior to slope failure.',
+  }
+];
+
+export const MOCK_DISASTER_RESOURCES = [
+  { district: 'Prayagraj (UP)', ndrfTeams: 4, sdrfTeams: 6, evacuationBoats: 42, reliefCamps: 18, highRiskVillages: 28, status: 'High Alert' },
+  { district: 'Mumbai Suburban (MH)', ndrfTeams: 8, sdrfTeams: 12, evacuationBoats: 65, reliefCamps: 35, highRiskVillages: 45, status: 'Red Alert' },
+  { district: 'Wayanad (KL)', ndrfTeams: 6, sdrfTeams: 8, evacuationBoats: 24, reliefCamps: 22, highRiskVillages: 32, status: 'Extreme Alert' },
+  { district: 'Kamrup Metro (AS)', ndrfTeams: 5, sdrfTeams: 7, evacuationBoats: 38, reliefCamps: 20, highRiskVillages: 26, status: 'High Alert' },
+  { district: 'Chamoli (UK)', ndrfTeams: 3, sdrfTeams: 5, evacuationBoats: 10, reliefCamps: 12, highRiskVillages: 16, status: 'High Alert' },
+];
+
+export const AI_MODEL_BENCHMARKS = [
+  { modelName: 'AstraWatch PI-UNet + GNN (Ours)', resolution: '5 km / 1 km', rmse: 4.12, pod: 0.95, far: 0.09, csi: 0.87, peakPreservationError: '3.8%', lossObjective: 'Physics-Informed + Quantile Loss' },
+  { modelName: 'Standard NCUM Operational', resolution: '12 km', rmse: 12.8, pod: 0.72, far: 0.31, csi: 0.54, peakPreservationError: '44.2%', lossObjective: 'Standard MSE Loss' },
+  { modelName: 'GFS Operational (NCEP)', resolution: '13 km', rmse: 14.1, pod: 0.68, far: 0.35, csi: 0.49, peakPreservationError: '48.6%', lossObjective: 'Standard MSE Loss' },
+  { modelName: 'DeepMind GraphCast', resolution: '0.25° (~28 km)', rmse: 8.50, pod: 0.82, far: 0.18, csi: 0.71, peakPreservationError: '22.4%', lossObjective: 'Global Autoregressive MSE' },
+  { modelName: 'Google MetNet-3', resolution: '1 km (Nowcasting)', rmse: 5.20, pod: 0.91, far: 0.12, csi: 0.81, peakPreservationError: '8.5%', lossObjective: 'Focal Cross-Entropy' },
+];
