@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { MapLayerId, ThreatObject, GridCell5km, IndiaRegionId } from '../types/weather';
 import { MOCK_THREAT_OBJECTS, MOCK_5KM_GRID, INDIA_REGION_PRESETS } from '../data/mockData';
+import { getOpenWeatherTileUrl, getMapboxTileUrl } from '../config/apiConfig';
 
 interface LiveRiskMapProps {
   selectedRegion?: IndiaRegionId;
@@ -64,11 +65,10 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       zoomControl: true,
     });
 
-    // Dark Map Tile Layer (CartoDB Dark Matter)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; AstraWatch AI Pan-India',
+    // Mapbox HD Satellite Base Layer
+    L.tileLayer(getMapboxTileUrl('navigation-night-v1'), {
+      attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a> &copy; OpenWeatherMap &copy; AstraWatch AI',
       maxZoom: 18,
-      subdomains: 'abcd',
     }).addTo(map);
 
     mapRef.current = map;
@@ -85,6 +85,12 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       vulnerability: L.layerGroup().addTo(map),
     };
     layerGroupsRef.current = layers;
+
+    // Add Live OpenWeatherMap Precipitation Tile Overlay
+    L.tileLayer(getOpenWeatherTileUrl('precipitation_new'), {
+      opacity: 0.65,
+      maxZoom: 18,
+    }).addTo(layers.rainfall_forecast);
 
     return () => {
       map.remove();
