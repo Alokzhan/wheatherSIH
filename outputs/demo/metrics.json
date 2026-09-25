@@ -1,6 +1,6 @@
 {
-  "extreme_peak_preservation_pct": 65.11278571898026,
-  "max_absolute_error_mm": 9.94,
+  "extreme_peak_preservation_pct": 34.24785463908559,
+  "max_absolute_error_mm": 18.49,
   "csi_score": 0.978,
   "pod_score": 0.988,
   "far_score": 0.011,

@@ -168,8 +168,8 @@
     "exceedance_probability": 0.985
   },
   "metrics": {
-    "extreme_peak_preservation_pct": 65.11278571898026,
-    "max_absolute_error_mm": 9.94,
+    "extreme_peak_preservation_pct": 34.24785463908559,
+    "max_absolute_error_mm": 18.49,
     "csi_score": 0.978,
     "pod_score": 0.988,
     "far_score": 0.011,
@@ -182,7 +182,7 @@
       88.35
     ],
     "severity": "WARNING",
-    "composite_risk_score": 64.4,
+    "composite_risk_score": 63.5,
     "affected_area_km2": 576.0,
     "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
   }
