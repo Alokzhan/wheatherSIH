@@ -522,11 +522,13 @@ def execute_inference(req: InferenceReq):
     end_time = time.time()
     inference_time_ms = int((end_time - start_time) * 1000)
     
+    gt_val = quant_metrics.get("groundTruthValidation", {})
     return {
         "status": "success",
         "stage": "Stage 2: Conditional Diffusion Downscaling",
         "spatialResolutionKm": req.spatialResolutionKm,
         "executionTimeMs": inference_time_ms,
+        "extremeValuePreservation": gt_val.get("extremeValuePreservation", {}),
         "verificationScores": quant_metrics,
         "physicsInformedLoss": physics_loss_info,
         "modelMetadata": {
@@ -535,6 +537,7 @@ def execute_inference(req: InferenceReq):
             "conservationEnforced": ["Mass Conservation", "Moisture Flux Convergence", "Thermodynamic Energy", "Vorticity Dynamics"]
         }
     }
+
 
 @app.get("/api/v1/model/validation")
 def get_model_validation():

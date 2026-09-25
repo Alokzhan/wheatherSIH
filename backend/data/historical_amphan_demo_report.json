@@ -5,7 +5,7 @@
   "domain": "Bay of Bengal & West Bengal Coast (21.65\u00b0N, 88.35\u00b0E)",
   "pipeline_stages": {
     "stage0_model_checkpoints": {
-      "timestamp": "2026-09-25T20:17:46.339175Z",
+      "timestamp": "2026-09-25T20:43:01.724298Z",
       "verification_status": "PROVED_REAL_TRAINED_WEIGHTS",
       "models": {
         "st_gnn": {
@@ -111,7 +111,7 @@
     "stage5_gnn_tracker": {
       "objectId": "EV-AMPHAN-2020",
       "anomalyType": "Tropical Cyclone / Severe Convective System",
-      "detectionTimestamp": "2026-09-25T20:17:48.346910Z",
+      "detectionTimestamp": "2026-09-25T20:43:03.726562Z",
       "originCentroid": [
         21.65,
         88.35
