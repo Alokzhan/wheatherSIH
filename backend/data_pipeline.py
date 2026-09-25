@@ -2,7 +2,7 @@ import os
 import urllib.request
 import json
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 
 try:
     import xarray as xr
@@ -92,7 +92,7 @@ class RealERA5DataPipeline:
                 "longitudes": lons[::step].tolist(),
                 "shape": (len(lats[::step]), len(lons[::step])),
                 "res_km": 12.0,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "variables": {
                     "rain_mm_24h": total_precip[::step, ::step].tolist(),
                     "total_precipitation_mm_24h": total_precip[::step, ::step].tolist(),
@@ -111,7 +111,7 @@ class RealERA5DataPipeline:
             "longitudes": lons.tolist(),
             "shape": (n_lat, n_lon),
             "res_km": 12.0,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "variables": {
                 "rain_mm_24h": total_precip,
                 "total_precipitation_mm_24h": total_precip,
@@ -129,7 +129,7 @@ class RealERA5DataPipeline:
             "spatial_res_km": res_km,
             "dimensions": grid["shape"],
             "variables": grid["variables"],
-            "timestamp": datetime.utcnow().isoformat() + "Z"
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         }
 
     def load_era5_climatology(self):

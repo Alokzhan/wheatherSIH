@@ -15,6 +15,9 @@ from backend.stage1_gnn.efi_compute import SciPyEFIComputeEngine
 from backend.stage1_gnn.st_gnn_model import SpatioTemporalGNN
 from backend.stage1_gnn.inference import run_st_gnn_inference
 from backend.stage2_diffusion.ddpm import ConditionalDDPMDownscaler
+from backend.stage2_diffusion.downscale_cnn import calculate_metrics
+from backend.stage2_diffusion.physics_loss import physics_informed_loss
+from backend.ensemble_engine import EnsembleNWPEngine
 from backend.tracking.tracker import ExtendedKalmanFilterTracker
 from backend.alerts.risk_engine import NDRFDisasterAlertEngine
 from backend.models.inspector import inspect_and_verify_checkpoints
@@ -72,15 +75,17 @@ def run_pipeline(config_path: str):
 
     # 5. Ensemble Uncertainty Quantification
     print("\n[Step 5] Quantifying EPS 50-Member Ensemble Spread & CRPS...")
-    ens_mean = float(np.mean(members_tensor))
-    ens_std = float(np.std(members_tensor))
+    ens_engine = EnsembleNWPEngine(num_members=len(members_tensor))
+    coarse_grid_2d = np.mean(np.array(members_tensor), axis=0)
+    ens_res = ens_engine.process_ensemble_forecast(coarse_grid_2d, threshold_mm=config['data'].get('extreme_threshold_mm', 50.0))
+    meta = ens_res["ensembleMetadata"]
     uncertainty_summary = {
         "ensemble_members": len(members_tensor),
-        "mean_intensity": round(ens_mean, 2),
-        "spread_std": round(ens_std, 2),
-        "crps_score": 30.7136,
-        "brier_score": 0.0305,
-        "exceedance_probability": 0.985
+        "mean_intensity": meta["ensembleMeanMaxMm"],
+        "spread_std": meta["ensembleSpreadStdMm"],
+        "crps_score": meta["crpsScore"],
+        "brier_score": meta["brierScore"],
+        "exceedance_probability": round(meta["maxExtremeProbabilityPct"] / 100.0, 4)
     }
 
     # 6. Conditional DDPM Downscaling (12 km -> 5 km) & Physics Losses
@@ -102,13 +107,25 @@ def run_pipeline(config_path: str):
     print(f"   -> 12km Peak: {coarse_max:.1f} mm/day | 5km Peak: {fine_max:.1f} mm/day")
     print(f"   -> Extreme Peak Preservation: {peak_preservation:.1f}%")
 
+    coarse_np = coarse_12km.squeeze().cpu().numpy()
+    from scipy.ndimage import zoom
+    scale_factor = downscaled_array.shape[0] / coarse_np.shape[0]
+    coarse_upsampled = zoom(coarse_np, scale_factor, order=1)
+    eval_metrics = calculate_metrics(coarse_upsampled, downscaled_array, threshold=10.0)
+
+    dummy_u = torch.zeros_like(downscaled_5km)
+    dummy_v = torch.zeros_like(downscaled_5km)
+    dummy_q = torch.zeros_like(downscaled_5km)
+    dummy_t = torch.zeros_like(downscaled_5km)
+    phys_loss_val = float(physics_informed_loss(downscaled_5km, coarse_12km, dummy_u, dummy_v, dummy_q, dummy_t).item())
+
     metrics_summary = {
-        "extreme_peak_preservation_pct": peak_preservation,
+        "extreme_peak_preservation_pct": round(peak_preservation, 2),
         "max_absolute_error_mm": round(abs(fine_max - coarse_max), 2),
-        "csi_score": 0.978,
-        "pod_score": 0.988,
-        "far_score": 0.011,
-        "physics_mass_conservation_loss": 503.097
+        "csi_score": round(eval_metrics["csiScore"], 3),
+        "pod_score": round(eval_metrics["podScore"], 3),
+        "far_score": round(eval_metrics["farScore"], 3),
+        "physics_mass_conservation_loss": round(phys_loss_val, 3)
     }
 
     # 7. Operational Alert Advisory

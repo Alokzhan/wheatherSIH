@@ -1,8 +1,11 @@
 import os
 import json
+import logging
 import urllib.request
+from datetime import datetime, timezone
 import numpy as np
-from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 class ERA5DataLoader:
     """
@@ -24,17 +27,20 @@ class ERA5DataLoader:
         Fetches live or calibrated ERA5 reanalysis fields over the India subcontinent.
         """
         url = (
-            f"https://api.open-meteo.com/v1/forecast?"
-            f"latitude=20.5937&longitude=78.9629&"
-            f"hourly=temperature_2m,relative_humidity_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m&"
-            f"forecast_days=3"
+            "https://api.open-meteo.com/v1/forecast?"
+            "latitude=20.5937&longitude=78.9629&"
+            "hourly=temperature_2m,relative_humidity_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m&"
+            "forecast_days=3"
         )
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'StormTrace-ERA5/2.0'})
             with urllib.request.urlopen(req, timeout=5) as resp:
                 data = json.loads(resp.read().decode())
-                print(f"[ERA5 Data Loader] Successfully fetched live atmospheric points: {len(data.get('hourly', {}).get('time', []))} hours.")
+                hours = len(data.get('hourly', {}).get('time', []))
+                logger.info(f"[ERA5 Data Loader] Successfully fetched live atmospheric points: {hours} hours.")
+                print(f"[ERA5 Data Loader] Successfully fetched live atmospheric points: {hours} hours.")
         except Exception as e:
+            logger.warning(f"[ERA5 Data Loader Note] API fetch fallback to calibrated ERA5 fields ({e})")
             print(f"[ERA5 Data Loader Note] API fetch fallback to calibrated ERA5 fields ({e})")
 
         return self.generate_era5_grid_dataset(lat_min, lat_max, lon_min, lon_max, res_deg)
@@ -74,7 +80,7 @@ class ERA5DataLoader:
             "longitudes": lons,
             "shape": (n_lat, n_lon),
             "spatialResolutionKm": 12.0,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "variables": {
                 "precipitation": total_precip,
                 "u10_wind": u_wind,

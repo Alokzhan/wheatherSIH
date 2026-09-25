@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timezone
 
 from stage1_gnn.efi_compute import compute_efi_1d
 from stage1_gnn.gnn_model import run_gnn_inference
@@ -27,31 +27,30 @@ DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "stor
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            full_name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            organization TEXT NOT NULL,
-            role TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    demo_users = [
-        ("USR-NDRF-904", "Cmdt. Rajesh Sharma", "rajesh.sharma@ndrf.gov.in", hashlib.sha256(b"ndrf123").hexdigest(), "NDRF 9th Battalion", "NDRF Disaster Operations Chief"),
-        ("USR-FAR-102", "Sardar Gurdeep Singh", "gurdeep.krishi@agri.in", hashlib.sha256(b"kisan123").hexdigest(), "Kisan Samiti & Crop Cell", "Progressive Farmer Representative"),
-        ("USR-PUB-501", "Ananya Roy", "ananya.roy@meteorology.org", hashlib.sha256(b"research123").hexdigest(), "Indian Institute of Tropical Meteorology", "Climate Researcher"),
-    ]
-    for u in demo_users:
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
         cursor.execute('''
-            INSERT OR IGNORE INTO users (id, full_name, email, password_hash, organization, role)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', u)
-    conn.commit()
-    conn.close()
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                full_name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                organization TEXT NOT NULL,
+                role TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        demo_users = [
+            ("USR-NDRF-904", "Cmdt. Rajesh Sharma", "rajesh.sharma@ndrf.gov.in", hashlib.sha256(b"ndrf123").hexdigest(), "NDRF 9th Battalion", "NDRF Disaster Operations Chief"),
+            ("USR-FAR-102", "Sardar Gurdeep Singh", "gurdeep.krishi@agri.in", hashlib.sha256(b"kisan123").hexdigest(), "Kisan Samiti & Crop Cell", "Progressive Farmer Representative"),
+            ("USR-PUB-501", "Ananya Roy", "ananya.roy@meteorology.org", hashlib.sha256(b"research123").hexdigest(), "Indian Institute of Tropical Meteorology", "Climate Researcher"),
+        ]
+        for u in demo_users:
+            cursor.execute('''
+                INSERT OR IGNORE INTO users (id, full_name, email, password_hash, organization, role)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', u)
+        conn.commit()
 
 init_db()
 
@@ -64,7 +63,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -90,7 +89,7 @@ def health_check():
         "pytorch": torch.__version__,
         "owmKeyConfigured": bool(OWM_KEY),
         "database": "SQLite (backend/data/stormtrace.db)",
-        "timestamp": datetime.utcnow().isoformat() + "Z"
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     }
 
 @app.post("/api/v1/auth/signup")

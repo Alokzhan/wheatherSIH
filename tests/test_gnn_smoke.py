@@ -22,7 +22,7 @@ from backend.stage1_gnn.icosahedral_mesh import build_spherical_icosahedral_mesh
 def test_st_gnn_training_smoke():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     mesh = build_spherical_icosahedral_mesh(level=1)
-    edge_index = torch.tensor(mesh["edge_index"], dtype=torch.long, device=device)
+    edge_index = mesh["edge_index"].to(device=device, dtype=torch.long)
 
 
     model = PyTorchSTGNNModel(in_channels=6, hidden_dim=64, out_channels=2).to(device)

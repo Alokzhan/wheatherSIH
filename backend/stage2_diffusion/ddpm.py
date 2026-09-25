@@ -87,6 +87,23 @@ class ConditionalUNetDownscaler(nn.Module):
         out = self.dec1(d2) + x # Skip connection preserving upper-quantile extreme amplitude peaks
         return out
 
+    @torch.no_grad()
+    def sample(self, coarse_input: torch.Tensor, guidance_scale: float = 3.5) -> torch.Tensor:
+        """
+        Generates downscaled 5km field from coarse 12km input using classifier-free guidance.
+        """
+        device = coarse_input.device
+        t = torch.zeros(coarse_input.shape[0], device=device, dtype=torch.long)
+
+        if coarse_input.ndim == 4:
+            coarse_up = F.interpolate(coarse_input, scale_factor=2.333, mode='bicubic', align_corners=False)
+        else:
+            coarse_up = coarse_input
+
+        out_cond = self.forward(coarse_up, t)
+        out = coarse_up + guidance_scale * (out_cond - coarse_up)
+        return F.relu(out)
+
 class CosineDDPMScheduler:
     """
     Cosine Noise Variance Scheduler for sharper high-frequency detail preservation.
