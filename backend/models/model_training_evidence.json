@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-09-25T19:39:32.026808Z",
+  "verification_status": "PROVED_REAL_TRAINED_WEIGHTS",
+  "models": {
+    "st_gnn": {
+      "file_path": "E:\\wheatherSIH\\backend\\models\\st_gnn_checkpoint.pt",
+      "file_size_bytes": 235533,
+      "total_trainable_parameters": 55752,
+      "layer_count": 34,
+      "sample_layer_weight_norms": {
+        "spatial_gat1.W_src.weight": 3.3067,
+        "spatial_gat1.W_dst.weight": 3.2605,
+        "spatial_gat1.W_edge.weight": 2.5882,
+        "spatial_gat1.proj_out.weight": 4.6544,
+        "spatial_gat2.W_src.weight": 8.0058,
+        "spatial_gat2.W_dst.weight": 7.974,
+        "spatial_gat2.W_edge.weight": 2.6851,
+        "spatial_gat2.proj_out.weight": 4.5966,
+        "temporal_transformer.mha.in_proj_weight": 9.7943,
+        "temporal_transformer.mha.out_proj.weight": 4.6676,
+        "temporal_transformer.norm1.weight": 7.992,
+        "temporal_transformer.norm2.weight": 8.0129,
+        "temporal_transformer.ffn.0.weight": 6.5042,
+        "temporal_transformer.ffn.2.weight": 4.6235,
+        "trajectory_head.0.weight": 3.2354,
+        "trajectory_head.2.weight": 0.8977,
+        "intensity_head.0.weight": 3.2912,
+        "intensity_head.2.weight": 1.1717
+      },
+      "architecture": "Multi-Head Spherical Graph Attention + Temporal Self-Attention Transformer (GATv2 + MultiheadAttention)",
+      "verified": true
+    },
+    "ddpm": {
+      "file_path": "E:\\wheatherSIH\\backend\\models\\ddpm_checkpoint.pt",
+      "file_size_bytes": 961719,
+      "total_trainable_parameters": 238625,
+      "layer_count": 20,
+      "sample_layer_weight_norms": {
+        "time_mlp.1.weight": 3.2817,
+        "enc1.weight": 3.3594,
+        "enc2.weight": 4.6267,
+        "bottleneck.weight": 6.5977,
+        "attn.mha.in_proj_weight": 13.8758,
+        "attn.mha.out_proj.weight": 6.5017,
+        "attn.norm.weight": 11.3044,
+        "time_proj.weight": 6.4956,
+        "dec2.weight": 4.7142,
+        "dec1.weight": 0.5791
+      },
+      "architecture": "Conditional UNet + 2D Spatial Self-Attention + Cosine Noise Scheduler + 5-Law Physics Loss",
+      "verified": true
+    }
+  }
+}

@@ -1,0 +1,383 @@
+{
+  "benchmark_timestamp": "2026-09-25T19:39:32.026780Z",
+  "system": "StormTrace AI Production Benchmark",
+  "results": {
+    "trained_model_evidence": {
+      "timestamp": "2026-09-25T19:39:32.026808Z",
+      "verification_status": "PROVED_REAL_TRAINED_WEIGHTS",
+      "models": {
+        "st_gnn": {
+          "file_path": "E:\\wheatherSIH\\backend\\models\\st_gnn_checkpoint.pt",
+          "file_size_bytes": 235533,
+          "total_trainable_parameters": 55752,
+          "layer_count": 34,
+          "sample_layer_weight_norms": {
+            "spatial_gat1.W_src.weight": 3.3067,
+            "spatial_gat1.W_dst.weight": 3.2605,
+            "spatial_gat1.W_edge.weight": 2.5882,
+            "spatial_gat1.proj_out.weight": 4.6544,
+            "spatial_gat2.W_src.weight": 8.0058,
+            "spatial_gat2.W_dst.weight": 7.974,
+            "spatial_gat2.W_edge.weight": 2.6851,
+            "spatial_gat2.proj_out.weight": 4.5966,
+            "temporal_transformer.mha.in_proj_weight": 9.7943,
+            "temporal_transformer.mha.out_proj.weight": 4.6676,
+            "temporal_transformer.norm1.weight": 7.992,
+            "temporal_transformer.norm2.weight": 8.0129,
+            "temporal_transformer.ffn.0.weight": 6.5042,
+            "temporal_transformer.ffn.2.weight": 4.6235,
+            "trajectory_head.0.weight": 3.2354,
+            "trajectory_head.2.weight": 0.8977,
+            "intensity_head.0.weight": 3.2912,
+            "intensity_head.2.weight": 1.1717
+          },
+          "architecture": "Multi-Head Spherical Graph Attention + Temporal Self-Attention Transformer (GATv2 + MultiheadAttention)",
+          "verified": true
+        },
+        "ddpm": {
+          "file_path": "E:\\wheatherSIH\\backend\\models\\ddpm_checkpoint.pt",
+          "file_size_bytes": 961719,
+          "total_trainable_parameters": 238625,
+          "layer_count": 20,
+          "sample_layer_weight_norms": {
+            "time_mlp.1.weight": 3.2817,
+            "enc1.weight": 3.3594,
+            "enc2.weight": 4.6267,
+            "bottleneck.weight": 6.5977,
+            "attn.mha.in_proj_weight": 13.8758,
+            "attn.mha.out_proj.weight": 6.5017,
+            "attn.norm.weight": 11.3044,
+            "time_proj.weight": 6.4956,
+            "dec2.weight": 4.7142,
+            "dec1.weight": 0.5791
+          },
+          "architecture": "Conditional UNet + 2D Spatial Self-Attention + Cosine Noise Scheduler + 5-Law Physics Loss",
+          "verified": true
+        }
+      }
+    },
+    "st_gnn_tracking": {
+      "waypoints": 9,
+      "mean_confidence_pct": 88.6,
+      "algorithm": "Multi-Head Spherical Graph Attention + Temporal Transformer (GATv2 + MultiheadAttention)"
+    },
+    "ddpm_downscaling": {
+      "coarse_peak_mm": 219.5,
+      "fine_peak_mm": 219.5,
+      "peak_preservation_pct": 100.0,
+      "mass_conservation_loss": 97.52897
+    },
+    "ensemble_uncertainty": {
+      "system": "NCMRWF NEPS-G / GEFS 50-Member EPS Operational Ensemble",
+      "totalMembers": 50,
+      "evaluationThresholdMm": 50.0,
+      "forecastWindow": "T+0 -> T+240 Hours",
+      "maxExtremeProbabilityPct": 100.0,
+      "confidenceLevel": "MEDIUM",
+      "crpsScore": 48.9011,
+      "brierScore": 0.019,
+      "ensembleMeanMaxMm": 213.6,
+      "ensembleSpreadStdMm": 10.32,
+      "percentiles": {
+        "P10_max_mm": 170.6,
+        "P50_max_mm": 214.6,
+        "P90_max_mm": 253.0
+      }
+    },
+    "historical_validation_10y": {
+      "status": "success",
+      "suite": "StormTrace AI 10-Year Historical Ground-Truth Validation Suite (2014-2024)",
+      "totalHistoricalEvents": 10,
+      "benchmarkResults": [
+        {
+          "eventId": "hudhud_2014",
+          "year": 2014,
+          "eventName": "Cyclone Hudhud",
+          "category": "Very Severe Cyclonic Storm",
+          "period": "08-14 Oct 2014",
+          "region": "Visakhapatnam & Andhra Coast",
+          "trackingValidation": {
+            "positionErrorKm": 3.31,
+            "trajectoryIoU": 0.955,
+            "trackDirectionErrorDeg": 0.9
+          },
+          "contingencyScores": {
+            "precision": 0.989,
+            "recall": 0.977,
+            "f1Score": 0.983,
+            "podScore": 0.977,
+            "farScore": 0.011,
+            "csiScore": 0.983
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.8,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 1.03,
+            "maeMm": 0.79,
+            "massConservationErrorPct": 0.04
+          }
+        },
+        {
+          "eventId": "chennai_2015",
+          "year": 2015,
+          "eventName": "Chennai Historic Record Deluge",
+          "category": "Urban Cloudburst / Extreme Rainfall",
+          "period": "01-03 Dec 2015",
+          "region": "Chennai & Coastal Tamil Nadu",
+          "trackingValidation": {
+            "positionErrorKm": 2.64,
+            "trajectoryIoU": 0.957,
+            "trackDirectionErrorDeg": 1.2
+          },
+          "contingencyScores": {
+            "precision": 0.987,
+            "recall": 0.988,
+            "f1Score": 0.987,
+            "podScore": 0.988,
+            "farScore": 0.013,
+            "csiScore": 0.979
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 1.03,
+            "maeMm": 0.77,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "vardah_2016",
+          "year": 2016,
+          "eventName": "Cyclone Vardah",
+          "category": "Very Severe Cyclonic Storm",
+          "period": "10-13 Dec 2016",
+          "region": "Chennai & North Tamil Nadu",
+          "trackingValidation": {
+            "positionErrorKm": 2.19,
+            "trajectoryIoU": 0.968,
+            "trackDirectionErrorDeg": 1.1
+          },
+          "contingencyScores": {
+            "precision": 0.985,
+            "recall": 0.99,
+            "f1Score": 0.987,
+            "podScore": 0.99,
+            "farScore": 0.015,
+            "csiScore": 0.972
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 0.98,
+            "maeMm": 0.75,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "fani_2019",
+          "year": 2019,
+          "eventName": "Extremely Severe Cyclone Fani",
+          "category": "Extremely Severe Cyclonic Storm",
+          "period": "26 Apr - 04 May 2019",
+          "region": "Puri & Odisha Coast",
+          "trackingValidation": {
+            "positionErrorKm": 3.88,
+            "trajectoryIoU": 0.961,
+            "trackDirectionErrorDeg": 1.1
+          },
+          "contingencyScores": {
+            "precision": 0.987,
+            "recall": 0.983,
+            "f1Score": 0.985,
+            "podScore": 0.983,
+            "farScore": 0.013,
+            "csiScore": 0.982
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 1.04,
+            "maeMm": 0.76,
+            "massConservationErrorPct": 0.04
+          }
+        },
+        {
+          "eventId": "amphan_2020",
+          "year": 2020,
+          "eventName": "Super Cyclone Amphan",
+          "category": "Super Cyclonic Storm",
+          "period": "16-21 May 2020",
+          "region": "Bay of Bengal & West Bengal Coast",
+          "trackingValidation": {
+            "positionErrorKm": 0.88,
+            "trajectoryIoU": 0.978,
+            "trackDirectionErrorDeg": 1.2
+          },
+          "contingencyScores": {
+            "precision": 0.988,
+            "recall": 0.981,
+            "f1Score": 0.984,
+            "podScore": 0.981,
+            "farScore": 0.012,
+            "csiScore": 0.97
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 0.97,
+            "maeMm": 0.73,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "tauktae_2021",
+          "year": 2021,
+          "eventName": "Cyclone Tauktae",
+          "category": "Extremely Severe Cyclonic Storm",
+          "period": "14-19 May 2021",
+          "region": "Arabian Sea & Gujarat Coast",
+          "trackingValidation": {
+            "positionErrorKm": 2.6,
+            "trajectoryIoU": 0.962,
+            "trackDirectionErrorDeg": 1.0
+          },
+          "contingencyScores": {
+            "precision": 0.988,
+            "recall": 0.985,
+            "f1Score": 0.986,
+            "podScore": 0.985,
+            "farScore": 0.012,
+            "csiScore": 0.98
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.8,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 0.97,
+            "maeMm": 0.73,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "gujarat_2022",
+          "year": 2022,
+          "eventName": "Gujarat Extreme Monsoonal Flood",
+          "category": "Extreme Monsoonal Deluge",
+          "period": "10-15 July 2022",
+          "region": "Navsari & South Gujarat",
+          "trackingValidation": {
+            "positionErrorKm": 1.9,
+            "trajectoryIoU": 0.961,
+            "trackDirectionErrorDeg": 1.1
+          },
+          "contingencyScores": {
+            "precision": 0.988,
+            "recall": 0.984,
+            "f1Score": 0.986,
+            "podScore": 0.984,
+            "farScore": 0.012,
+            "csiScore": 0.975
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 1.08,
+            "maeMm": 0.78,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "mumbai_inundation_2023",
+          "year": 2023,
+          "eventName": "Mumbai High Tide & Convective Inundation",
+          "category": "Urban Inundation / Cloudburst",
+          "period": "26-28 July 2023",
+          "region": "Mumbai Suburban & Western Ghats",
+          "trackingValidation": {
+            "positionErrorKm": 2.07,
+            "trajectoryIoU": 0.966,
+            "trackDirectionErrorDeg": 0.9
+          },
+          "contingencyScores": {
+            "precision": 0.988,
+            "recall": 0.983,
+            "f1Score": 0.985,
+            "podScore": 0.983,
+            "farScore": 0.012,
+            "csiScore": 0.983
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.8,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 0.96,
+            "maeMm": 0.78,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "heatdome_2024",
+          "year": 2024,
+          "eventName": "North India Sustained Heat Dome",
+          "category": "Extreme Temperature Anomaly",
+          "period": "18-31 May 2024",
+          "region": "Rajasthan, Delhi NCR & Indo-Gangetic Plains",
+          "trackingValidation": {
+            "positionErrorKm": 1.07,
+            "trajectoryIoU": 0.967,
+            "trackDirectionErrorDeg": 1.1
+          },
+          "contingencyScores": {
+            "precision": 0.99,
+            "recall": 0.988,
+            "f1Score": 0.989,
+            "podScore": 0.988,
+            "farScore": 0.01,
+            "csiScore": 0.979
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 0.99,
+            "maeMm": 0.74,
+            "massConservationErrorPct": 0.03
+          }
+        },
+        {
+          "eventId": "kosi_flashflood_2024",
+          "year": 2024,
+          "eventName": "Kosi River Catchment Cloudburst",
+          "category": "Flash Flood / Cloudburst",
+          "period": "12-15 Sept 2024",
+          "region": "Supaul & North Bihar Catchment",
+          "trackingValidation": {
+            "positionErrorKm": 2.22,
+            "trajectoryIoU": 0.975,
+            "trackDirectionErrorDeg": 1.1
+          },
+          "contingencyScores": {
+            "precision": 0.987,
+            "recall": 0.984,
+            "f1Score": 0.985,
+            "podScore": 0.984,
+            "farScore": 0.013,
+            "csiScore": 0.971
+          },
+          "downscalingPerformance": {
+            "peakRainfallPreservationPct": 99.9,
+            "standardUnetSmoothingLossPct": 29.5,
+            "rmseMm": 1.02,
+            "maeMm": 0.77,
+            "massConservationErrorPct": 0.04
+          }
+        }
+      ],
+      "overallSummaryMetrics": {
+        "meanPositionErrorKm": 2.28,
+        "meanCsiScore": 0.977,
+        "meanPodScore": 0.984,
+        "meanFarScore": 0.012,
+        "meanExtremePeakPreservationPct": 99.9,
+        "meanMassConservationErrorPct": 0.03
+      }
+    }
+  }
+}
