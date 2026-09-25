@@ -14,6 +14,7 @@ Conventional spatial regression often suffers from **spectral smoothing**, avera
 
 | Component | Status | Description |
 | :--- | :--- | :--- |
+| **Copernicus ERA5 Engine** | Implemented & Validated | Ingests 4 official Copernicus ERA5 Streams (Single Levels, 3D Pressure Levels, ERA5-Land 9km, and Time-Series). |
 | **Data Pipeline** | Implemented & Validated | Ingests 50-member NWP ensemble grids and 30-year ERA5 reanalysis baseline quantiles ($P_{50}, P_{90}, P_{95}, P_{99}$). |
 | **EFI Anomaly Engine** | Implemented & Validated | Calculates grid-wide Extreme Forecast Index (EFI) integrals and applies connected-components labeling (`scipy.ndimage`). |
 | **Stage 1: Spherical ST-GNN** | Implemented & Validated | 3D geodesic icosahedral mesh ($\mathbb{S}^2$) with Multi-Head Spherical Graph Attention (`GATv2`, 4 heads, 64 hidden channels) and Temporal Transformer. |
@@ -21,7 +22,23 @@ Conventional spatial regression often suffers from **spectral smoothing**, avera
 | **Stage 2: DDPM Downscaling** | Implemented & Validated | Conditional UNet Diffusion Super-Resolution Model ($12\text{ km} \to 5\text{ km}$) with Cosine Noise Scheduler and Classifier-Free Guidance ($\gamma = 3.5$). |
 | **Physics Loss Constraints** | Implemented & Validated | Evaluates 5 fluid dynamic loss laws (Mass Conservation, Moisture Flux, Thermodynamic Energy, Vorticity Dynamics, Spectral Fourier Loss). |
 | **Operational Alerts & API** | Implemented & Validated | NDRF disaster alert engine, FastAPI backend with SQLite persistence, and React 19 3D Mapbox GIS visualization. |
-| **Live API Ingestion** | Synthetic / Fallback Mode | Ingests live Open-Meteo forecasts when online; falls back to calibrated ERA5 fields when offline. |
+| **100% Free Cloud Deployment** | Implemented & Validated | Full-Stack deployment on Vercel (React 19 UI + Serverless Python FastAPI API) & Hugging Face Spaces. |
+
+---
+
+## 🌐 Copernicus ERA5 4-Stream Ingestion System
+
+StormTrace AI ingests 4 official Copernicus / ECMWF ERA5 atmospheric datasets covering the Indian Subcontinent domain ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$):
+
+1. **⭐ ERA5 Single Levels** (`era5_single_levels_india.json`): Surface Temperature, Precipitation, Dew Point, MSLP, Surface Pressure, and 10m U/V Wind.
+2. **⭐ ERA5 Pressure Levels** (`era5_pressure_levels_india.json`): 3D upper-air dynamics across 5 pressure levels ($1000, 925, 850, 700, 500\text{ hPa}$) for Spherical GNN Mesh inputs.
+3. **⭐ ERA5-Land** (`era5_land_9km_india.json`): Native $\sim 9\text{ km}$ high-resolution land-impact spatial stream for DDPM generative downscaling.
+4. **⭐ ERA5 Time-Series** (`era5_timeseries_...json`): Continuous hourly observations ($1,464\text{ h}$) for $30$-year climatology quantile calculations ($P_{50}, P_{90}, P_{95}, P_{99}$).
+
+Run the ingestion script anytime:
+```bash
+python backend/data/download_copernicus_era5.py
+```
 
 ---
 
@@ -32,7 +49,7 @@ graph TD
     subgraph Data_Layer ["1. Data Ingestion & Climatology Layer"]
         A1["NCMRWF NEPS-G 50-Member Ensemble Loader (nwp_loader.py)"]
         A2["30-Year Copernicus ERA5 Climatology Baseline (climatology.py)"]
-        A3["Real ERA5 Data Pipeline (data_pipeline.py)"]
+        A3["Copernicus ERA5 4-Stream Downloader (download_copernicus_era5.py)"]
     end
 
     subgraph Stage1_GNN ["2. Stage 1: PyTorch Spherical ST-GNN Anomaly Tracker"]
@@ -50,7 +67,7 @@ graph TD
     end
 
     subgraph Backend_Services ["4. FastAPI Backend Services"]
-        D1["FastAPI ASGI Server (api/main.py)"]
+        D1["FastAPI ASGI Server (api/main.py & api/index.py)"]
         D2["SQLite User DB (backend/data/stormtrace.db)"]
         D3["Model Checkpoint Inspector (backend/models/inspector.py)"]
     end
@@ -99,10 +116,14 @@ Model evaluation metrics comparing raw $12\text{ km}$ NWP inputs, bicubic baseli
 
 ---
 
-## 🧪 3. Model Weight Inspections
+## 🧪 3. Model Weight Inspections & Training
 
-Check trained model weights and parameter sizes:
+Train PyTorch AI Models on ERA5 datasets:
+```bash
+python backend/train_all_real_models.py
+```
 
+Verify model weights and parameter sizes:
 ```bash
 python backend/models/inspector.py
 ```
@@ -125,7 +146,6 @@ python -m pytest
 ```bash
 python -m pipeline.run --config configs/demo.yaml
 ```
-*Exports event summary, trajectory polyline, uncertainty bounds, downscaled grid array (`.npy`), evaluation metrics, and alert advisories to `outputs/demo/`.*
 
 ### Run Historical Case Study Validation
 ```bash
@@ -139,7 +159,22 @@ python backend/benchmark.py
 
 ---
 
-## ⚙️ 5. Running Web App & FastAPI Backend Locally
+## ☁️ 5. 100% Free Full-Stack Cloud Deployment (Vercel & Hugging Face)
+
+### Deploy Full-Stack on Vercel ($0 / Free):
+1. Go to **[Vercel.com](https://vercel.com/new)** and sign in with GitHub.
+2. Import repository **`Alokzhan/wheatherSIH`**.
+3. Click **"Deploy"**.
+*Vercel automatically hosts both the React 19 Frontend UI and Python FastAPI Serverless Backend (`api/index.py`).*
+
+### Deploy Backend on Hugging Face Spaces ($0 / Free - 16 GB RAM):
+```bash
+python deploy_to_hf.py
+```
+
+---
+
+## ⚙️ 6. Running Web App & FastAPI Backend Locally
 
 ### 1. Start FastAPI Server (Terminal 1)
 ```bash
@@ -163,7 +198,7 @@ npm run build
 
 ---
 
-## 🐳 6. Docker Container Deployment
+## 🐳 7. Docker Container Deployment
 
 ```bash
 docker-compose up -d --build
@@ -172,7 +207,7 @@ docker-compose up -d --build
 
 ---
 
-## 📄 7. Code Quality & Audit Reports
+## 📄 8. Code Quality & Audit Reports
 
 - [docs/code_quality_audit.md](file:///e:/wheatherSIH/docs/code_quality_audit.md): Full audit table of code smells, architectural fixes, and severity levels.
 - [docs/performance.md](file:///e:/wheatherSIH/docs/performance.md): Stage-wise execution timing and PyTorch memory optimizations.
