@@ -215,8 +215,9 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     risk_grid_5km: true,
     admin_boundaries: true,
     vulnerability: true,
-    wind_extremes: false,
+    wind_extremes: true,
   });
+
 
   const [currentRegion, setCurrentRegion] = useState<IndiaRegionId>(selectedRegion);
   const [selectedTimeStep, setSelectedTimeStep] = useState<number>(12);
@@ -650,40 +651,169 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // Add HTML markers for threat centroids
+      // --- 8. High Speed Wind & Cyclones Overlay Layer ---
+      const windExtremesFeatures = [
+        {
+          type: 'Feature' as const,
+          geometry: {
+            type: 'Polygon' as const,
+            coordinates: [[
+              [82.0, 12.0], [88.0, 12.0], [89.0, 15.0], [88.0, 18.0], [82.0, 18.0], [81.0, 15.0], [82.0, 12.0]
+            ]]
+          },
+          properties: {
+            id: 'WIND-CYC-01',
+            name: 'Super Cyclone Amphan 220 km/h Wind Radius',
+            windSpeed: 220,
+            type: 'cyclone',
+            color: '#ef4444'
+          }
+        },
+        {
+          type: 'Feature' as const,
+          geometry: {
+            type: 'Polygon' as const,
+            coordinates: [[
+              [83.0, 24.5], [86.0, 24.5], [86.5, 26.5], [83.5, 26.5], [83.0, 24.5]
+            ]]
+          },
+          properties: {
+            id: 'WIND-SQUALL-02',
+            name: 'Pre-Monsoon Squall Line 135 km/h Gust Band',
+            windSpeed: 135,
+            type: 'squall',
+            color: '#f59e0b'
+          }
+        },
+        {
+          type: 'Feature' as const,
+          geometry: {
+            type: 'Polygon' as const,
+            coordinates: [[
+              [72.5, 18.5], [73.5, 18.5], [73.8, 19.8], [72.8, 19.8], [72.5, 18.5]
+            ]]
+          },
+          properties: {
+            id: 'WIND-GALE-03',
+            name: 'Konkan Coast Gale Force Wind Zone',
+            windSpeed: 110,
+            type: 'gale',
+            color: '#f97316'
+          }
+        }
+      ];
+
+      map.addSource('wind-extremes-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: windExtremesFeatures
+        }
+      });
+
+      map.addLayer({
+        id: 'wind-extremes-fill',
+        type: 'fill',
+        source: 'wind-extremes-source',
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': layerOpacity * 0.35
+        }
+      });
+
+      map.addLayer({
+        id: 'wind-extremes-line',
+        type: 'line',
+        source: 'wind-extremes-source',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 3,
+          'line-dasharray': [2, 2],
+          'line-opacity': 0.9
+        }
+      });
+
+      // Add HTML markers for threat centroids with dynamic hazard badges (Cyclone, Wind Squall, Heat Dome, Rain Cell)
       MOCK_THREAT_OBJECTS.forEach(threat => {
         const el = document.createElement('div');
-        el.className = 'threat-marker';
+        el.className = 'threat-marker-container';
+
+        const isCyclone = threat.id.includes('CYC') || (threat.hazardType && threat.hazardType.toLowerCase().includes('cyclone')) || threat.name.toLowerCase().includes('cyclone');
+        const isWind = threat.id.includes('WIND') || (threat.hazardType && threat.hazardType.toLowerCase().includes('wind')) || threat.name.toLowerCase().includes('squall');
+        const isHeat = threat.id.includes('HEAT') || (threat.hazardType && threat.hazardType.toLowerCase().includes('heat'));
+
+        let badgeBg = 'rgba(15, 23, 42, 0.92)';
+        let borderCol = RISK_COLORS[threat.riskLevel] || '#ef4444';
+        let glowCol = RISK_GLOW[threat.riskLevel] || 'rgba(239, 68, 68, 0.4)';
+        let metricText = `${threat.peakIntensityMmH} mm/h Rain`;
+        let iconHtml = `<span style="font-size: 16px;">🌧️</span>`;
+
+        if (isCyclone) {
+          badgeBg = 'rgba(127, 29, 29, 0.92)';
+          borderCol = '#ef4444';
+          glowCol = 'rgba(239, 68, 68, 0.7)';
+          metricText = threat.hazardMetricDisplay || `${threat.speedKmH} km/h Cat 5`;
+          iconHtml = `<span style="display:inline-block; animation: spin 3s linear infinite; font-size: 18px;">🌀</span>`;
+        } else if (isWind) {
+          badgeBg = 'rgba(120, 53, 15, 0.92)';
+          borderCol = '#f59e0b';
+          glowCol = 'rgba(245, 158, 11, 0.7)';
+          metricText = threat.hazardMetricDisplay || `${threat.speedKmH} km/h Gusts`;
+          iconHtml = `<span style="font-size: 18px;">💨</span>`;
+        } else if (isHeat) {
+          badgeBg = 'rgba(124, 45, 18, 0.92)';
+          borderCol = '#ea580c';
+          glowCol = 'rgba(234, 88, 12, 0.7)';
+          metricText = threat.hazardMetricDisplay || '50°C Anomaly';
+          iconHtml = `<span style="font-size: 18px;">🌡️</span>`;
+        }
+
         el.innerHTML = `
           <div style="
-            width: 32px; height: 32px; 
-            background: ${RISK_COLORS[threat.riskLevel]}; 
-            border: 2.5px solid white; 
-            border-radius: 50%; 
-            box-shadow: 0 0 20px ${RISK_GLOW[threat.riskLevel]}, 0 4px 12px rgba(0,0,0,0.3); 
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: transform 0.2s;
-            font-size: 14px;
-          ">🚨</div>
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: ${badgeBg};
+            border: 2px solid ${borderCol};
+            border-radius: 20px;
+            padding: 4px 10px;
+            box-shadow: 0 0 20px ${glowCol}, 0 4px 12px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            backdrop-filter: blur(8px);
+          ">
+            ${iconHtml}
+            <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.15;">
+              <span style="font-size: 11px; font-weight: 800; color: #f8fafc; font-family: system-ui, sans-serif; letter-spacing: 0.01em;">
+                ${threat.name}
+              </span>
+              <span style="font-size: 10px; font-weight: 700; color: #38bdf8; font-family: monospace;">
+                ${metricText} • ${threat.district}
+              </span>
+            </div>
+          </div>
         `;
         el.style.cursor = 'pointer';
 
         const popup = new mapboxgl.Popup({
           offset: 20,
           closeButton: true,
-          maxWidth: '300px',
+          maxWidth: '320px',
         }).setHTML(`
-          <div style="font-family: 'Inter', system-ui, sans-serif; padding: 4px;">
-            <div style="font-weight: 800; font-size: 13px; color: ${RISK_COLORS[threat.riskLevel]}; margin-bottom: 6px;">
-              ${threat.name}
+          <div style="font-family: 'Inter', system-ui, sans-serif; padding: 6px;">
+            <div style="font-weight: 800; font-size: 13px; color: ${borderCol}; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>${isCyclone ? '🌀' : isWind ? '💨' : isHeat ? '🌡️' : '🌧️'}</span>
+              <span>${threat.name}</span>
             </div>
             <div style="font-size: 11px; color: #b4c1db; line-height: 1.6;">
               <strong style="color: #f0f4ff;">District:</strong> ${threat.district}<br/>
               <strong style="color: #f0f4ff;">Region:</strong> ${threat.region}<br/>
+              <strong style="color: #f0f4ff;">Hazard Type:</strong> <span style="color: #38bdf8; font-weight:700;">${threat.hazardType || 'Convective Precipitation Cell'}</span><br/>
+              <strong style="color: #f0f4ff;">Intensity / Metric:</strong> <span style="color: #f59e0b; font-weight:700;">${metricText}</span><br/>
               <strong style="color: #f0f4ff;">Track Speed:</strong> ${threat.speedKmH} km/h (${threat.direction})<br/>
-              <strong style="color: #f0f4ff;">Peak Rainfall Rate:</strong> ${threat.peakIntensityMmH} mm/h<br/>
               <strong style="color: #f0f4ff;">5km Subgrid Quantile:</strong> 
-                <span style="color: ${RISK_COLORS[threat.riskLevel]}; font-weight: 700;">${threat.probabilityExceedance}% Exceedance</span>
+                <span style="color: ${borderCol}; font-weight: 700;">${threat.probabilityExceedance}% Exceedance</span>
             </div>
           </div>
         `);
@@ -779,6 +909,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       risk_grid_5km: ['risk-grid-3d', 'risk-grid-flat', 'risk-grid-outline'],
       threat_footprint: ['threat-fill', 'threat-outline', 'threat-3d'],
       trajectory: ['trajectory-line', 'waypoint-circles'],
+      wind_extremes: ['wind-extremes-fill', 'wind-extremes-line'],
     };
 
     Object.entries(layerMap).forEach(([key, mapboxLayers]) => {
@@ -804,6 +935,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       ['risk-grid-flat', 'fill-opacity', layerOpacity * 0.25],
       ['threat-fill', 'fill-opacity', layerOpacity * 0.35],
       ['threat-3d', 'fill-extrusion-opacity', layerOpacity * 0.4],
+      ['wind-extremes-fill', 'fill-opacity', layerOpacity * 0.35],
     ];
 
     opacityUpdates.forEach(([layerId, prop, value]) => {

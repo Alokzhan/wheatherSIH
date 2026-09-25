@@ -124,23 +124,31 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
         </div>
 
         {/* Threat Switcher Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2">
-          {MOCK_THREAT_OBJECTS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => {
-                setActiveEventId(t.id);
-                setTrajectoryStep(0);
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-all ${
-                activeEventId === t.id
-                  ? 'bg-red-950 text-red-300 border border-red-700 font-bold shadow'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-              }`}
-            >
-              {t.id}: {t.name.split(' ')[0]}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 pb-1">
+          {MOCK_THREAT_OBJECTS.map(t => {
+            const isCyclone = t.id.includes('CYC') || (t.hazardType && t.hazardType.toLowerCase().includes('cyclone')) || t.name.toLowerCase().includes('cyclone');
+            const isWind = t.id.includes('WIND') || (t.hazardType && t.hazardType.toLowerCase().includes('wind')) || t.name.toLowerCase().includes('squall');
+            const isHeat = t.id.includes('HEAT') || (t.hazardType && t.hazardType.toLowerCase().includes('heat'));
+            const icon = isCyclone ? '🌀' : isWind ? '💨' : isHeat ? '🌡️' : '🌧️';
+
+            return (
+              <button
+                key={t.id}
+                onClick={() => {
+                  setActiveEventId(t.id);
+                  setTrajectoryStep(0);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-all flex items-center gap-1.5 ${
+                  activeEventId === t.id
+                    ? 'bg-red-950/80 text-red-200 border border-red-600 font-bold shadow-md shadow-red-900/30'
+                    : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border border-slate-800'
+                }`}
+              >
+                <span>{icon}</span>
+                <span>{t.name}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
