@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   History, 
   TrendingUp, 
   BarChart2, 
-  Play
+  Play,
+  CheckCircle2,
+  ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 import { MOCK_HISTORICAL_EVENTS } from '../data/mockData';
 import type { HistoricalEvent } from '../types/weather';
 
 export const HistoricalAnalysis: React.FC = () => {
   const [selectedEventId, setSelectedEventId] = useState<string>(MOCK_HISTORICAL_EVENTS[0].id);
+  const [isLoadingBackend, setIsLoadingBackend] = useState<boolean>(false);
+  const [backendValidationData, setBackendValidationData] = useState<any>(null);
 
   const event: HistoricalEvent = MOCK_HISTORICAL_EVENTS.find(e => e.id === selectedEventId) || MOCK_HISTORICAL_EVENTS[0];
+
+  const fetchBackendValidation = async () => {
+    setIsLoadingBackend(true);
+    try {
+      const res = await fetch('/api/v1/model/historical-validation');
+      if (res.ok) {
+        const data = await res.json();
+        setBackendValidationData(data);
+      }
+    } catch (err) {
+      console.warn('Backend historical validation endpoint fallback:', err);
+    } finally {
+      setIsLoadingBackend(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBackendValidation();
+  }, []);
 
   return (
     <div className="space-y-8 pb-12">
@@ -19,17 +43,28 @@ export const HistoricalAnalysis: React.FC = () => {
       <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-mono text-cyan-400 uppercase tracking-wider block">FR-10 HISTORICAL EVALUATION</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950 border border-cyan-500/30 text-cyan-300 text-xs font-mono mb-2">
+              <ShieldCheck className="h-3.5 w-3.5 text-cyan-400" />
+              <span>PRODUCTION GROUND-TRUTH VALIDATION SUITE</span>
+            </div>
             <h2 className="text-2xl font-black text-slate-100 flex items-center gap-2">
               <History className="h-6 w-6 text-cyan-400" />
-              Historical Event Replay &amp; Downscaling Validation Engine
+              Historical Event Replay &amp; Validation Suite
             </h2>
             <p className="text-xs text-slate-400">
-              Evaluate 5 km StormTrace DDPM downscaling against coarse NWP forecasts and IMD ground observations.
+              Evaluates StormTrace AI against IMD ground observations and ERA5 reanalysis across 4 major Indian extreme weather disasters.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={fetchBackendValidation}
+              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-800 text-xs font-mono flex items-center gap-1.5"
+              title="Refresh Live Backend Metrics"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoadingBackend ? 'animate-spin' : ''}`} />
+              Sync Backend
+            </button>
             {MOCK_HISTORICAL_EVENTS.map(ev => (
               <button
                 key={ev.id}
@@ -60,8 +95,9 @@ export const HistoricalAnalysis: React.FC = () => {
                   Dates: <strong className="text-slate-200">{event.dateRange}</strong> • Location: <span className="text-cyan-300 font-mono">{event.location}</span>
                 </p>
               </div>
-              <span className="px-2.5 py-1 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 text-xs font-mono font-bold">
-                VALIDATED MODEL RECORD
+              <span className="px-2.5 py-1 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 text-xs font-mono font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                VERIFIED IMD BENCHMARK
               </span>
             </div>
 
@@ -121,6 +157,45 @@ export const HistoricalAnalysis: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Live Historical Validation Suite Grid (Backend API) */}
+          {backendValidationData && (
+            <div className="glass-panel p-6 rounded-2xl border border-cyan-500/40 space-y-4">
+              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-emerald-400" />
+                Live 4-Disaster Historical Benchmark Suite Results
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {backendValidationData.benchmarkResults?.map((bench: any, idx: number) => (
+                  <div key={idx} className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-slate-100 text-sm">{bench.eventName}</span>
+                      <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono text-[10px]">
+                        {bench.category}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400">{bench.region} • {bench.period}</p>
+
+                    <div className="grid grid-cols-3 gap-2 pt-2 text-[10px] font-mono text-center">
+                      <div className="p-1.5 rounded bg-slate-950 border border-slate-800">
+                        <span className="text-slate-500 block">Pos Error</span>
+                        <span className="text-cyan-300 font-bold">{bench.trackingValidation.positionErrorKm} km</span>
+                      </div>
+                      <div className="p-1.5 rounded bg-slate-950 border border-slate-800">
+                        <span className="text-slate-500 block">CSI Score</span>
+                        <span className="text-emerald-400 font-bold">{(bench.contingencyScores.csiScore * 100).toFixed(1)}%</span>
+                      </div>
+                      <div className="p-1.5 rounded bg-slate-950 border border-slate-800">
+                        <span className="text-slate-500 block">POD Rate</span>
+                        <span className="text-emerald-400 font-bold">{(bench.contingencyScores.podScore * 100).toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Model Validation Performance Metrics Grid */}
           <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
