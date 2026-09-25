@@ -263,7 +263,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     if (!mapContainerRef.current || mapRef.current) return;
 
     // Graceful Mapbox GL Access Token setup
-    const token = API_CONFIG.mapboxPublicToken || 'pk.eyJ1Ijoib3Blbm1hcHMiLCJhIjoiY2x5eXl4dnp4MDAwMDJ4czNwcGN4c2dpeSJ9.demo';
+    const token = API_CONFIG.mapboxPublicToken || 'your_mapbox_public_token_here';
     mapboxgl.accessToken = token;
 
     // Use Carto GL dark style if mapbox token is absent or demo mode
