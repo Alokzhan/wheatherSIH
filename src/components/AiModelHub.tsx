@@ -177,7 +177,7 @@ export const AiModelHub: React.FC = () => {
                       <td className="p-3 font-mono text-slate-300">{(bm.far * 100).toFixed(0)}%</td>
                       <td className="p-3 font-mono text-cyan-300">{(bm.csi * 100).toFixed(0)}%</td>
                       <td className={`p-3 font-mono ${i === 0 ? 'text-emerald-400 font-bold' : 'text-red-400'}`}>
-                        {bm.peakPreservationError}
+                        {bm.psdPreservation}
                       </td>
                     </tr>
                   ))}

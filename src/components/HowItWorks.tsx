@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Cpu, ShieldAlert, Sparkles, Map, Bell, Info } from 'lucide-react';
+import { BookOpen, Cpu, ShieldAlert, Sparkles, Map, Info } from 'lucide-react';
 
 export const HowItWorks: React.FC = () => {
   return (
