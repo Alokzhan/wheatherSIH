@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { LandingPage } from './components/LandingPage';
@@ -18,16 +18,27 @@ export function App() {
   const [activeTab, setActiveTab] = useState<string>('landing');
   const [userRole, setUserRole] = useState<UserRole>('public');
   const [selectedRegion, setSelectedRegion] = useState<IndiaRegionId>('all');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Modern bright theme by default
   const [lang, setLang] = useState<'en' | 'hi' | 'hinglish'>('en');
   const [selectedLocationKey, setSelectedLocationKey] = useState<string>('prayagraj');
   const [selectedThreat, setSelectedThreat] = useState<ThreatObject | null>(null);
+
+  // Sync data-theme attribute on document root
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   const handleSelectThreatFromMap = (threat: ThreatObject) => {
     setSelectedThreat(threat);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen transition-colors duration-200 flex flex-col font-sans">
       {/* Header Bar */}
       <Header
         activeTab={activeTab}
@@ -36,6 +47,8 @@ export function App() {
         setUserRole={setUserRole}
         selectedRegion={selectedRegion}
         setSelectedRegion={setSelectedRegion}
+        theme={theme}
+        setTheme={setTheme}
         lang={lang}
         setLang={setLang}
       />

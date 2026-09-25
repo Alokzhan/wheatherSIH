@@ -6,7 +6,11 @@ import {
   Sliders, 
   Key, 
   Terminal, 
-  RefreshCw
+  RefreshCw,
+  ExternalLink,
+  CheckCircle2,
+  Globe,
+  Lock
 } from 'lucide-react';
 import { INITIAL_MODEL_CONFIG } from '../data/mockData';
 import type { ModelConfig } from '../types/weather';
@@ -14,12 +18,21 @@ import type { ModelConfig } from '../types/weather';
 export const AdminPanel: React.FC = () => {
   const [config, setConfig] = useState<ModelConfig>(INITIAL_MODEL_CONFIG);
   const [isRunningModel, setIsRunningModel] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+
+  // API Keys State
+  const [openWeatherKey, setOpenWeatherKey] = useState<string>('owm_live_98f2a1b3c4d5e6f7');
+  const [tomorrowKey, setTomorrowKey] = useState<string>('tmr_free_77a8b9c0d1e2f3');
+  const [mapboxToken, setMapboxToken] = useState<string>('pk.eyJ1IjoiYXN0cmF3YXRjaCIsImEiOiJjbHg5eDI...3a4');
+  const [huggingfaceToken, setHuggingfaceToken] = useState<string>('hf_v92k1l8m3n4p5');
+  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+
   const [logs, setLogs] = useState<string[]>([
     '[SYSTEM INIT] AstraWatch AI Admin Control Center Ready.',
     '[METEOROLOGY] Climatology baseline ERA5 loaded (1991-2020 window).',
     '[MODEL CONFIG] Spatial resolution set to 5.0 km downscaled grid.',
+    '[API PROVIDERS] OpenWeatherMap & Tomorrow.io active connectors connected.',
   ]);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const handleWeightChange = (key: keyof ModelConfig, val: number) => {
     setConfig(prev => ({ ...prev, [key]: val }));
@@ -34,6 +47,15 @@ export const AdminPanel: React.FC = () => {
         ...prev
       ]);
     }
+  };
+
+  const handleSaveApiKeys = () => {
+    setSavedSuccess(true);
+    setLogs(prev => [
+      `[API KEYS] API Keys updated & credentials saved securely.`,
+      ...prev
+    ]);
+    setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   const handleRunModel = () => {
@@ -65,16 +87,16 @@ export const AdminPanel: React.FC = () => {
   return (
     <div className="space-y-8 pb-12">
       {/* Header Banner */}
-      <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+      <div className="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-mono text-cyan-400 uppercase tracking-wider block">SYSTEM ADMINISTRATION &amp; CONTROL</span>
-            <h2 className="text-2xl font-black text-slate-100 flex items-center gap-2">
-              <Settings className="h-6 w-6 text-cyan-400" />
-              Admin Control Center &amp; AI Model Configurator
+            <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 uppercase tracking-wider block font-bold">SYSTEM ADMINISTRATION &amp; API CONFIGURATION</span>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Settings className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
+              Admin Control Center &amp; Live API Key Manager
             </h2>
-            <p className="text-xs text-slate-400">
-              Manage NetCDF/GRIB2 uploads, trigger downscaling pipeline inference, and tune composite risk score loss weights.
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Configure external weather APIs, manage NetCDF/GRIB2 uploads, and tune composite risk score loss weights.
             </p>
           </div>
 
@@ -83,7 +105,7 @@ export const AdminPanel: React.FC = () => {
             disabled={isRunningModel}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-lg ${
               isRunningModel
-                ? 'bg-amber-600 text-slate-950 animate-pulse cursor-not-allowed'
+                ? 'bg-amber-600 text-white animate-pulse cursor-not-allowed'
                 : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white'
             }`}
           >
@@ -95,19 +117,146 @@ export const AdminPanel: React.FC = () => {
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Config Sliders & Upload */}
+        {/* Left Column: API Keys Manager & Upload */}
         <div className="lg:col-span-7 space-y-6">
+          {/* API Keys Provider Setup */}
+          <div className="glass-panel p-6 rounded-2xl border border-cyan-500/40 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <Key className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                  Live Weather &amp; AI Provider API Keys
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Configure free API keys for real-world weather radar &amp; voice translation</p>
+              </div>
+              {savedSuccess && (
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-4 w-4" /> Keys Saved!
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* Provider 1: OpenWeatherMap */}
+              <div className="space-y-1.5 bg-slate-50 dark:bg-slate-900/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Globe className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                    OpenWeatherMap API Key (Free 1,000 calls/day)
+                  </span>
+                  <a
+                    href="https://home.openweathermap.org/users/sign_up"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1 hover:underline"
+                  >
+                    Get Free Key <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={openWeatherKey}
+                  onChange={(e) => setOpenWeatherKey(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg font-mono focus:outline-none"
+                  placeholder="Paste OpenWeatherMap API Key..."
+                />
+              </div>
+
+              {/* Provider 2: Tomorrow.io */}
+              <div className="space-y-1.5 bg-slate-50 dark:bg-slate-900/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Globe className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                    Tomorrow.io Weather API Key (Free 500 calls/day)
+                  </span>
+                  <a
+                    href="https://app.tomorrow.io/development/keys"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1 hover:underline"
+                  >
+                    Get Free Key <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={tomorrowKey}
+                  onChange={(e) => setTomorrowKey(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg font-mono focus:outline-none"
+                  placeholder="Paste Tomorrow.io API Key..."
+                />
+              </div>
+
+              {/* Provider 3: Mapbox Token */}
+              <div className="space-y-1.5 bg-slate-50 dark:bg-slate-900/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Lock className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                    Mapbox Public Access Token (Free 50,000 map loads/mo)
+                  </span>
+                  <a
+                    href="https://account.mapbox.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1 hover:underline"
+                  >
+                    Get Token <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={mapboxToken}
+                  onChange={(e) => setMapboxToken(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg font-mono focus:outline-none"
+                  placeholder="Paste Mapbox Public Token..."
+                />
+              </div>
+
+              {/* Provider 4: Hugging Face / Voice AI Token */}
+              <div className="space-y-1.5 bg-slate-50 dark:bg-slate-900/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Key className="h-4 w-4 text-amber-500" />
+                    Hugging Face / Voice Advisory Token (Kisan Hindi TTS)
+                  </span>
+                  <a
+                    href="https://huggingface.co/settings/tokens"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1 hover:underline"
+                  >
+                    Get Free Token <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={huggingfaceToken}
+                  onChange={(e) => setHuggingfaceToken(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg font-mono focus:outline-none"
+                  placeholder="Paste HuggingFace Token..."
+                />
+              </div>
+
+              <button
+                onClick={handleSaveApiKeys}
+                className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg transition-colors"
+              >
+                Save &amp; Test Provider Credentials
+              </button>
+            </div>
+          </div>
+
           {/* Dataset Upload Simulator */}
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Upload className="h-5 w-5 text-cyan-400" />
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Upload className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
               Ingest Weather Dataset (NetCDF `.nc`, GRIB2 `.grib2`, CSV)
             </h3>
 
-            <div className="border-2 border-dashed border-slate-800 hover:border-cyan-500/50 rounded-xl p-6 text-center space-y-3 transition-colors bg-slate-950/60">
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-800 hover:border-cyan-500 rounded-xl p-6 text-center space-y-3 transition-colors bg-slate-50/50 dark:bg-slate-950/60">
               <Upload className="h-8 w-8 text-slate-400 mx-auto" />
               <div>
-                <span className="text-xs text-slate-300 font-semibold block">
+                <span className="text-xs text-slate-700 dark:text-slate-300 font-semibold block">
                   {selectedFile ? `Selected: ${selectedFile}` : 'Drag & Drop Forecast Dataset or Click to Browse'}
                 </span>
                 <span className="text-[10px] text-slate-500 block">
@@ -123,31 +272,30 @@ export const AdminPanel: React.FC = () => {
               />
               <label
                 htmlFor="file-upload"
-                className="inline-block px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs font-semibold cursor-pointer"
+                className="inline-block px-4 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-cyan-700 dark:text-cyan-300 text-xs font-semibold cursor-pointer"
               >
                 Browse Local File
               </label>
             </div>
           </div>
+        </div>
 
+        {/* Right Column: Execution Logs & Loss Weight Sliders */}
+        <div className="lg:col-span-5 space-y-6">
           {/* Configurable Composite Risk Score Loss Weights */}
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Sliders className="h-5 w-5 text-cyan-400" />
-                Composite Risk Score Weight Tuning
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Sliders className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                Risk Score Weight Tuning
               </h3>
-              <span className="text-[10px] text-cyan-400 font-mono">
-                Formula: RiskScore = w1*EFI + w2*P(prob) + w3*Severity + w4*Vulnerability
-              </span>
             </div>
 
             <div className="space-y-4 text-xs">
-              {/* w1 */}
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-300">w1 - EFI-inspired Anomaly Weight:</span>
-                  <span className="font-mono text-cyan-300 font-bold">{config.w1_efi_anomaly}</span>
+                  <span className="text-slate-700 dark:text-slate-300">w1 - EFI Anomaly Weight:</span>
+                  <span className="font-mono text-cyan-600 dark:text-cyan-300 font-bold">{config.w1_efi_anomaly}</span>
                 </div>
                 <input
                   type="range"
@@ -156,15 +304,14 @@ export const AdminPanel: React.FC = () => {
                   step="0.05"
                   value={config.w1_efi_anomaly}
                   onChange={(e) => handleWeightChange('w1_efi_anomaly', parseFloat(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
+                  className="w-full accent-cyan-500 cursor-pointer"
                 />
               </div>
 
-              {/* w2 */}
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-300">w2 - Threshold Exceedance Probability P(&gt;50mm) Weight:</span>
-                  <span className="font-mono text-cyan-300 font-bold">{config.w2_prob_exceedance}</span>
+                  <span className="text-slate-700 dark:text-slate-300">w2 - Exceedance Prob Weight:</span>
+                  <span className="font-mono text-cyan-600 dark:text-cyan-300 font-bold">{config.w2_prob_exceedance}</span>
                 </div>
                 <input
                   type="range"
@@ -173,15 +320,14 @@ export const AdminPanel: React.FC = () => {
                   step="0.05"
                   value={config.w2_prob_exceedance}
                   onChange={(e) => handleWeightChange('w2_prob_exceedance', parseFloat(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
+                  className="w-full accent-cyan-500 cursor-pointer"
                 />
               </div>
 
-              {/* w3 */}
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-300">w3 - Peak Intensity Severity Magnitude Weight:</span>
-                  <span className="font-mono text-cyan-300 font-bold">{config.w3_severity_magnitude}</span>
+                  <span className="text-slate-700 dark:text-slate-300">w3 - Severity Magnitude Weight:</span>
+                  <span className="font-mono text-cyan-600 dark:text-cyan-300 font-bold">{config.w3_severity_magnitude}</span>
                 </div>
                 <input
                   type="range"
@@ -190,61 +336,25 @@ export const AdminPanel: React.FC = () => {
                   step="0.05"
                   value={config.w3_severity_magnitude}
                   onChange={(e) => handleWeightChange('w3_severity_magnitude', parseFloat(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
-                />
-              </div>
-
-              {/* w4 */}
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-slate-300">w4 - Terrain Vulnerability &amp; Exposure Weight:</span>
-                  <span className="font-mono text-cyan-300 font-bold">{config.w4_vulnerability_exposure}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.05"
-                  max="0.4"
-                  step="0.05"
-                  value={config.w4_vulnerability_exposure}
-                  onChange={(e) => handleWeightChange('w4_vulnerability_exposure', parseFloat(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
+                  className="w-full accent-cyan-500 cursor-pointer"
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Execution Logs & API Keys */}
-        <div className="lg:col-span-5 space-y-6">
           {/* Real-time System Logs Console */}
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 font-mono uppercase">
-              <Terminal className="h-4 w-4 text-cyan-400" />
+          <div className="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 font-mono uppercase">
+              <Terminal className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
               Real-time Model Execution Console Logs
             </h3>
 
-            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] h-64 overflow-y-auto space-y-1.5 text-slate-300">
+            <div className="bg-slate-900 dark:bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] h-64 overflow-y-auto space-y-1.5 text-slate-300">
               {logs.map((log, i) => (
                 <div key={i} className="leading-tight">
                   <span className="text-cyan-400 font-bold">&gt;</span> {log}
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* API Keys & RBAC Management */}
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <Key className="h-4 w-4 text-amber-400" />
-              API Key Management &amp; Rate Limits
-            </h3>
-
-            <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-xs space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-mono">astrawatch_live_sec_8f92k</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">Active</span>
-              </div>
-              <p className="text-[11px] text-slate-500">Rate limit: 100 requests/sec • JWT Token Auth</p>
             </div>
           </div>
         </div>

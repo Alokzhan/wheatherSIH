@@ -1,25 +1,42 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* Modern Dynamic Theme System */
 :root {
-  --color-bg-dark: #080c14;
-  --color-card-dark: #0f172a;
-  --color-border-dark: #1e293b;
-  --color-cyan-glow: #06b6d4;
-  --color-blue-glow: #3b82f6;
-  --color-alert-low: #10b981;
-  --color-alert-moderate: #f59e0b;
-  --color-alert-severe: #f97316;
-  --color-alert-critical: #ef4444;
+  --bg-main: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #edf2f7 50%, #e2e8f0 100%);
+  --card-bg: rgba(255, 255, 255, 0.90);
+  --card-border: rgba(226, 232, 240, 0.9);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+  --panel-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --map-bg: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --bg-main: #080c14;
+  --bg-gradient: linear-gradient(180deg, #080c14 0%, #0f172a 100%);
+  --card-bg: rgba(15, 23, 42, 0.85);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-subtle: #94a3b8;
+  --panel-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --header-bg: rgba(15, 23, 42, 0.92);
+  --map-bg: #0b111e;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-bg-dark);
-  color: #f1f5f9;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* Custom Scrollbars */
@@ -28,73 +45,60 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: #334155;
 }
 
-/* Glassmorphism utility */
+/* Premium Glassmorphism Utility */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--panel-shadow);
 }
 
 .glass-panel-hover {
-  transition: all 0.25s ease-in-out;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-panel-hover:hover {
-  border-color: rgba(6, 182, 212, 0.4);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(6, 182, 212, 0.15);
 }
 
-/* Glowing text and pulses */
-.glow-cyan {
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
-}
-.glow-red {
-  text-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+/* Ticker Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
-.pulse-radar {
-  animation: radarPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
 
-@keyframes radarPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.08);
-  }
-}
-
-/* Leaflet Map overrides for sleek dark theme */
+/* Leaflet Map Styling */
 .leaflet-container {
-  background-color: #0b111e !important;
+  background-color: var(--map-bg) !important;
   font-family: inherit !important;
-}
-
-.leaflet-control-zoom a {
-  background-color: #0f172a !important;
-  color: #06b6d4 !important;
-  border-color: #1e293b !important;
 }
 
 .leaflet-popup-content-wrapper {
   background: rgba(15, 23, 42, 0.95) !important;
   color: #f1f5f9 !important;
   border: 1px solid #06b6d4;
-  backdrop-filter: blur(8px);
-  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 .leaflet-popup-tip {
@@ -103,25 +107,25 @@ body {
 
 /* Hazard Risk Badges */
 .badge-critical {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.5);
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 .badge-severe {
-  background-color: rgba(249, 115, 22, 0.2);
-  color: #f97316;
-  border: 1px solid rgba(249, 115, 22, 0.5);
+  background-color: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.35);
 }
 
 .badge-moderate {
-  background-color: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.5);
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
 .badge-low {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.5);
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.35);
 }
