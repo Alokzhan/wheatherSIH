@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import torch
 import numpy as np
 from datetime import datetime
 
@@ -17,6 +18,7 @@ from backend.tracking.tracker import SpatioTemporalTracker
 from backend.stage1_gnn.st_gnn_model import track_anomaly_object_st_gnn
 from backend.stage2_diffusion.ddpm import run_diffusion_downscale
 from backend.alerts.risk_engine import ConfigurableRiskEngine
+from backend.models.inspector import ModelEvidenceInspector
 
 def run_killer_historical_event_demo(event_name="amphan_2020"):
     print("=" * 80)
@@ -31,6 +33,16 @@ def run_killer_historical_event_demo(event_name="amphan_2020"):
         "domain": "Bay of Bengal & West Bengal Coast (21.65°N, 88.35°E)",
         "pipeline_stages": {}
     }
+
+    # STAGE 0: Verify Active PyTorch Trained Weight Checkpoints
+    print("\n[Stage 0] Verifying Active PyTorch Model Weights & Checkpoints...")
+    inspector = ModelEvidenceInspector()
+    chk_meta = inspector.inspect_checkpoints()
+    st_gnn_params = chk_meta["models"].get("st_gnn", {}).get("total_trainable_parameters", 0)
+    ddpm_params = chk_meta["models"].get("ddpm", {}).get("total_trainable_parameters", 0)
+    print(f"   -> ST-GNN Trained Weights: {chk_meta['models'].get('st_gnn', {}).get('file_path')} ({st_gnn_params:,} PyTorch parameters)")
+    print(f"   -> DDPM Downscaler Weights: {chk_meta['models'].get('ddpm', {}).get('file_path')} ({ddpm_params:,} PyTorch parameters)")
+    demo_results["pipeline_stages"]["stage0_model_checkpoints"] = chk_meta
 
     # STAGE 1: Real NWP 50-Member Ensemble Stream Ingestion
     print("\n[Stage 1] Ingesting Operational NCMRWF NEPS-G 50-Member Ensemble Forecast Grid...")
