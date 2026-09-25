@@ -67,6 +67,8 @@ export function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
+      case 'landing':
+      case 'overview':
         return (
           <DashboardOverview
             selectedRegion={selectedRegion}
@@ -75,6 +77,8 @@ export function App() {
           />
         );
       case 'map':
+      case 'live-map':
+      case 'gis':
         return (
           <LiveRiskMap
             selectedRegion={selectedRegion}
@@ -82,11 +86,16 @@ export function App() {
           />
         );
       case 'locality':
+      case 'search':
         return <LocalityExplorer initialSearchQuery={topSearchQuery} />;
       case 'models':
       case 'evaluation':
+      case 'ai-analysis':
+      case 'ai-models':
+      case 'model-evaluation':
         return <AiModelHub />;
       case 'location':
+      case 'location-risk':
         return (
           <LocationRisk
             initialLocKey="prayagraj"
@@ -94,6 +103,9 @@ export function App() {
           />
         );
       case 'event':
+      case 'anomaly-tracking':
+      case 'tracking':
+      case 'event-detail':
         return (
           <EventDetail
             selectedEventId={selectedThreat?.id}
@@ -101,20 +113,37 @@ export function App() {
           />
         );
       case 'alerts':
+      case 'risk-alerts':
+      case 'alert-center':
         return <AlertCenter />;
       case 'historical':
+      case 'historical-explorer':
+      case 'historical-replay':
+      case 'historical-analysis':
+      case 'history':
+      case 'historical_explorer':
+      case 'historical_analysis':
         return <HistoricalAnalysis />;
-
       case 'farmer':
+      case 'farmer-advisory':
+      case 'advisory':
         return <FarmerAdvisory lang="en" setLang={() => {}} />;
       case 'how-it-works':
+      case 'guide':
         return <HowItWorks />;
       case 'disaster':
+      case 'operations-room':
+      case 'operations':
+      case 'disaster-dashboard':
         return <DisasterDashboard />;
       case 'admin':
       case 'settings':
+      case 'data-center':
         return <AdminPanel />;
       case 'api':
+      case 'apis':
+      case 'weather-apis':
+      case 'api-explorer':
         return <ApiExplorer />;
       case 'auth':
       case 'login':
