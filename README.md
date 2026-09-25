@@ -255,9 +255,10 @@ MAPBOX_TOKEN=your_mapbox_token
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-*Backend will be running at `http://localhost:8000` with interactive docs at `http://localhost:8000/docs`.*
+*Backend will be running at `http://127.0.0.1:8000` with interactive docs at `http://127.0.0.1:8000/docs`.*
+*(Note for Windows users: Use `--host 127.0.0.1` to prevent socket permission error `[WinError 10013]`. If port 8000 is already in use by a background process, use `--port 8001`.)*
 
 ### 3. Start the Frontend Application (Terminal 2)
 ```bash
