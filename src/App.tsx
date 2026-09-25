@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
-import { LandingPage } from './components/LandingPage';
+import { Sidebar } from './components/Sidebar';
+import { TopNavbar } from './components/TopNavbar';
+import { DashboardOverview } from './components/DashboardOverview';
 import { LiveRiskMap } from './components/LiveRiskMap';
+import { LocalityExplorer } from './components/LocalityExplorer';
 import { AiModelHub } from './components/AiModelHub';
 import { LocationRisk } from './components/LocationRisk';
 import { EventDetail } from './components/EventDetail';
@@ -12,15 +13,13 @@ import { FarmerAdvisory } from './components/FarmerAdvisory';
 import { DisasterDashboard } from './components/DisasterDashboard';
 import { AdminPanel } from './components/AdminPanel';
 import { ApiExplorer } from './components/ApiExplorer';
-import type { UserRole, ThreatObject, IndiaRegionId } from './types/weather';
+import { Footer } from './components/Footer';
+import type { ThreatObject, IndiaRegionId } from './types/weather';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<string>('landing');
-  const [userRole, setUserRole] = useState<UserRole>('public');
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [selectedRegion, setSelectedRegion] = useState<IndiaRegionId>('all');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Modern bright theme by default
-  const [lang, setLang] = useState<'en' | 'hi' | 'hinglish'>('en');
-  const [selectedLocationKey, setSelectedLocationKey] = useState<string>('prayagraj');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [selectedThreat, setSelectedThreat] = useState<ThreatObject | null>(null);
 
   // Sync data-theme attribute on document root
@@ -37,71 +36,83 @@ export function App() {
     setSelectedThreat(threat);
   };
 
+  const handleTopSearch = (_query: string) => {
+    setActiveTab('locality');
+  };
+
   return (
-    <div className="min-h-screen transition-colors duration-200 flex flex-col font-sans">
-      {/* Header Bar */}
-      <Header
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        userRole={userRole}
-        setUserRole={setUserRole}
-        selectedRegion={selectedRegion}
-        setSelectedRegion={setSelectedRegion}
-        theme={theme}
-        setTheme={setTheme}
-        lang={lang}
-        setLang={setLang}
-      />
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex font-sans transition-colors duration-200">
+      {/* Left Collapsible Dark Sidebar */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Container View Switcher */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'landing' && (
-          <LandingPage
-            onNavigate={(tab) => setActiveTab(tab)}
-            onSelectLocation={(locKey) => setSelectedLocationKey(locKey)}
-          />
-        )}
+      {/* Main Right Shell Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Header Bar */}
+        <TopNavbar
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          theme={theme}
+          setTheme={setTheme}
+          onSearchSubmit={handleTopSearch}
+        />
 
-        {activeTab === 'map' && (
-          <LiveRiskMap
-            selectedRegion={selectedRegion}
-            onSelectThreat={handleSelectThreatFromMap}
-          />
-        )}
+        {/* Content Container Area */}
+        <main className="flex-1 overflow-y-auto px-6 py-6 max-w-7xl w-full mx-auto">
+          {activeTab === 'dashboard' && (
+            <DashboardOverview
+              selectedRegion={selectedRegion}
+              onNavigate={(tab) => setActiveTab(tab)}
+              onSelectThreat={handleSelectThreatFromMap}
+            />
+          )}
 
-        {activeTab === 'models' && <AiModelHub />}
+          {activeTab === 'map' && (
+            <LiveRiskMap
+              selectedRegion={selectedRegion}
+              onSelectThreat={handleSelectThreatFromMap}
+            />
+          )}
 
-        {activeTab === 'location' && (
-          <LocationRisk
-            initialLocKey={selectedLocationKey}
-            onNavigateToEvent={() => setActiveTab('event')}
-          />
-        )}
+          {activeTab === 'locality' && <LocalityExplorer />}
 
-        {activeTab === 'event' && (
-          <EventDetail
-            selectedEventId={selectedThreat?.id}
-            onNavigateToMap={() => setActiveTab('map')}
-          />
-        )}
+          {activeTab === 'models' && <AiModelHub />}
 
-        {activeTab === 'alerts' && <AlertCenter />}
+          {activeTab === 'location' && (
+            <LocationRisk
+              initialLocKey="prayagraj"
+              onNavigateToEvent={() => setActiveTab('event')}
+            />
+          )}
 
-        {activeTab === 'historical' && <HistoricalAnalysis />}
+          {activeTab === 'event' && (
+            <EventDetail
+              selectedEventId={selectedThreat?.id}
+              onNavigateToMap={() => setActiveTab('map')}
+            />
+          )}
 
-        {activeTab === 'farmer' && (
-          <FarmerAdvisory lang={lang} setLang={setLang} />
-        )}
+          {activeTab === 'alerts' && <AlertCenter />}
 
-        {activeTab === 'disaster' && <DisasterDashboard />}
+          {activeTab === 'historical' && <HistoricalAnalysis />}
 
-        {activeTab === 'admin' && <AdminPanel />}
+          {activeTab === 'evaluation' && <HistoricalAnalysis />}
 
-        {activeTab === 'api' && <ApiExplorer />}
-      </main>
+          {activeTab === 'farmer' && (
+            <FarmerAdvisory lang="en" setLang={() => {}} />
+          )}
 
-      {/* Footer */}
-      <Footer />
+          {activeTab === 'disaster' && <DisasterDashboard />}
+
+          {activeTab === 'admin' && <AdminPanel />}
+
+          {activeTab === 'api' && <ApiExplorer />}
+
+          {activeTab === 'settings' && <AdminPanel />}
+        </main>
+
+        {/* Footer */}
+        <Footer />
+      </div>
     </div>
   );
 }

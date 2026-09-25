@@ -1,39 +1,49 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Modern Dynamic Theme System */
+/* StormTrace / AstraWatch Premium UI System */
 :root {
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-active: #2563eb;
+  --sidebar-text: #94a3b8;
+  --sidebar-text-active: #ffffff;
+  
   --bg-main: #f8fafc;
-  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #edf2f7 50%, #e2e8f0 100%);
-  --card-bg: rgba(255, 255, 255, 0.90);
-  --card-border: rgba(226, 232, 240, 0.9);
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-subtle: #64748b;
-  --panel-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
-  --header-bg: rgba(255, 255, 255, 0.92);
-  --map-bg: #e2e8f0;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --color-primary: #2563eb;
+  --color-cyan: #06b6d4;
+  --color-emerald: #10b981;
+  --color-amber: #f59e0b;
+  --color-orange: #ea580c;
+  --color-red: #ef4444;
 }
 
 [data-theme="dark"] {
-  --bg-main: #080c14;
-  --bg-gradient: linear-gradient(180deg, #080c14 0%, #0f172a 100%);
-  --card-bg: rgba(15, 23, 42, 0.85);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-main: #f8fafc;
-  --text-muted: #cbd5e1;
-  --text-subtle: #94a3b8;
-  --panel-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  --header-bg: rgba(15, 23, 42, 0.92);
-  --map-bg: #0b111e;
+  --sidebar-bg: #090d16;
+  --sidebar-hover: #1e293b;
+  --sidebar-active: #2563eb;
+  --sidebar-text: #94a3b8;
+  --sidebar-text-active: #ffffff;
+  
+  --bg-main: #0b1120;
+  --card-bg: #111827;
+  --card-border: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  color: var(--text-main);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
@@ -52,28 +62,25 @@ body {
   border-radius: 4px;
 }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #374151;
 }
 
-/* Premium Glassmorphism Utility */
-.glass-panel {
+/* Card Styling */
+.storm-card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
-  box-shadow: var(--panel-shadow);
+  border-radius: 0.85rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.glass-panel-hover:hover {
-  border-color: rgba(6, 182, 212, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -6px rgba(6, 182, 212, 0.15);
+.storm-card-hover:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
 }
 
-/* Ticker Marquee Animation */
+/* Ticker Marquee */
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
@@ -88,44 +95,67 @@ body {
 
 /* Leaflet Map Styling */
 .leaflet-container {
-  background-color: var(--map-bg) !important;
+  background-color: #e2e8f0 !important;
   font-family: inherit !important;
+}
+[data-theme="dark"] .leaflet-container {
+  background-color: #0f172a !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.95) !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #06b6d4;
-  backdrop-filter: blur(12px);
-  border-radius: 10px;
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #2563eb;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: #0f172a !important;
 }
 
 /* Hazard Risk Badges */
 .badge-critical {
-  background-color: rgba(239, 68, 68, 0.12);
+  background-color: #fef2f2;
   color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  border: 1px solid #fecaca;
+}
+[data-theme="dark"] .badge-critical {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .badge-severe {
-  background-color: rgba(249, 115, 22, 0.12);
+  background-color: #fff7ed;
   color: #ea580c;
-  border: 1px solid rgba(249, 115, 22, 0.35);
+  border: 1px solid #ffedd5;
+}
+[data-theme="dark"] .badge-severe {
+  background-color: rgba(249, 115, 22, 0.15);
+  color: #fdba74;
+  border-color: rgba(249, 115, 22, 0.3);
 }
 
 .badge-moderate {
-  background-color: rgba(245, 158, 11, 0.12);
+  background-color: #fffbeb;
   color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  border: 1px solid #fef3c7;
+}
+[data-theme="dark"] .badge-moderate {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fde047;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .badge-low {
-  background-color: rgba(16, 185, 129, 0.12);
+  background-color: #ecfdf5;
   color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  border: 1px solid #a7f3d0;
+}
+[data-theme="dark"] .badge-low {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
 }
