@@ -8,7 +8,7 @@ import {
   Maximize2, 
   Minimize2, 
   Sliders, 
-  Check,
+  Check, 
   RefreshCw,
   Globe,
   Mountain,
@@ -26,7 +26,6 @@ interface LiveRiskMapProps {
   onSelectThreat?: (threat: ThreatObject) => void;
 }
 
-// Risk level color mapping (consistent across the system)
 const RISK_COLORS: Record<string, string> = {
   critical: '#ef4444',
   severe: '#f97316',
@@ -41,6 +40,166 @@ const RISK_GLOW: Record<string, string> = {
   low: 'rgba(16, 185, 129, 0.25)',
 };
 
+// Pan-India Isohyets GeoJSON features representing downscaled rainfall zones across India
+const PAN_INDIA_RAINFALL_FEATURES = [
+  {
+    name: 'Supaul Kosi Catchment Heavy Downpour',
+    district: 'Supaul',
+    state: 'Bihar',
+    rainMm: 165.0,
+    efiPercentile: 98.8,
+    probGt50: 95,
+    riskLevel: 'critical',
+    coords: [
+      [86.4, 25.8], [86.9, 25.8], [87.1, 26.4], [86.7, 26.6], [86.3, 26.2], [86.4, 25.8]
+    ]
+  },
+  {
+    name: 'Mumbai Suburban Urban Cloudburst Cell',
+    district: 'Mumbai Suburban',
+    state: 'Maharashtra',
+    rainMm: 135.0,
+    efiPercentile: 99.2,
+    probGt50: 97,
+    riskLevel: 'critical',
+    coords: [
+      [72.7, 18.9], [73.1, 18.9], [73.2, 19.3], [72.8, 19.4], [72.6, 19.1], [72.7, 18.9]
+    ]
+  },
+  {
+    name: 'Wayanad Orographic Monsoon Downpour',
+    district: 'Wayanad',
+    state: 'Kerala',
+    rainMm: 185.0,
+    efiPercentile: 99.6,
+    probGt50: 98,
+    riskLevel: 'critical',
+    coords: [
+      [75.9, 11.4], [76.4, 11.4], [76.5, 11.9], [76.0, 12.0], [75.8, 11.6], [75.9, 11.4]
+    ]
+  },
+  {
+    name: 'Brahmaputra Middle Valley Inundation',
+    district: 'Kamrup Metropolitan',
+    state: 'Assam',
+    rainMm: 110.0,
+    efiPercentile: 96.5,
+    probGt50: 91,
+    riskLevel: 'severe',
+    coords: [
+      [91.4, 25.9], [92.1, 25.9], [92.3, 26.4], [91.7, 26.6], [91.3, 26.2], [91.4, 25.9]
+    ]
+  },
+  {
+    name: 'Mahanadi Coastal Delta Storm Rainfall',
+    district: 'Cuttack',
+    state: 'Odisha',
+    rainMm: 145.0,
+    efiPercentile: 98.1,
+    probGt50: 94,
+    riskLevel: 'critical',
+    coords: [
+      [85.6, 20.1], [86.4, 20.1], [86.5, 20.7], [85.9, 20.8], [85.5, 20.4], [85.6, 20.1]
+    ]
+  },
+  {
+    name: 'Prayagraj Sangam Confluence Flash Cell',
+    district: 'Prayagraj',
+    state: 'Uttar Pradesh',
+    rainMm: 118.4,
+    efiPercentile: 97.4,
+    probGt50: 92,
+    riskLevel: 'critical',
+    coords: [
+      [81.6, 25.2], [82.1, 25.2], [82.2, 25.7], [81.7, 25.8], [81.5, 25.4], [81.6, 25.2]
+    ]
+  },
+  {
+    name: 'Delhi-NCR & Yamuna Catchment Rain',
+    district: 'New Delhi',
+    state: 'Delhi',
+    rainMm: 95.0,
+    efiPercentile: 95.2,
+    probGt50: 84,
+    riskLevel: 'severe',
+    coords: [
+      [76.9, 28.3], [77.5, 28.3], [77.6, 28.9], [77.0, 29.0], [76.8, 28.5], [76.9, 28.3]
+    ]
+  },
+  {
+    name: 'Chamoli Alaknanda Himalayan Surge',
+    district: 'Chamoli',
+    state: 'Uttarakhand',
+    rainMm: 155.0,
+    efiPercentile: 99.1,
+    probGt50: 96,
+    riskLevel: 'critical',
+    coords: [
+      [79.1, 30.1], [79.8, 30.1], [79.9, 30.7], [79.3, 30.8], [79.0, 30.4], [79.1, 30.1]
+    ]
+  },
+  {
+    name: 'South Peninsular Coastal Surge Rain',
+    district: 'Chennai',
+    state: 'Tamil Nadu',
+    rainMm: 88.0,
+    efiPercentile: 94.0,
+    probGt50: 78,
+    riskLevel: 'moderate',
+    coords: [
+      [80.0, 12.8], [80.5, 12.8], [80.6, 13.3], [80.1, 13.4], [79.9, 13.0], [80.0, 12.8]
+    ]
+  },
+  {
+    name: 'Sundarbans Bay Convective Cell',
+    district: 'South 24 Parganas',
+    state: 'West Bengal',
+    rainMm: 130.0,
+    efiPercentile: 97.8,
+    probGt50: 93,
+    riskLevel: 'severe',
+    coords: [
+      [88.1, 21.6], [88.8, 21.6], [88.9, 22.2], [88.3, 22.3], [88.0, 21.9], [88.1, 21.6]
+    ]
+  },
+  {
+    name: 'South Gujarat Surat Coastal Belt',
+    district: 'Surat',
+    state: 'Gujarat',
+    rainMm: 105.0,
+    efiPercentile: 96.0,
+    probGt50: 88,
+    riskLevel: 'severe',
+    coords: [
+      [72.6, 21.0], [73.2, 21.0], [73.3, 21.5], [72.7, 21.6], [72.5, 21.2], [72.6, 21.0]
+    ]
+  },
+  {
+    name: 'Western Ghats Orographic Belt',
+    district: 'Ratnagiri',
+    state: 'Maharashtra',
+    rainMm: 175.0,
+    efiPercentile: 99.4,
+    probGt50: 97,
+    riskLevel: 'critical',
+    coords: [
+      [73.1, 16.8], [73.7, 16.8], [73.8, 17.4], [73.2, 17.5], [73.0, 17.0], [73.1, 16.8]
+    ]
+  },
+  {
+    name: 'Rohilkhand Ganges Upper Basin Rain',
+    district: 'Shahjahanpur',
+    state: 'Uttar Pradesh',
+    rainMm: 125.0,
+    efiPercentile: 97.0,
+    probGt50: 90,
+    riskLevel: 'severe',
+    coords: [
+      [79.6, 27.6], [80.2, 27.6], [80.3, 28.2], [79.7, 28.3], [79.5, 27.8], [79.6, 27.6]
+    ]
+  }
+];
+
 export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all', onSelectThreat }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -50,7 +209,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   const [activeLayers, setActiveLayers] = useState<Record<MapLayerId, boolean>>({
     rainfall_forecast: true,
     rainfall_anomaly: true,
-    extreme_probability: false,
+    extreme_probability: true,
     threat_footprint: true,
     trajectory: true,
     risk_grid_5km: true,
@@ -62,12 +221,24 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   const [currentRegion, setCurrentRegion] = useState<IndiaRegionId>(selectedRegion);
   const [selectedTimeStep, setSelectedTimeStep] = useState<number>(12);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [layerOpacity, setLayerOpacity] = useState<number>(0.75);
+  const [layerOpacity, setLayerOpacity] = useState<number>(0.80);
   const [selectedCell, setSelectedCell] = useState<GridCell5km | null>(MOCK_5KM_GRID[0] || null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [is3DEnabled, setIs3DEnabled] = useState<boolean>(true);
-  const [showLayerPanel, setShowLayerPanel] = useState<boolean>(true);
   const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark');
+  const [showLayerPanel, setShowLayerPanel] = useState<boolean>(true);
+
+
+  const toggleMapStyle = useCallback(() => {
+    const nextStyle = mapStyle === 'dark' ? 'satellite' : 'dark';
+    setMapStyle(nextStyle);
+    if (mapRef.current) {
+      const styleUrl = API_CONFIG.mapboxPublicToken
+        ? (nextStyle === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/satellite-streets-v12')
+        : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+      mapRef.current.setStyle(styleUrl);
+    }
+  }, [mapStyle]);
 
   const timeSteps = useMemo(() => [
     { hour: -24, label: '-24h' },
@@ -81,7 +252,6 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     { hour: 72, label: '+72h' },
   ], []);
 
-  // Cleanup all markers
   const clearMarkers = useCallback(() => {
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
@@ -89,28 +259,31 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     popupsRef.current = [];
   }, []);
 
-  // Initialize Mapbox GL Map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    mapboxgl.accessToken = API_CONFIG.mapboxPublicToken;
+    // Graceful Mapbox GL Access Token setup
+    const token = API_CONFIG.mapboxPublicToken || 'pk.eyJ1Ijoib3Blbm1hcHMiLCJhIjoiY2x5eXl4dnp4MDAwMDJ4czNwcGN4c2dpeSJ9.demo';
+    mapboxgl.accessToken = token;
+
+    // Use Carto GL dark style if mapbox token is absent or demo mode
+    const styleUrl = API_CONFIG.mapboxPublicToken
+      ? (mapStyle === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/satellite-streets-v12')
+      : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
-      style: mapStyle === 'dark' 
-        ? 'mapbox://styles/mapbox/dark-v11' 
-        : 'mapbox://styles/mapbox/satellite-streets-v12',
-      center: [78.9629, 22.5937], // India center [lng, lat]
-      zoom: 4.5,
-      pitch: is3DEnabled ? 45 : 0,
-      bearing: is3DEnabled ? -12 : 0,
+      style: styleUrl,
+      center: [78.9629, 22.5937], // Center on India
+      zoom: 4.8,
+      pitch: is3DEnabled ? 40 : 0,
+      bearing: is3DEnabled ? -10 : 0,
       projection: 'globe',
       antialias: true,
       maxZoom: 18,
       minZoom: 3,
     });
 
-    // Add navigation controls
     map.addControl(new mapboxgl.NavigationControl({
       showCompass: true,
       showZoom: true,
@@ -124,68 +297,154 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
 
     map.on('load', () => {
       map.resize();
-      setTimeout(() => map.resize(), 100);
-      setTimeout(() => map.resize(), 400);
-      setTimeout(() => map.resize(), 1000);
+      setTimeout(() => map.resize(), 200);
+      setTimeout(() => map.resize(), 800);
 
-      // Set fog / atmosphere for globe view
-      map.setFog({
-        color: 'rgb(8, 12, 24)',
-        'high-color': 'rgb(20, 30, 60)',
-        'horizon-blend': 0.08,
-        'space-color': 'rgb(4, 6, 12)',
-        'star-intensity': 0.6,
+      try {
+        map.setFog({
+          color: 'rgb(8, 12, 24)',
+          'high-color': 'rgb(20, 30, 60)',
+          'horizon-blend': 0.08,
+          'space-color': 'rgb(4, 6, 12)',
+          'star-intensity': 0.6,
+        });
+      } catch (e) {
+        console.warn('Globe fog setting skipped:', e);
+      }
+
+      // --- 1. RainViewer Live Precipitation Doppler Radar Raster Layer ---
+      map.addSource('rain-radar-source', {
+        type: 'raster',
+        tiles: [
+          '/api/v1/tiles/radar/{z}/{x}/{y}',
+          'https://tilecache.rainviewer.com/v2/radar/nowcast_100m/{z}/{x}/{y}/2/1_1.png'
+        ],
+        tileSize: 256
       });
 
-      // Add terrain for 3D effect
-      if (is3DEnabled) {
-        map.addSource('mapbox-dem', {
-          type: 'raster-dem',
-          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-          tileSize: 512,
-          maxzoom: 14,
-        });
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
-      }
-
-      // Add 3D building layer
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers?.find(
-        (layer) => layer.type === 'symbol' && layer.layout?.['text-field']
-      )?.id;
-
-      if (labelLayerId) {
-        map.addLayer(
-          {
-            id: '3d-buildings',
-            source: 'composite',
-            'source-layer': 'building',
-            filter: ['==', 'extrude', 'true'],
-            type: 'fill-extrusion',
-            minzoom: 12,
-            paint: {
-              'fill-extrusion-color': '#1a2540',
-              'fill-extrusion-height': ['get', 'height'],
-              'fill-extrusion-base': ['get', 'min_height'],
-              'fill-extrusion-opacity': 0.7,
-            },
-          },
-          labelLayerId
-        );
-      }
-
-      // Add sky layer for atmosphere
       map.addLayer({
-        id: 'sky',
-        type: 'sky',
+        id: 'rain-radar-layer',
+        type: 'raster',
+        source: 'rain-radar-source',
         paint: {
-          'sky-type': 'atmosphere',
-          'sky-atmosphere-sun': [0.0, 90.0],
-          'sky-atmosphere-sun-intensity': 8,
+          'raster-opacity': layerOpacity * 0.75,
+          'raster-fade-duration': 300,
         },
       });
 
-      // Add risk grid GeoJSON source
+      // --- 2. Pan-India Downscaled Rainfall Isohyet GeoJSON Layer ---
+      const isohyetFeatures = PAN_INDIA_RAINFALL_FEATURES.map((item, idx) => ({
+        type: 'Feature' as const,
+        geometry: {
+          type: 'Polygon' as const,
+          coordinates: [item.coords],
+        },
+        properties: {
+          id: `ISO-${idx + 1}`,
+          name: item.name,
+          district: item.district,
+          state: item.state,
+          rainMm: item.rainMm,
+          efiPercentile: item.efiPercentile,
+          probGt50: item.probGt50,
+          riskLevel: item.riskLevel,
+          color: item.rainMm > 150 ? '#ef4444' : item.rainMm > 110 ? '#f97316' : item.rainMm > 80 ? '#f59e0b' : '#06b6d4'
+        }
+      }));
+
+      map.addSource('rain-isohyets-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: isohyetFeatures,
+        },
+      });
+
+      map.addLayer({
+        id: 'rain-isohyets-fill',
+        type: 'fill',
+        source: 'rain-isohyets-source',
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': layerOpacity * 0.45,
+        },
+      });
+
+      map.addLayer({
+        id: 'rain-isohyets-line',
+        type: 'line',
+        source: 'rain-isohyets-source',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2.0,
+          'line-opacity': 0.85,
+        },
+      });
+
+      // --- 3. Extreme Forecast Index (EFI) Anomaly Contours Layer ---
+      map.addSource('rain-anomaly-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: isohyetFeatures.filter(f => f.properties.efiPercentile > 96.0).map(f => ({
+            ...f,
+            properties: {
+              ...f.properties,
+              anomalyColor: '#c084fc'
+            }
+          }))
+        }
+      });
+
+      map.addLayer({
+        id: 'rain-anomaly-fill',
+        type: 'fill',
+        source: 'rain-anomaly-source',
+        paint: {
+          'fill-color': '#a855f7',
+          'fill-opacity': layerOpacity * 0.35,
+        }
+      });
+
+      map.addLayer({
+        id: 'rain-anomaly-line',
+        type: 'line',
+        source: 'rain-anomaly-source',
+        paint: {
+          'line-color': '#e879f9',
+          'line-width': 2.5,
+          'line-dasharray': [2, 2],
+          'line-opacity': 0.9,
+        }
+      });
+
+      // --- 4. Exceedance Probability Layer (>50mm/24h) ---
+      map.addSource('extreme-prob-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: isohyetFeatures.map(f => ({
+            type: 'Feature' as const,
+            geometry: f.geometry,
+            properties: {
+              prob: f.properties.probGt50,
+              color: f.properties.probGt50 > 90 ? '#ef4444' : '#f59e0b'
+            }
+          }))
+        }
+      });
+
+      map.addLayer({
+        id: 'extreme-prob-fill',
+        type: 'fill',
+        source: 'extreme-prob-source',
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': layerOpacity * 0.2,
+        }
+      });
+
+      // --- 5. 5km Grid Cells Overlay ---
       const gridFeatures = MOCK_5KM_GRID.map(cell => ({
         type: 'Feature' as const,
         geometry: {
@@ -210,7 +469,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           vulnerability: cell.vulnerabilityIndex,
           anomaly: cell.anomalyPercentile,
           color: RISK_COLORS[cell.riskLevel] || '#10b981',
-          height: cell.downscaledRiskScore * 50, // Extrude based on risk score
+          height: cell.downscaledRiskScore * 40,
         },
       }));
 
@@ -222,7 +481,6 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // 3D Extruded risk grid
       map.addLayer({
         id: 'risk-grid-3d',
         type: 'fill-extrusion',
@@ -231,11 +489,10 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           'fill-extrusion-color': ['get', 'color'],
           'fill-extrusion-height': is3DEnabled ? ['get', 'height'] : 0,
           'fill-extrusion-base': 0,
-          'fill-extrusion-opacity': layerOpacity * 0.6,
+          'fill-extrusion-opacity': layerOpacity * 0.5,
         },
       });
 
-      // Flat risk grid (fallback / complement)
       map.addLayer({
         id: 'risk-grid-flat',
         type: 'fill',
@@ -257,7 +514,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // Threat footprint GeoJSON
+      // --- 6. Threat Footprints GeoJSON ---
       const threatFeatures = MOCK_THREAT_OBJECTS.map(threat => ({
         type: 'Feature' as const,
         geometry: {
@@ -276,7 +533,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           probability: threat.probabilityExceedance,
           speed: threat.speedKmH,
           direction: threat.direction,
-          height: threat.probabilityExceedance * 80,
+          height: threat.probabilityExceedance * 70,
         },
       }));
 
@@ -288,18 +545,16 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // Threat footprint fill
       map.addLayer({
         id: 'threat-fill',
         type: 'fill',
         source: 'threat-footprints',
         paint: {
           'fill-color': ['get', 'color'],
-          'fill-opacity': layerOpacity * 0.3,
+          'fill-opacity': layerOpacity * 0.35,
         },
       });
 
-      // Threat footprint outline (animated dash)
       map.addLayer({
         id: 'threat-outline',
         type: 'line',
@@ -308,11 +563,10 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           'line-color': ['get', 'color'],
           'line-width': 2.5,
           'line-dasharray': [3, 3],
-          'line-opacity': 0.8,
+          'line-opacity': 0.85,
         },
       });
 
-      // 3D Extruded threat volumes
       map.addLayer({
         id: 'threat-3d',
         type: 'fill-extrusion',
@@ -325,7 +579,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // Trajectory lines
+      // --- 7. Trajectories & Markers ---
       const trajectoryFeatures = MOCK_THREAT_OBJECTS.map(threat => ({
         type: 'Feature' as const,
         geometry: {
@@ -356,13 +610,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           'line-dasharray': [4, 4],
           'line-opacity': 0.85,
         },
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round',
-        },
       });
 
-      // Trajectory waypoint circles
       const waypointFeatures = MOCK_THREAT_OBJECTS.flatMap(threat => 
         threat.trajectoryPoints.map((p, idx) => ({
           type: 'Feature' as const,
@@ -401,7 +650,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      // Add threat centroid markers with custom HTML
+      // Add HTML markers for threat centroids
       MOCK_THREAT_OBJECTS.forEach(threat => {
         const el = document.createElement('div');
         el.className = 'threat-marker';
@@ -416,22 +665,15 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
             cursor: pointer; transition: transform 0.2s;
             font-size: 14px;
           ">🚨</div>
-          <div style="
-            position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border: 2px solid ${RISK_COLORS[threat.riskLevel]}; border-radius: 50%;
-            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-            pointer-events: none;
-          "></div>
         `;
         el.style.cursor = 'pointer';
-        el.style.position = 'relative';
 
         const popup = new mapboxgl.Popup({
           offset: 20,
           closeButton: true,
-          maxWidth: '280px',
+          maxWidth: '300px',
         }).setHTML(`
-          <div style="font-family: 'Inter', system-ui, sans-serif;">
+          <div style="font-family: 'Inter', system-ui, sans-serif; padding: 4px;">
             <div style="font-weight: 800; font-size: 13px; color: ${RISK_COLORS[threat.riskLevel]}; margin-bottom: 6px;">
               ${threat.name}
             </div>
@@ -439,9 +681,9 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
               <strong style="color: #f0f4ff;">District:</strong> ${threat.district}<br/>
               <strong style="color: #f0f4ff;">Region:</strong> ${threat.region}<br/>
               <strong style="color: #f0f4ff;">Track Speed:</strong> ${threat.speedKmH} km/h (${threat.direction})<br/>
-              <strong style="color: #f0f4ff;">Intensity:</strong> ${threat.hazardMetricDisplay || (threat.peakIntensityMmH + ' mm/h')}<br/>
-              <strong style="color: #f0f4ff;">Exceedance Prob:</strong> 
-                <span style="color: ${RISK_COLORS[threat.riskLevel]}; font-weight: 700;">${threat.probabilityExceedance}%</span>
+              <strong style="color: #f0f4ff;">Peak Rainfall Rate:</strong> ${threat.peakIntensityMmH} mm/h<br/>
+              <strong style="color: #f0f4ff;">5km Subgrid Quantile:</strong> 
+                <span style="color: ${RISK_COLORS[threat.riskLevel]}; font-weight: 700;">${threat.probabilityExceedance}% Exceedance</span>
             </div>
           </div>
         `);
@@ -463,20 +705,39 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         markersRef.current.push(marker);
       });
 
-      // Click handler for grid cells
+      // Hover / Click interaction for Rain Isohyet Polygons
+      map.on('click', 'rain-isohyets-fill', (e) => {
+        if (!e.features?.length) return;
+        const props = (e.features[0] as any).properties;
+        if (!props) return;
+
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <div style="font-family: sans-serif; font-size: 12px; padding: 4px;">
+              <div style="font-weight: bold; color: #38bdf8; font-size: 13px; margin-bottom: 4px;">🌧️ ${props.name}</div>
+              <div><strong>District:</strong> ${props.district} (${props.state})</div>
+              <div><strong>Downscaled 24h Rain:</strong> <span style="color: #ef4444; font-weight: bold;">${props.rainMm} mm</span></div>
+              <div><strong>EFI Climatological Percentile:</strong> ${props.efiPercentile}th</div>
+              <div><strong>5km Quantile Exceedance Prob:</strong> ${props.probGt50}%</div>
+            </div>
+          `)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', 'rain-isohyets-fill', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'rain-isohyets-fill', () => {
+        map.getCanvas().style.cursor = '';
+      });
+
       map.on('click', 'risk-grid-flat', (e) => {
         if (!e.features?.length) return;
         const props = (e.features[0] as any).properties;
         if (!props) return;
         const cell = MOCK_5KM_GRID.find(c => c.id === props.id);
         if (cell) setSelectedCell(cell);
-      });
-
-      map.on('mouseenter', 'risk-grid-flat', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'risk-grid-flat', () => {
-        map.getCanvas().style.cursor = '';
       });
     });
 
@@ -497,21 +758,24 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
 
     const preset = INDIA_REGION_PRESETS.find(p => p.id === currentRegion) || INDIA_REGION_PRESETS[0];
     map.flyTo({
-      center: [preset.center[1], preset.center[0]], // [lng, lat]
+      center: [preset.center[1], preset.center[0]],
       zoom: preset.zoom,
-      pitch: is3DEnabled ? 45 : 0,
-      bearing: is3DEnabled ? -12 : 0,
-      duration: 2000,
+      pitch: is3DEnabled ? 40 : 0,
+      bearing: is3DEnabled ? -10 : 0,
+      duration: 1800,
       essential: true,
     });
   }, [currentRegion, is3DEnabled]);
 
-  // Update layer visibility
+  // Sync layer visibilities dynamically
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
 
     const layerMap: Record<string, string[]> = {
+      rainfall_forecast: ['rain-radar-layer', 'rain-isohyets-fill', 'rain-isohyets-line'],
+      rainfall_anomaly: ['rain-anomaly-fill', 'rain-anomaly-line'],
+      extreme_probability: ['extreme-prob-fill'],
       risk_grid_5km: ['risk-grid-3d', 'risk-grid-flat', 'risk-grid-outline'],
       threat_footprint: ['threat-fill', 'threat-outline', 'threat-3d'],
       trajectory: ['trajectory-line', 'waypoint-circles'],
@@ -527,17 +791,18 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     });
   }, [activeLayers]);
 
-  // Update opacity
+  // Sync opacity
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
 
     const opacityUpdates: [string, string, number][] = [
-      ['risk-grid-3d', 'fill-extrusion-opacity', layerOpacity * 0.6],
+      ['rain-radar-layer', 'raster-opacity', layerOpacity * 0.75],
+      ['rain-isohyets-fill', 'fill-opacity', layerOpacity * 0.45],
+      ['rain-anomaly-fill', 'fill-opacity', layerOpacity * 0.35],
+      ['risk-grid-3d', 'fill-extrusion-opacity', layerOpacity * 0.5],
       ['risk-grid-flat', 'fill-opacity', layerOpacity * 0.25],
-      ['risk-grid-outline', 'line-opacity', layerOpacity * 0.4],
-      ['threat-fill', 'fill-opacity', layerOpacity * 0.3],
-      ['threat-outline', 'line-opacity', layerOpacity * 0.8],
+      ['threat-fill', 'fill-opacity', layerOpacity * 0.35],
       ['threat-3d', 'fill-extrusion-opacity', layerOpacity * 0.4],
     ];
 
@@ -548,90 +813,6 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     });
   }, [layerOpacity]);
 
-  // Dynamic filter for Wind Extremes
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
-
-    const visibleThreats = MOCK_THREAT_OBJECTS.filter(threat => {
-      if (activeLayers.wind_extremes) {
-        return threat.hazardType?.toLowerCase().includes('cyclone') || threat.hazardType?.toLowerCase().includes('wind') || threat.speedKmH > 80;
-      }
-      return true;
-    });
-
-    const threatFeatures = visibleThreats.map(threat => ({
-      type: 'Feature' as const,
-      geometry: {
-        type: 'Polygon' as const,
-        coordinates: [threat.polygonCoords.map(([lat, lng]) => [lng, lat]).concat([
-          [threat.polygonCoords[0][1], threat.polygonCoords[0][0]]
-        ])],
-      },
-      properties: {
-        id: threat.id,
-        name: threat.name,
-        riskLevel: threat.riskLevel,
-        color: RISK_COLORS[threat.riskLevel] || '#f59e0b',
-        district: threat.district,
-        peakIntensity: threat.peakIntensityMmH,
-        probability: threat.probabilityExceedance,
-        speed: threat.speedKmH,
-        direction: threat.direction,
-        height: threat.probabilityExceedance * 80,
-      },
-    }));
-
-    const trajectoryFeatures = visibleThreats.map(threat => ({
-      type: 'Feature' as const,
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: threat.trajectoryPoints.map(p => [p.lng, p.lat]),
-      },
-      properties: {
-        id: threat.id,
-        name: threat.name,
-      },
-    }));
-
-    const waypointFeatures = visibleThreats.flatMap(threat => 
-      threat.trajectoryPoints.map((p, idx) => ({
-        type: 'Feature' as const,
-        geometry: {
-          type: 'Point' as const,
-          coordinates: [p.lng, p.lat],
-        },
-        properties: {
-          isOrigin: idx === 0,
-          timestamp: p.timestamp,
-          hour: p.forecastHour,
-          riskLevel: p.riskLevel,
-          color: idx === 0 ? '#ef4444' : RISK_COLORS[p.riskLevel] || '#06b6d4',
-        },
-      }))
-    );
-
-    if (map.getSource('threat-footprints')) {
-      (map.getSource('threat-footprints') as mapboxgl.GeoJSONSource).setData({
-        type: 'FeatureCollection',
-        features: threatFeatures,
-      });
-    }
-    if (map.getSource('trajectories')) {
-      (map.getSource('trajectories') as mapboxgl.GeoJSONSource).setData({
-        type: 'FeatureCollection',
-        features: trajectoryFeatures,
-      });
-    }
-    if (map.getSource('waypoints')) {
-      (map.getSource('waypoints') as mapboxgl.GeoJSONSource).setData({
-        type: 'FeatureCollection',
-        features: waypointFeatures,
-      });
-    }
-  }, [activeLayers.wind_extremes]);
-
-  // Toggle 3D
   const toggle3D = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -639,50 +820,25 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     setIs3DEnabled(newState);
 
     if (newState) {
-      map.easeTo({ pitch: 45, bearing: -12, duration: 1200 });
-      if (!map.getSource('mapbox-dem')) {
-        map.addSource('mapbox-dem', {
-          type: 'raster-dem',
-          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-          tileSize: 512,
-          maxzoom: 14,
-        });
-      }
-      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+      map.easeTo({ pitch: 40, bearing: -10, duration: 1200 });
     } else {
       map.easeTo({ pitch: 0, bearing: 0, duration: 1200 });
-      map.setTerrain(null);
     }
   }, [is3DEnabled]);
 
-  // Toggle map style (Dark / Satellite)
-  const toggleMapStyle = useCallback(() => {
-    const nextStyle = mapStyle === 'dark' ? 'satellite' : 'dark';
-    setMapStyle(nextStyle);
-    if (mapRef.current) {
-      mapRef.current.setStyle(
-        nextStyle === 'dark' 
-          ? 'mapbox://styles/mapbox/dark-v11' 
-          : 'mapbox://styles/mapbox/satellite-streets-v12'
-      );
-    }
-  }, [mapStyle]);
-
-  // Reset view
   const resetView = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
     map.flyTo({
       center: [78.9629, 22.5937],
-      zoom: 4.5,
-      pitch: is3DEnabled ? 45 : 0,
-      bearing: is3DEnabled ? -12 : 0,
-      duration: 2000,
+      zoom: 4.8,
+      pitch: is3DEnabled ? 40 : 0,
+      bearing: is3DEnabled ? -10 : 0,
+      duration: 1800,
     });
     setCurrentRegion('all');
   }, [is3DEnabled]);
 
-  // Resize observer to keep Mapbox GL canvas sized to 100% container
   useEffect(() => {
     const el = mapContainerRef.current;
     if (!el) return;
@@ -700,8 +856,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   }, []);
 
   const layerLabels: Record<MapLayerId, { label: string; icon: string }> = {
-    rainfall_forecast: { label: 'Rainfall Forecast (mm/h)', icon: '🌧️' },
-    rainfall_anomaly: { label: 'EFI Rain Anomaly', icon: '⚡' },
+    rainfall_forecast: { label: 'Live Pan-India Rainfall Radar', icon: '🌧️' },
+    rainfall_anomaly: { label: 'EFI Climatology Anomaly', icon: '⚡' },
     extreme_probability: { label: 'Extreme Prob (>50mm)', icon: '🎯' },
     threat_footprint: { label: 'Threat Polygons', icon: '🛡️' },
     trajectory: { label: 'GNN Trajectory Track', icon: '↗️' },
@@ -724,31 +880,21 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           </div>
           <div>
             <h2 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              StormTrace 3D Pan-India GIS Engine
+              StormTrace 3D Pan-India GIS Rainfall Engine
               <span className="text-[10px] px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-950 to-blue-950 text-cyan-300 border border-cyan-800/50 font-mono">
-                Mapbox GL 3D
+                Live Doppler Radar
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-md bg-violet-950/60 text-violet-300 border border-violet-800/40 font-mono">
-                PI-UNet 5 km
+                DDPM 5km Sub-Grid
               </span>
             </h2>
-            <p className="text-[11px] text-slate-500">
-              Terrain-Aware 3D Probabilistic Extreme Rainfall Radar • Globe View
+            <p className="text-[11px] text-slate-400">
+              Spherical GNN Anomaly Tracker • 5km Diffusion Downscaled Extreme Value Radar
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Style Selector */}
-          <button
-            onClick={toggleMapStyle}
-            className="px-2.5 py-1.5 rounded-lg bg-[#111827] hover:bg-[#1e2d48] border border-[#1e2d48] text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all"
-            title="Switch Map Base Style"
-          >
-            <Globe className="h-3.5 w-3.5 text-cyan-400" />
-            <span className="capitalize font-mono">{mapStyle} Map</span>
-          </button>
-
           {/* Region Selector */}
           <div className="flex items-center gap-1.5 bg-[#111827] border border-[#1e2d48] px-2.5 py-1.5 rounded-lg text-xs text-slate-200">
             <Globe className="h-3.5 w-3.5 text-cyan-400" />
@@ -763,15 +909,26 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
             </select>
           </div>
 
+          {/* Style Toggle */}
+          <button
+            onClick={toggleMapStyle}
+            className="px-2.5 py-1.5 rounded-lg bg-[#111827] hover:bg-[#1e2d48] border border-[#1e2d48] text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all"
+            title="Switch Map Base Style"
+          >
+            <Globe className="h-3.5 w-3.5 text-cyan-400" />
+            <span className="capitalize font-mono">{mapStyle}</span>
+          </button>
+
           {/* 3D Toggle */}
           <button
             onClick={toggle3D}
+
             className={`p-1.5 rounded-lg border transition-all ${
               is3DEnabled 
                 ? 'bg-cyan-600/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]' 
                 : 'bg-[#111827] border-[#1e2d48] text-slate-400 hover:text-slate-200'
             }`}
-            title={is3DEnabled ? 'Disable 3D Terrain' : 'Enable 3D Terrain'}
+            title={is3DEnabled ? 'Disable 3D View' : 'Enable 3D View'}
           >
             <Mountain className="h-4 w-4" />
           </button>
@@ -780,7 +937,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           <button
             onClick={resetView}
             className="p-1.5 rounded-lg bg-[#111827] hover:bg-[#1e2d48] border border-[#1e2d48] text-slate-400 hover:text-slate-200 transition-all"
-            title="Reset to India View"
+            title="Reset to Pan-India View"
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -811,7 +968,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         </div>
       </div>
 
-      {/* Main Map Body */}
+      {/* Main Map Canvas */}
       <div className="relative flex-1 w-full h-full min-h-[500px] bg-[#060a14] overflow-hidden">
         <div ref={mapContainerRef} className="absolute inset-0 z-0 w-full h-full" />
 
@@ -829,10 +986,10 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
             <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#1e2d48]">
               <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                 <Layers className="h-4 w-4 text-cyan-400" />
-                Active Map Layers
+                Active GIS Map Layers
               </span>
               <span className="text-[10px] text-cyan-400 font-mono">
-                {activeCount}/8 Active
+                {activeCount}/9 Active
               </span>
             </div>
 
@@ -861,23 +1018,23 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-[#1e2d48] text-[11px]">
-              <span className="text-slate-400 block font-semibold mb-1">Risk Severity Scale:</span>
+              <span className="text-slate-400 block font-semibold mb-1">Precipitation Severity Legend:</span>
               <div className="grid grid-cols-4 gap-1 text-[10px] text-center font-bold">
-                <div className="py-1 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">Low</div>
-                <div className="py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">Mod</div>
-                <div className="py-1 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">Severe</div>
-                <div className="py-1 rounded bg-red-950/60 text-red-400 border border-red-800/40">Critical</div>
+                <div className="py-1 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">&lt;50mm</div>
+                <div className="py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">50-100mm</div>
+                <div className="py-1 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">100-150mm</div>
+                <div className="py-1 rounded bg-red-950/60 text-red-400 border border-red-800/40">&gt;150mm</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Grid Cell Inspection Panel */}
+        {/* Selected Cell Inspection Panel */}
         {selectedCell && (
           <div className="absolute top-4 right-4 z-10 w-80 bg-[#0a0f1e]/92 backdrop-blur-xl p-4 rounded-xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/5 space-y-2">
             <div className="flex items-center justify-between pb-2 border-b border-[#1e2d48]">
               <div>
-                <span className="text-[10px] font-mono text-cyan-400 block uppercase tracking-wider">5 KM DOWN-SCALED CELL</span>
+                <span className="text-[10px] font-mono text-cyan-400 block uppercase tracking-wider">5 KM DOWNSCALED CELL</span>
                 <h4 className="font-bold text-slate-100 text-sm">{selectedCell.tehsil} ({selectedCell.district})</h4>
               </div>
               <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase ${
@@ -914,16 +1071,15 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           </div>
         )}
 
-        {/* 3D View Badge */}
         {is3DEnabled && (
           <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0a0f1e]/85 backdrop-blur-lg border border-violet-500/30 text-[11px] text-violet-300 font-mono">
             <Compass className="h-3.5 w-3.5 text-violet-400 animate-spin" style={{ animationDuration: '8s' }} />
-            3D Terrain Active • Globe Projection
+            3D Globe View Active • GIS Radar Overlay
           </div>
         )}
       </div>
 
-      {/* Bottom Time Slider Bar */}
+      {/* Bottom Time Step Bar */}
       <div className="bg-[#0a0f1e]/95 backdrop-blur-xl border-t border-[#1a2540] p-3 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-2">
           <button

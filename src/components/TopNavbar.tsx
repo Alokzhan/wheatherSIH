@@ -9,8 +9,10 @@ import {
   AlertTriangle,
   Zap,
   X,
-  Menu
+  Menu,
+  LogIn
 } from 'lucide-react';
+
 import { INDIA_REGION_PRESETS } from '../data/mockData';
 import type { IndiaRegionId } from '../types/weather';
 
@@ -21,7 +23,9 @@ interface TopNavbarProps {
   setTheme: (theme: 'light' | 'dark') => void;
   onSearchSubmit: (query: string) => void;
   onMobileMenuToggle?: () => void;
+  onNavigateToTab?: (tab: string) => void;
 }
+
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
   selectedRegion,
@@ -30,7 +34,9 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   setTheme,
   onSearchSubmit,
   onMobileMenuToggle,
+  onNavigateToTab,
 }) => {
+
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState('');
   const [showAlertModal, setShowAlertModal] = useState(false);
@@ -164,7 +170,20 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             </div>
           )}
         </div>
+
+
+        {/* Login / Auth Page Button */}
+        <button
+          onClick={() => onNavigateToTab && onNavigateToTab('auth')}
+          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20 hover:-translate-y-0.5"
+          title="Sign In or Register Account"
+        >
+          <LogIn className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Sign In / Register</span>
+        </button>
       </div>
     </header>
   );
 };
+
+

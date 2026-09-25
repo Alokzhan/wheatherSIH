@@ -10,6 +10,7 @@ except ImportError:
     CDSAPI_AVAILABLE = False
 
 from backend.stage1_gnn.efi_compute import compute_efi_1d
+from backend.stage1_gnn.gnn_model import run_gnn_inference
 from backend.stage2_diffusion.downscale_cnn import run_inference_pipeline, calculate_metrics
 from backend.hazards.multi_hazard import track_extreme_rainfall
 
@@ -74,6 +75,13 @@ def run_live_pipeline():
     print(f"   -> Computed EFI Score: {efi_score:.2f} (Scale: -1 to 1)")
     if efi_score > 0.8:
         print("   -> [ALERT] Extremely unusual meteorological event detected!")
+        
+    print("\n[Step 2.5] Executing PyTorch Spherical GNN Anomaly Detection...")
+    time.sleep(1)
+    # Simulate a matrix of forecast grid points
+    forecast_matrix = np.random.randn(50, 5)
+    gnn_scores = run_gnn_inference(forecast_matrix)
+    print(f"   -> GNN Node Probability (Max Anomaly): {gnn_scores.max():.2%} Confidence")
         
     # 3. Statistical Downscaling (Bicubic + Residual CNN)
     print("\n[Step 3] Running Physics-Informed Downscaling (12km -> 5km)...")

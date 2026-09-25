@@ -17,6 +17,8 @@ const DisasterDashboard = lazy(() => import('./components/DisasterDashboard').th
 const AdminPanel = lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
 const ApiExplorer = lazy(() => import('./components/ApiExplorer').then(m => ({ default: m.ApiExplorer })));
 const HowItWorks = lazy(() => import('./components/HowItWorks').then(m => ({ default: m.HowItWorks })));
+const AuthPage = lazy(() => import('./components/AuthPage').then(m => ({ default: m.AuthPage })));
+
 
 // Premium loading spinner
 const LoadingFallback = () => (
@@ -113,6 +115,10 @@ export function App() {
         return <AdminPanel />;
       case 'api':
         return <ApiExplorer />;
+      case 'auth':
+      case 'login':
+      case 'signup':
+        return <AuthPage onNavigateToTab={handleNavigate} />;
       default:
         return (
           <DashboardOverview
@@ -144,7 +150,9 @@ export function App() {
           setTheme={setTheme}
           onSearchSubmit={handleTopSearch}
           onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          onNavigateToTab={handleNavigate}
         />
+
 
         {/* Content */}
         <main 

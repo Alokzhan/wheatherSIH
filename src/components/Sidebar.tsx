@@ -17,6 +17,7 @@ import {
   Sprout,
   Radio,
   BookOpen,
+  LogIn,
   X
 } from 'lucide-react';
 
@@ -47,10 +48,12 @@ const MENU_ITEMS: MenuItem[] = [
   { id: 'farmer', label: 'Farmer Advisory', icon: Sprout, section: 'tools' },
   { id: 'disaster', label: 'Operations Room', icon: Radio, section: 'tools' },
   { id: 'how-it-works', label: 'How It Works Guide', icon: BookOpen, section: 'tools' },
+  { id: 'auth', label: 'Login / Sign Up', icon: LogIn, badge: 'Auth', section: 'admin' },
   { id: 'admin', label: 'Data Center', icon: Database, section: 'admin' },
   { id: 'api', label: 'Weather APIs', icon: FileText, section: 'admin' },
   { id: 'settings', label: 'Settings', icon: Settings, section: 'admin' },
 ];
+
 
 const SECTIONS = {
   core: 'Command Center',
