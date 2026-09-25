@@ -16,12 +16,15 @@ import {
   ChevronLeft,
   Sprout,
   Radio,
-  BookOpen
+  BookOpen,
+  X
 } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  isMobileMenuOpen?: boolean;
+  setIsMobileMenuOpen?: (isOpen: boolean) => void;
 }
 
 interface MenuItem {
@@ -56,7 +59,7 @@ const SECTIONS = {
   admin: 'Administration',
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleTabClick = useCallback((id: string) => {
@@ -73,9 +76,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   }, []);
 
   return (
-    <aside 
-      className={`${isCollapsed ? 'w-[68px]' : 'w-64'} bg-[#060a14] text-slate-300 flex flex-col h-screen sticky top-0 border-r border-[#141d32] shrink-0 z-40 select-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]`}
-    >
+    <>
+      {/* Mobile Backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`${isCollapsed ? 'w-[68px]' : 'w-64'} 
+          bg-[#060a14] text-slate-300 flex flex-col h-screen 
+          fixed md:sticky top-0 left-0 z-50 md:z-40 border-r border-[#141d32] shrink-0 select-none 
+          transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
       {/* Brand Header */}
       <div className="p-4 border-b border-[#141d32]/80 flex items-center gap-3 relative">
         <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-600/25 shrink-0">
@@ -92,12 +110,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           </div>
         )}
 
-        {/* Collapse toggle */}
+        {/* Collapse toggle (Desktop) */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-[#111827] border border-[#1e2d48] flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all z-50 shadow-md"
+          className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-[#111827] border border-[#1e2d48] items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all z-50 shadow-md"
         >
           {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+        </button>
+
+        {/* Close toggle (Mobile) */}
+        <button
+          onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+          className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#111827] border border-[#1e2d48] flex items-center justify-center text-slate-400 hover:text-white transition-all z-50"
+        >
+          <X className="h-4 w-4" />
         </button>
       </div>
 
@@ -172,5 +198,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         </div>
       </div>
     </aside>
+    </>
   );
 };

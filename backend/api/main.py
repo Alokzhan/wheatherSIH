@@ -1,14 +1,17 @@
 import os
-import math
 import random
 import requests
-from fastapi import FastAPI, Query, Path, Response
+import time
+import numpy as np
+from fastapi import FastAPI, Query, Response
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Optional
 from dotenv import load_dotenv
 from datetime import datetime
+
+from stage1_gnn.efi_compute import compute_efi_1d
+from stage2_diffusion.downscale_cnn import run_inference_pipeline, calculate_metrics
 
 # Load environment variables
 load_dotenv()
@@ -178,10 +181,6 @@ def get_location_risk(q: str = Query(..., description="Location name query")):
         }
     }
 
-from backend.stage1_gnn.efi_compute import compute_efi_1d
-from backend.stage2_diffusion.downscale_cnn import run_inference_pipeline, calculate_metrics
-import numpy as np
-import time
 
 class InferenceReq(BaseModel):
     spatialResolutionKm: float = 5.0

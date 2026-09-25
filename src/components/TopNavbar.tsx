@@ -8,7 +8,8 @@ import {
   Clock, 
   AlertTriangle,
   Zap,
-  X
+  X,
+  Menu
 } from 'lucide-react';
 import { INDIA_REGION_PRESETS } from '../data/mockData';
 import type { IndiaRegionId } from '../types/weather';
@@ -19,6 +20,7 @@ interface TopNavbarProps {
   theme: 'light' | 'dark';
   setTheme: (theme: 'light' | 'dark') => void;
   onSearchSubmit: (query: string) => void;
+  onMobileMenuToggle?: () => void;
 }
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
@@ -27,6 +29,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   theme,
   setTheme,
   onSearchSubmit,
+  onMobileMenuToggle,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState('');
@@ -59,9 +62,18 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   }, [searchQuery, onSearchSubmit]);
 
   return (
-    <header className="h-14 bg-white/95 dark:bg-[#0a0f1e]/95 backdrop-blur-xl border-b border-slate-200 dark:border-[#141d32] px-5 flex items-center justify-between gap-4 sticky top-0 z-30 transition-colors">
+    <header className="h-14 bg-white/95 dark:bg-[#0a0f1e]/95 backdrop-blur-xl border-b border-slate-200 dark:border-[#141d32] px-3 md:px-5 flex items-center justify-between gap-3 md:gap-4 sticky top-0 z-30 transition-colors">
+      
+      {/* Mobile Menu Toggle */}
+      <button 
+        onClick={onMobileMenuToggle}
+        className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#1e2d48] transition-colors"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
       {/* Search Input */}
-      <form onSubmit={handleSearch} className="flex-1 max-w-lg relative">
+      <form onSubmit={handleSearch} className="flex-1 max-w-lg relative hidden sm:block">
         <Search className={`h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${searchFocused ? 'text-blue-500' : 'text-slate-400'}`} />
         <input
           type="text"

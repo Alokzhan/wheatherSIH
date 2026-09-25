@@ -35,6 +35,7 @@ export function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [selectedThreat, setSelectedThreat] = useState<ThreatObject | null>(null);
   const [topSearchQuery, setTopSearchQuery] = useState<string>('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Sync data-theme attribute
   useEffect(() => {
@@ -57,6 +58,7 @@ export function App() {
 
   const handleNavigate = useCallback((tab: string) => {
     setActiveTab(tab);
+    setIsMobileMenuOpen(false); // Close mobile menu on navigation
   }, []);
 
   // Render active tab content
@@ -123,9 +125,14 @@ export function App() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-100 dark:bg-[#070b16] text-slate-900 dark:text-slate-100 flex font-sans transition-colors duration-300">
+    <div className="h-screen w-screen overflow-hidden bg-slate-100 dark:bg-[#070b16] text-slate-900 dark:text-slate-100 flex font-sans transition-colors duration-300 relative">
       {/* Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={handleNavigate}
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
 
       {/* Main Content Shell */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
@@ -136,6 +143,7 @@ export function App() {
           theme={theme}
           setTheme={setTheme}
           onSearchSubmit={handleTopSearch}
+          onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
 
         {/* Content */}
