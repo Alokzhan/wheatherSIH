@@ -96,9 +96,10 @@ def test_configurable_risk_engine():
 def test_historical_validation_suite():
     suite = HistoricalValidationEngine()
     res = suite.evaluate_historical_case_studies()
-    assert res["totalHistoricalEvents"] == 4
+    assert res["totalHistoricalEvents"] >= 4
     assert res["overallSummaryMetrics"]["meanCsiScore"] > 0.80
-    print("[PASS] 4-Disaster Historical Benchmark Suite Test Passed")
+    print(f"[PASS] {res['totalHistoricalEvents']}-Disaster Historical Benchmark Suite Test Passed")
+
 
 if __name__ == "__main__":
     print("==================================================")

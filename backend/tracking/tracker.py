@@ -149,8 +149,24 @@ class SpatioTemporalTracker:
             "trackingAlgorithm": "Extended Kalman Filter + Hungarian Bipartite Matching (DeepSORT Paradigm)"
         }
 
+class ExtendedKalmanFilterTracker(SpatioTemporalTracker):
+    """
+    Alias wrapper class for Extended Kalman Filter tracking.
+    """
+    def generate_trajectory(self, initial_lat, initial_lon, timesteps=9):
+        obj = {
+            "objectId": "EV-2026-001",
+            "centroid": [initial_lat, initial_lon],
+            "boundingBox": {"latMin": initial_lat - 1, "latMax": initial_lat + 1, "lonMin": initial_lon - 1, "lonMax": initial_lon + 1},
+            "peakEfi": 0.85
+        }
+        steps = [0, 6, 12, 18, 24, 48, 72, 120, 240][:timesteps]
+        res = self.track_event_across_timesteps(obj, timesteps=steps)
+        return res["timesteps"]
+
 if __name__ == "__main__":
     tracker = SpatioTemporalTracker()
     obj = {"objectId": "EV-2026-001", "centroid": [19.5, 88.5], "peakEfi": 0.88, "boundingBox": {"latMin": 18, "latMax": 21, "lonMin": 87, "lonMax": 90}}
     res = tracker.track_event_across_timesteps(obj)
     print("SpatioTemporalTracker test passed. Trajectory steps:", len(res["timesteps"]), "Algorithm:", res["trackingAlgorithm"])
+

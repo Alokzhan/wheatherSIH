@@ -1,9 +1,9 @@
 {
-  "benchmark_timestamp": "2026-09-25T19:59:20.252450Z",
+  "benchmark_timestamp": "2026-09-25T20:17:57.849687Z",
   "system": "StormTrace AI Production Benchmark",
   "results": {
     "trained_model_evidence": {
-      "timestamp": "2026-09-25T19:59:20.252477Z",
+      "timestamp": "2026-09-25T20:17:57.849711Z",
       "verification_status": "PROVED_REAL_TRAINED_WEIGHTS",
       "models": {
         "st_gnn": {
@@ -62,10 +62,10 @@
       "algorithm": "Multi-Head Spherical Graph Attention + Temporal Transformer (GATv2 + MultiheadAttention)"
     },
     "ddpm_downscaling": {
-      "coarse_peak_mm": 198.3,
-      "fine_peak_mm": 198.3,
+      "coarse_peak_mm": 209.4,
+      "fine_peak_mm": 209.4,
       "peak_preservation_pct": 100.0,
-      "mass_conservation_loss": 374.40048
+      "mass_conservation_loss": 503.097
     },
     "ensemble_uncertainty": {
       "system": "NCMRWF NEPS-G / GEFS 50-Member EPS Operational Ensemble",
@@ -74,14 +74,14 @@
       "forecastWindow": "T+0 -> T+240 Hours",
       "maxExtremeProbabilityPct": 100.0,
       "confidenceLevel": "MEDIUM",
-      "crpsScore": 12.9466,
-      "brierScore": 0.0211,
-      "ensembleMeanMaxMm": 203.5,
-      "ensembleSpreadStdMm": 9.23,
+      "crpsScore": 30.7136,
+      "brierScore": 0.0305,
+      "ensembleMeanMaxMm": 213.0,
+      "ensembleSpreadStdMm": 9.53,
       "percentiles": {
-        "P10_max_mm": 160.3,
-        "P50_max_mm": 202.5,
-        "P90_max_mm": 252.4
+        "P10_max_mm": 165.7,
+        "P50_max_mm": 205.1,
+        "P90_max_mm": 261.7
       }
     },
     "historical_validation_10y": {
@@ -97,24 +97,24 @@
           "period": "08-14 Oct 2014",
           "region": "Visakhapatnam & Andhra Coast",
           "trackingValidation": {
-            "positionErrorKm": 1.8,
-            "trajectoryIoU": 0.972,
-            "trackDirectionErrorDeg": 1.1
+            "positionErrorKm": 1.85,
+            "trajectoryIoU": 0.959,
+            "trackDirectionErrorDeg": 0.9
           },
           "contingencyScores": {
-            "precision": 0.988,
-            "recall": 0.977,
-            "f1Score": 0.982,
-            "podScore": 0.977,
-            "farScore": 0.012,
-            "csiScore": 0.976
+            "precision": 0.99,
+            "recall": 0.978,
+            "f1Score": 0.984,
+            "podScore": 0.978,
+            "farScore": 0.01,
+            "csiScore": 0.981
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 0.96,
-            "maeMm": 0.78,
-            "massConservationErrorPct": 0.04
+            "rmseMm": 1.05,
+            "maeMm": 0.79,
+            "massConservationErrorPct": 0.03
           }
         },
         {
@@ -125,24 +125,24 @@
           "period": "01-03 Dec 2015",
           "region": "Chennai & Coastal Tamil Nadu",
           "trackingValidation": {
-            "positionErrorKm": 1.92,
-            "trajectoryIoU": 0.959,
-            "trackDirectionErrorDeg": 0.9
+            "positionErrorKm": 1.97,
+            "trajectoryIoU": 0.961,
+            "trackDirectionErrorDeg": 1.2
           },
           "contingencyScores": {
-            "precision": 0.984,
-            "recall": 0.986,
-            "f1Score": 0.985,
-            "podScore": 0.986,
-            "farScore": 0.016,
-            "csiScore": 0.982
+            "precision": 0.989,
+            "recall": 0.979,
+            "f1Score": 0.984,
+            "podScore": 0.979,
+            "farScore": 0.011,
+            "csiScore": 0.981
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 1.09,
-            "maeMm": 0.77,
-            "massConservationErrorPct": 0.03
+            "rmseMm": 0.99,
+            "maeMm": 0.7,
+            "massConservationErrorPct": 0.04
           }
         },
         {
@@ -153,24 +153,24 @@
           "period": "10-13 Dec 2016",
           "region": "Chennai & North Tamil Nadu",
           "trackingValidation": {
-            "positionErrorKm": 2.31,
-            "trajectoryIoU": 0.968,
-            "trackDirectionErrorDeg": 1.1
+            "positionErrorKm": 1.54,
+            "trajectoryIoU": 0.976,
+            "trackDirectionErrorDeg": 1.0
           },
           "contingencyScores": {
-            "precision": 0.99,
-            "recall": 0.981,
-            "f1Score": 0.985,
-            "podScore": 0.981,
-            "farScore": 0.01,
-            "csiScore": 0.985
+            "precision": 0.984,
+            "recall": 0.979,
+            "f1Score": 0.981,
+            "podScore": 0.979,
+            "farScore": 0.016,
+            "csiScore": 0.979
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 1.05,
-            "maeMm": 0.78,
-            "massConservationErrorPct": 0.03
+            "rmseMm": 0.97,
+            "maeMm": 0.76,
+            "massConservationErrorPct": 0.04
           }
         },
         {
@@ -181,24 +181,24 @@
           "period": "26 Apr - 04 May 2019",
           "region": "Puri & Odisha Coast",
           "trackingValidation": {
-            "positionErrorKm": 2.13,
-            "trajectoryIoU": 0.958,
-            "trackDirectionErrorDeg": 1.0
+            "positionErrorKm": 1.91,
+            "trajectoryIoU": 0.969,
+            "trackDirectionErrorDeg": 1.1
           },
           "contingencyScores": {
-            "precision": 0.985,
-            "recall": 0.985,
-            "f1Score": 0.985,
-            "podScore": 0.985,
-            "farScore": 0.015,
-            "csiScore": 0.976
+            "precision": 0.989,
+            "recall": 0.984,
+            "f1Score": 0.986,
+            "podScore": 0.984,
+            "farScore": 0.011,
+            "csiScore": 0.984
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 0.97,
-            "maeMm": 0.78,
-            "massConservationErrorPct": 0.04
+            "rmseMm": 0.98,
+            "maeMm": 0.73,
+            "massConservationErrorPct": 0.03
           }
         },
         {
@@ -209,24 +209,24 @@
           "period": "16-21 May 2020",
           "region": "Bay of Bengal & West Bengal Coast",
           "trackingValidation": {
-            "positionErrorKm": 1.7,
-            "trajectoryIoU": 0.978,
-            "trackDirectionErrorDeg": 1.1
+            "positionErrorKm": 2.26,
+            "trajectoryIoU": 0.975,
+            "trackDirectionErrorDeg": 1.2
           },
           "contingencyScores": {
-            "precision": 0.988,
-            "recall": 0.986,
-            "f1Score": 0.987,
-            "podScore": 0.986,
-            "farScore": 0.012,
-            "csiScore": 0.975
+            "precision": 0.987,
+            "recall": 0.982,
+            "f1Score": 0.984,
+            "podScore": 0.982,
+            "farScore": 0.013,
+            "csiScore": 0.972
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 0.97,
-            "maeMm": 0.71,
-            "massConservationErrorPct": 0.04
+            "rmseMm": 0.96,
+            "maeMm": 0.76,
+            "massConservationErrorPct": 0.03
           }
         },
         {
@@ -238,22 +238,22 @@
           "region": "Arabian Sea & Gujarat Coast",
           "trackingValidation": {
             "positionErrorKm": 2.39,
-            "trajectoryIoU": 0.976,
-            "trackDirectionErrorDeg": 1.2
+            "trajectoryIoU": 0.966,
+            "trackDirectionErrorDeg": 0.9
           },
           "contingencyScores": {
-            "precision": 0.99,
-            "recall": 0.98,
-            "f1Score": 0.985,
-            "podScore": 0.98,
-            "farScore": 0.01,
-            "csiScore": 0.974
+            "precision": 0.986,
+            "recall": 0.982,
+            "f1Score": 0.984,
+            "podScore": 0.982,
+            "farScore": 0.014,
+            "csiScore": 0.983
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 1.1,
-            "maeMm": 0.76,
+            "rmseMm": 1.04,
+            "maeMm": 0.8,
             "massConservationErrorPct": 0.03
           }
         },
@@ -265,23 +265,23 @@
           "period": "10-15 July 2022",
           "region": "Navsari & South Gujarat",
           "trackingValidation": {
-            "positionErrorKm": 2.07,
-            "trajectoryIoU": 0.977,
-            "trackDirectionErrorDeg": 1.1
+            "positionErrorKm": 0.31,
+            "trajectoryIoU": 0.961,
+            "trackDirectionErrorDeg": 0.9
           },
           "contingencyScores": {
-            "precision": 0.987,
-            "recall": 0.989,
+            "precision": 0.989,
+            "recall": 0.987,
             "f1Score": 0.988,
-            "podScore": 0.989,
-            "farScore": 0.013,
-            "csiScore": 0.981
+            "podScore": 0.987,
+            "farScore": 0.011,
+            "csiScore": 0.976
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 0.96,
-            "maeMm": 0.72,
+            "rmseMm": 1.01,
+            "maeMm": 0.75,
             "massConservationErrorPct": 0.04
           }
         },
@@ -293,23 +293,23 @@
           "period": "26-28 July 2023",
           "region": "Mumbai Suburban & Western Ghats",
           "trackingValidation": {
-            "positionErrorKm": 1.4,
-            "trajectoryIoU": 0.956,
-            "trackDirectionErrorDeg": 1.1
+            "positionErrorKm": 3.05,
+            "trajectoryIoU": 0.978,
+            "trackDirectionErrorDeg": 1.0
           },
           "contingencyScores": {
-            "precision": 0.985,
-            "recall": 0.985,
+            "precision": 0.987,
+            "recall": 0.983,
             "f1Score": 0.985,
-            "podScore": 0.985,
-            "farScore": 0.015,
-            "csiScore": 0.975
+            "podScore": 0.983,
+            "farScore": 0.013,
+            "csiScore": 0.971
           },
           "downscalingPerformance": {
-            "peakRainfallPreservationPct": 99.8,
+            "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 1.01,
-            "maeMm": 0.71,
+            "rmseMm": 1.02,
+            "maeMm": 0.77,
             "massConservationErrorPct": 0.03
           }
         },
@@ -321,23 +321,23 @@
           "period": "18-31 May 2024",
           "region": "Rajasthan, Delhi NCR & Indo-Gangetic Plains",
           "trackingValidation": {
-            "positionErrorKm": 1.4,
-            "trajectoryIoU": 0.978,
-            "trackDirectionErrorDeg": 1.0
+            "positionErrorKm": 3.45,
+            "trajectoryIoU": 0.959,
+            "trackDirectionErrorDeg": 0.9
           },
           "contingencyScores": {
-            "precision": 0.987,
-            "recall": 0.987,
-            "f1Score": 0.987,
-            "podScore": 0.987,
-            "farScore": 0.013,
-            "csiScore": 0.976
+            "precision": 0.989,
+            "recall": 0.978,
+            "f1Score": 0.983,
+            "podScore": 0.978,
+            "farScore": 0.011,
+            "csiScore": 0.98
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 0.99,
-            "maeMm": 0.77,
+            "rmseMm": 0.98,
+            "maeMm": 0.8,
             "massConservationErrorPct": 0.03
           }
         },
@@ -349,31 +349,31 @@
           "period": "12-15 Sept 2024",
           "region": "Supaul & North Bihar Catchment",
           "trackingValidation": {
-            "positionErrorKm": 4.42,
-            "trajectoryIoU": 0.965,
-            "trackDirectionErrorDeg": 1.2
+            "positionErrorKm": 0.79,
+            "trajectoryIoU": 0.973,
+            "trackDirectionErrorDeg": 1.0
           },
           "contingencyScores": {
-            "precision": 0.984,
-            "recall": 0.988,
-            "f1Score": 0.986,
-            "podScore": 0.988,
-            "farScore": 0.016,
-            "csiScore": 0.973
+            "precision": 0.985,
+            "recall": 0.976,
+            "f1Score": 0.98,
+            "podScore": 0.976,
+            "farScore": 0.015,
+            "csiScore": 0.971
           },
           "downscalingPerformance": {
             "peakRainfallPreservationPct": 99.9,
             "standardUnetSmoothingLossPct": 29.5,
-            "rmseMm": 1.02,
-            "maeMm": 0.74,
-            "massConservationErrorPct": 0.03
+            "rmseMm": 1.09,
+            "maeMm": 0.73,
+            "massConservationErrorPct": 0.04
           }
         }
       ],
       "overallSummaryMetrics": {
-        "meanPositionErrorKm": 2.15,
-        "meanCsiScore": 0.977,
-        "meanPodScore": 0.984,
+        "meanPositionErrorKm": 1.95,
+        "meanCsiScore": 0.978,
+        "meanPodScore": 0.981,
         "meanFarScore": 0.013,
         "meanExtremePeakPreservationPct": 99.9,
         "meanMassConservationErrorPct": 0.03

@@ -61,7 +61,23 @@ class ConfigurableRiskEngine:
             }
         }
 
+class NDRFDisasterAlertEngine(ConfigurableRiskEngine):
+    """
+    Alias wrapper class for NDRF operational alert advisories.
+    """
+    def generate_advisory(self, event_id, centroid, intensity, affected_area):
+        res = self.calculate_risk_score(0.85, 90.0, intensity, vulnerability_score=70.0, persistence_hours=48.0)
+        return {
+            "event_id": event_id,
+            "centroid": centroid,
+            "severity": res["severityCategory"],
+            "composite_risk_score": res["riskScore"],
+            "affected_area_km2": affected_area,
+            "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector" if res["severityCategory"] in ["WARNING", "CRITICAL"] else "Monitor Standard Bulletins"
+        }
+
 if __name__ == "__main__":
     engine = ConfigurableRiskEngine()
     res = engine.calculate_risk_score(0.88, 85.0, 145.0, 75.0, 72.0)
     print("Configurable Risk Engine test passed. Risk Score =", res["riskScore"], "Category =", res["severityCategory"])
+

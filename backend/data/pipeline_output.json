@@ -1,0 +1,176 @@
+{
+  "status": "SUCCESS",
+  "experiment_name": "amphan_historical_proof",
+  "checkpoints_verified": true,
+  "st_gnn_parameters": 55752,
+  "ddpm_parameters": 238625,
+  "weather_object": {
+    "event_id": "EV-2026-001",
+    "type": "extreme_rainfall",
+    "peak_efi": -0.68,
+    "centroid": [
+      21.65,
+      88.35
+    ],
+    "bounding_box": {},
+    "affected_area_km2": 576.0
+  },
+  "trajectory": [
+    {
+      "timestep": "T+0h",
+      "hour": 0,
+      "coordinates": [
+        21.65,
+        88.35
+      ],
+      "latitude": 21.65,
+      "longitude": 88.35,
+      "rainfallIntensityMmH": 119.0,
+      "windSpeedKmh": 115.0,
+      "pressureDeficitHpa": 28.0,
+      "evolutionStage": "Intensifying",
+      "confidenceScore": 98.0,
+      "riskLevel": "critical"
+    },
+    {
+      "timestep": "T+6h",
+      "hour": 6,
+      "coordinates": [
+        22.0732,
+        89.2143
+      ],
+      "latitude": 22.0732,
+      "longitude": 89.2143,
+      "rainfallIntensityMmH": 116.9,
+      "windSpeedKmh": 113.7,
+      "pressureDeficitHpa": 27.6,
+      "evolutionStage": "Intensifying",
+      "confidenceScore": 97.3,
+      "riskLevel": "critical"
+    },
+    {
+      "timestep": "T+12h",
+      "hour": 12,
+      "coordinates": [
+        22.6537,
+        90.4082
+      ],
+      "latitude": 22.6537,
+      "longitude": 90.4082,
+      "rainfallIntensityMmH": 114.8,
+      "windSpeedKmh": 112.4,
+      "pressureDeficitHpa": 27.2,
+      "evolutionStage": "Intensifying",
+      "confidenceScore": 96.7,
+      "riskLevel": "critical"
+    },
+    {
+      "timestep": "T+18h",
+      "hour": 18,
+      "coordinates": [
+        23.3273,
+        91.7838
+      ],
+      "latitude": 23.3273,
+      "longitude": 91.7838,
+      "rainfallIntensityMmH": 112.7,
+      "windSpeedKmh": 111.0,
+      "pressureDeficitHpa": 26.7,
+      "evolutionStage": "Intensifying",
+      "confidenceScore": 96.0,
+      "riskLevel": "critical"
+    },
+    {
+      "timestep": "T+24h",
+      "hour": 24,
+      "coordinates": [
+        24.0274,
+        93.2036
+      ],
+      "latitude": 24.0274,
+      "longitude": 93.2036,
+      "rainfallIntensityMmH": 110.6,
+      "windSpeedKmh": 109.7,
+      "pressureDeficitHpa": 26.3,
+      "evolutionStage": "Intensifying",
+      "confidenceScore": 95.4,
+      "riskLevel": "critical"
+    },
+    {
+      "timestep": "T+48h",
+      "hour": 48,
+      "coordinates": [
+        25.9071,
+        97.0253
+      ],
+      "latitude": 25.9071,
+      "longitude": 97.0253,
+      "rainfallIntensityMmH": 102.2,
+      "windSpeedKmh": 104.4,
+      "pressureDeficitHpa": 24.6,
+      "evolutionStage": "Peak Severity",
+      "confidenceScore": 92.7,
+      "riskLevel": "severe"
+    },
+    {
+      "timestep": "T+72h",
+      "hour": 72,
+      "coordinates": [
+        28.307,
+        101.8941
+      ],
+      "latitude": 28.307,
+      "longitude": 101.8941,
+      "rainfallIntensityMmH": 93.8,
+      "windSpeedKmh": 99.2,
+      "pressureDeficitHpa": 23.0,
+      "evolutionStage": "Peak Severity",
+      "confidenceScore": 90.1,
+      "riskLevel": "severe"
+    },
+    {
+      "timestep": "T+120h",
+      "hour": 120,
+      "coordinates": [
+        32.4422,
+        110.2828
+      ],
+      "latitude": 32.4422,
+      "longitude": 110.2828,
+      "rainfallIntensityMmH": 77.0,
+      "windSpeedKmh": 88.6,
+      "pressureDeficitHpa": 19.6,
+      "evolutionStage": "Dissipating",
+      "confidenceScore": 84.8,
+      "riskLevel": "moderate"
+    },
+    {
+      "timestep": "T+240h",
+      "hour": 240,
+      "coordinates": [
+        41.8483,
+        129.368
+      ],
+      "latitude": 41.8483,
+      "longitude": 129.368,
+      "rainfallIntensityMmH": 35.0,
+      "windSpeedKmh": 62.2,
+      "pressureDeficitHpa": 11.2,
+      "evolutionStage": "Dissipating",
+      "confidenceScore": 71.6,
+      "riskLevel": "moderate"
+    }
+  ],
+  "downscaled_peak_preservation": 67.11508791838592,
+  "advisory": {
+    "event_id": "EV-2026-001",
+    "centroid": [
+      21.65,
+      88.35
+    ],
+    "severity": "WARNING",
+    "composite_risk_score": 64.4,
+    "affected_area_km2": 576.0,
+    "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
+  }
+}

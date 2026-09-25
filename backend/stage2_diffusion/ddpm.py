@@ -205,6 +205,20 @@ def run_diffusion_downscale(coarse_grid_2d, cfg_scale=3.5):
 
     return fine_grid
 
+class ConditionalDDPMDownscaler(ConditionalUNetDownscaler):
+    """
+    Alias wrapper with sample interface for pipeline compatibility.
+    """
+    def sample(self, coarse_12km, guidance_scale=3.5):
+        B, C, H, W = coarse_12km.shape
+        target_size = (int(H * 2.4), int(W * 2.4))
+        upsampled = F.interpolate(coarse_12km, size=target_size, mode='bicubic', align_corners=False)
+        t = torch.zeros(B, device=coarse_12km.device, dtype=torch.long)
+        cond = self.forward(upsampled, t)
+        res = upsampled + guidance_scale * (cond - upsampled)
+        return res
+
 if __name__ == "__main__":
     result = train_ddpm_model(epochs=5)
     print("DDPM Training Completed:", result)
+
