@@ -1,20 +1,18 @@
 {
   "status": "SUCCESS",
-  "experiment_name": "amphan_historical_proof",
-  "checkpoints_verified": true,
-  "st_gnn_parameters": 55752,
-  "ddpm_parameters": 238625,
-  "weather_object": {
-    "event_id": "EV-2026-001",
-    "type": "extreme_rainfall",
-    "peak_efi": -0.68,
-    "centroid": [
-      21.65,
-      88.35
-    ],
-    "bounding_box": {},
-    "affected_area_km2": 576.0
-  },
+  "events": [
+    {
+      "event_id": "EV-2026-001",
+      "type": "extreme_rainfall",
+      "peak_efi": -0.68,
+      "centroid": [
+        21.65,
+        88.35
+      ],
+      "bounding_box": {},
+      "affected_area_km2": 576.0
+    }
+  ],
   "trajectory": [
     {
       "timestep": "T+0h",
@@ -161,15 +159,30 @@
       "riskLevel": "moderate"
     }
   ],
-  "downscaled_peak_preservation": 52.247014231305656,
-  "advisory": {
+  "uncertainty": {
+    "ensemble_members": 50,
+    "mean_intensity": 3.55,
+    "spread_std": 14.17,
+    "crps_score": 30.7136,
+    "brier_score": 0.0305,
+    "exceedance_probability": 0.985
+  },
+  "metrics": {
+    "extreme_peak_preservation_pct": 56.11683714810866,
+    "max_absolute_error_mm": 13.4,
+    "csi_score": 0.978,
+    "pod_score": 0.988,
+    "far_score": 0.011,
+    "physics_mass_conservation_loss": 503.097
+  },
+  "alert": {
     "event_id": "EV-2026-001",
     "centroid": [
       21.65,
       88.35
     ],
     "severity": "WARNING",
-    "composite_risk_score": 63.9,
+    "composite_risk_score": 64.2,
     "affected_area_km2": 576.0,
     "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
   }

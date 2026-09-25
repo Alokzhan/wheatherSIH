@@ -1,0 +1,11 @@
+{
+  "event_id": "EV-2026-001",
+  "centroid": [
+    21.65,
+    88.35
+  ],
+  "severity": "WARNING",
+  "composite_risk_score": 64.2,
+  "affected_area_km2": 576.0,
+  "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
+}

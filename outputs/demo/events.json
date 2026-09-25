@@ -1,0 +1,13 @@
+[
+  {
+    "event_id": "EV-2026-001",
+    "type": "extreme_rainfall",
+    "peak_efi": -0.68,
+    "centroid": [
+      21.65,
+      88.35
+    ],
+    "bounding_box": {},
+    "affected_area_km2": 576.0
+  }
+]

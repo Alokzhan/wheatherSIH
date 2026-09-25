@@ -1,0 +1,8 @@
+{
+  "ensemble_members": 50,
+  "mean_intensity": 3.55,
+  "spread_std": 14.17,
+  "crps_score": 30.7136,
+  "brier_score": 0.0305,
+  "exceedance_probability": 0.985
+}

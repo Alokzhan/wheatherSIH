@@ -1,0 +1,28 @@
+# StormTrace AI - Real & Synthetic Data Sources Configuration
+
+data_sources:
+  ncmrwf_neps:
+    description: "NCMRWF NEPS-G 50-Member Operational Ensemble"
+    format: "NetCDF4 / GRIB2"
+    archive_dir: "backend/data/nwp_archive/"
+    domain: "India Subcontinent (6°N-38°N, 68°E-98°E)"
+
+  copernicus_era5:
+    description: "Copernicus ERA5 30-Year Reanalysis (1994-2024)"
+    format: "NetCDF4 / Zarr"
+    archive_dir: "backend/data/era5_archive/"
+    sample_years: 30
+
+  synthetic_fallback:
+    enabled: true
+    members: 50
+    timesteps: 9
+    schema: "[ensemble, time, variable, latitude, longitude]"
+
+variables:
+  - "precipitation"
+  - "temperature"
+  - "u10_wind"
+  - "v10_wind"
+  - "surface_pressure"
+  - "relative_humidity"
