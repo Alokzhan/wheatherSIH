@@ -1,17 +1,47 @@
-# 🛡️ StormTrace AI (formerly AstraWatch) — Pan-India Extreme Rainfall & Flood-Risk Intelligence Platform
+# 🛡️ StormTrace AI — Pan-India Hyperlocal Extreme Rainfall & AI Downscaling Platform
 
 > **Smarter Forecasts. Safer Tomorrow.**  
-> **SIH Problem Statement:** Ensemble-based extreme rainfall and flood-risk tracking for Uttar Pradesh / Prayagraj & Pan-India regions.  
+> **SIH Problem Statement:** Ensemble-based 5 km & 1 km extreme rainfall and flood-risk downscaling for Uttar Pradesh (Prayagraj, Shahjahanpur) & Pan-India regions.  
 > **GitHub Repository:** [`https://github.com/Alokzhan/wheatherSIH`](https://github.com/Alokzhan/wheatherSIH)  
-> **Live Demo Server:** `http://localhost:5173/`
+> **Live Web Application:** `http://localhost:5173/`
 
 ---
 
 ## 📌 Executive Summary
 
-Extreme weather events such as mesoscale cloudbursts, flash floods, urban inundation, and landslides affect hyper-local geographic zones (often under 5–10 km²). However, standard Numerical Weather Prediction (NWP) models (such as GFS 13 km or NCUM 12 km) output coarse grids that average rainfall over 144–169 km² cells, smoothing out upper-tail extreme rainfall peaks by **40–50%**.
+Extreme weather events such as mesoscale cloudbursts, flash floods, urban inundation, and landslides affect hyper-local geographic zones (often under 5–10 km²). Standard Numerical Weather Prediction (NWP) models (such as GFS 13 km or NCUM 12 km) output coarse grids that average rainfall over 144–169 km² cells, smoothing out upper-tail extreme rainfall peaks by **40–50%**.
 
-**StormTrace AI** is an AI-assisted, web-based decision-support platform. It ingests multivariable NWP ensemble forecasts, reanalysis climatology (ERA5/IMDAA), and Digital Elevation Models (DEM). It applies a **Dual-Stage Physics-Informed Deep Learning Engine** to generate terrain-aware 5 km and 1 km probabilistic risk maps, track dynamic storm trajectories, and broadcast severity-based alerts through interactive GIS dashboards, Kisan multi-lingual advisories, and machine-readable REST APIs.
+**StormTrace AI** is a state-of-the-art AI decision-support platform. It ingests multivariable NWP ensemble forecasts, reanalysis climatology (ERA5/IMDAA), and Digital Elevation Models (DEM), applying a **Dual-Stage Physics-Informed Deep Learning Engine** (`panIndiaWeatherEngine.ts`) to:
+1. Generate terrain-aware **5 km and 1 km probabilistic risk maps** across **ANY location in India** (using live OpenStreetMap Nominatim geocoding & OpenWeatherMap / Tomorrow.io API integration).
+2. Track dynamic storm trajectories and predicted track centroids.
+3. Broadcast localized Kisan multi-lingual advisories (English, Hindi, Hinglish with Voice TTS Player) and district-level emergency alerts.
+
+---
+
+## 🇮🇳 Pan-India Hyperlocal & Real-World City Case Study
+
+StormTrace AI dynamically resolves and downscales extreme rainfall metrics for **any city, village, or PIN code across all 28 States and 8 Union Territories** in India.
+
+### 🔍 Real-World Case Study: Chinour, Shahjahanpur (UP - PIN 242001)
+- **Locality Search:** Typing `"Chinour"`, `"Shahjahanpur"`, or `"242001"` dynamically computes:
+  - **Coordinates:** `[27.8804° N, 79.9096° E]`
+  - **Accumulated 24h Rainfall:** **168.5 mm** (Continuous rain since yesterday)
+  - **Exceedance Probability:** **96% (CRITICAL RED ALERT)**
+  - **Threat Cell:** `EV-UP-2026-003 (Garra & Khautra River Basin Rain Inundation)`
+  - **Kisan Advisory:** Directives for paddy and sugarcane growers in Garra river plain to clear field drainage channels.
+  - **District Command:** Directives for DEOC Shahjahanpur to monitor Garra river level at Azizganj bridge.
+
+### 🗺️ 10 Regional Map Presets Supported:
+1. 🇮🇳 **Pan-India Overview** (National Multi-Hazard & Extreme Rainfall Radar)
+2. 🏙️ **Delhi-NCR & Yamuna Basin** (Capital Territory, Noida, Gurugram Urban Flooding)
+3. 🌊 **Uttar Pradesh / Ganges Basin** (Prayagraj, Shahjahanpur, Varanasi, Ganges Plain)
+4. 🌴 **Mumbai & Konkan Coast** (Mumbai Suburban River Basin, Thane, Ratnagiri)
+5. ☕ **Wayanad / Western Ghats** (Kerala Orographic Extreme Rain & Landslide Zone)
+6. ⚡ **Deccan & South Peninsular** (Bengaluru, Hyderabad, Chennai Storm Surge)
+7. 🌧️ **Assam & Brahmaputra Basin** (Guwahati, Silchar, Majuli Riverine Inundation)
+8. 🌾 **East India / Bay of Bengal Delta** (Kolkata, Sundarbans, Patna, Mahanadi Delta)
+9. 🏜️ **West & Central Arid Belt** (Jaipur, Jodhpur, Bhopal, Ahmedabad Flash Cell)
+10. 🏔️ **Uttarakhand & Himalayan Ridge** (Chamoli, Rishikesh, Shimla, Srinagar Surge)
 
 ---
 
@@ -24,7 +54,7 @@ StormTrace AI features a senior-developer grade, ultra-modern dashboard design s
   - Dark Navy background (`#0F172A`) with active tab highlight in **Electric Blue (`#2563EB`)**.
   - Direct navigation across all 10 core views.
 - **Top Navigation Header Bar (`TopNavbar.tsx`):**
-  - Search location input bar (*Search location e.g., Bareilly, Prayagraj, Mumbai...*).
+  - Search location input bar (*Search location e.g., Chinour, Shahjahanpur, Prayagraj, Delhi, Wayanad...*).
   - Live clock display (*Mon, 28 Apr 2025 10:24 AM IST*).
   - Pan-India Region Selector & Theme Switcher (☀️ Light / 🌙 Dark Mode).
   - Quick Notification Bell Badge with live hazard modal.
@@ -36,9 +66,10 @@ StormTrace AI features a senior-developer grade, ultra-modern dashboard design s
 4. **Event Tracking & Forecast Timeline (Screen 5):** Storm cell detail view, centroid coordinates, track vector, radar forecast track map with uncertainty cone, and forecast timeline slider.
 5. **AI Analysis & Downscaling Comparison (Screen 6):** Side-by-side comparison of **Original Coarse Grid (12 km)** vs **Downscaled Grid (5 km / 1 km)**, physics loss metrics table, and key insights.
 6. **Risk & Alerts Center (Screen 7):** Hazard tabs (Rainfall, Thunderstorm, Hail, Wind), severity filters, officer acknowledgement workflow, and CSV/PDF export.
-7. **Data Center (Screen 8):** Dataset drag-and-drop upload zone (`.nc`, `.grib`, `.csv`), uploaded datasets table, and real-time processing log console.
-8. **Historical Explorer & Model Evaluation (Screens 9 & 10):** Event replay engine, performance metric cards (Rainfall MAE, Temp MAE, Wind MAE), and model comparison bar charts (Baseline vs Proposed PI-UNet).
-9. **Weather APIs & Settings (Screens 11 & 12):** Live provider credentials manager (OpenWeatherMap, Tomorrow.io, Mapbox GL, Hugging Face) and user profile settings.
+7. **Kisan Weather Bandhu (Screen 8):** Multi-lingual Kisan Advisory (English, Hindi, Hinglish) with Voice Audio Player for crop-specific protection guidelines.
+8. **Data Center (Screen 9):** Dataset drag-and-drop upload zone (`.nc`, `.grib`, `.csv`), uploaded datasets table, and real-time processing log console.
+9. **Historical Explorer & Model Evaluation (Screens 10 & 11):** Event replay engine, performance metric cards (Rainfall MAE, Temp MAE, Wind MAE), and model comparison bar charts.
+10. **Weather APIs & Settings (Screen 12):** Live provider credentials manager (OpenWeatherMap, Tomorrow.io, Mapbox GL, Hugging Face) and user profile settings.
 
 ---
 
@@ -51,18 +82,19 @@ flowchart TD
         A2["NEPS-G Ensemble Fields"]
         A3["ERA5 / IMDAA Climatology"]
         A4["SRTM DEM Topography"]
-        A5["IMD Gridded Observations"]
+        A5["OpenWeather & Tomorrow.io APIs"]
     end
 
-    subgraph Preprocessing Engine
-        B1["Xarray + Dask Ingestion"]
-        B2["Spatial Regridding & Standardization"]
+    subgraph Preprocessing & Geocoding Engine
+        B1["OpenStreetMap Nominatim Geocoder"]
+        B2["Pan-India Coordinates & Location Resolver"]
         B3["EFI Anomaly Percentile Engine"]
     end
 
     subgraph AI & ML Pipeline
         C1["Stage 1: ST-GNN + ConvLSTM<br/>Storm Centroid & Trajectory Tracker"]
         C2["Stage 2: PI-UNet + Conditional Diffusion<br/>5km / 1km Physics Downscaling"]
+        C3["panIndiaWeatherEngine.ts<br/>AI Kisan & Safety Advisory Synthesizer"]
     end
 
     subgraph Dissemination & UI Layer
@@ -73,8 +105,8 @@ flowchart TD
     end
 
     A1 & A2 & A3 & A4 & A5 --> B1 --> B2 --> B3
-    B3 --> C1 --> C2
-    C2 --> D1 & D2 & D3 & D4
+    B3 --> C1 --> C2 --> C3
+    C3 --> D1 & D2 & D3 & D4
 ```
 
 ---
@@ -120,7 +152,7 @@ Where:
 
 ## ⚡ Performance Optimization & SEO Architecture
 
-- **React.lazy Code Splitting:** Heavy tab components (`LiveRiskMap`, `AiModelHub`, `HistoricalAnalysis`, `ApiExplorer`) are dynamically imported, eliminating monolithic bundle bloat.
+- **React.lazy Code Splitting:** Heavy tab components (`LiveRiskMap`, `AiModelHub`, `HistoricalAnalysis`, `ApiExplorer`, `panIndiaWeatherEngine`) are dynamically imported into separate bundle chunks, keeping the main bundle footprint light (~438 kB).
 - **SEO & Meta Tags (`index.html`):**
   - High-ranking `<title>` and `<meta name="description">`
   - OpenGraph & Twitter Card tags for rich social sharing
@@ -166,7 +198,7 @@ npm run build
 | :--- | :--- | :--- |
 | `/api/v1/alerts` | `GET` | Return all active machine-readable alerts |
 | `/api/v1/alerts/{id}` | `GET` | Return detailed single alert by ID |
-| `/api/v1/location-risk` | `GET` | Return 5 km downscaled risk score for lat/lng |
+| `/api/v1/location-risk` | `GET` | Return 5 km downscaled risk score for lat/lng or query |
 | `/api/v1/trajectory/{event_id}` | `GET` | Return track and predicted GNN centroid positions |
 | `/api/v1/weather-layer` | `GET` | Return map-ready raster/vector metadata |
 | `/api/v1/admin/upload` | `POST` | Upload NetCDF/GRIB2 forecast dataset |
