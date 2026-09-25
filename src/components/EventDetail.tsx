@@ -15,9 +15,10 @@ import {
   Shield,
   Truck
 } from 'lucide-react';
-import { MOCK_THREAT_OBJECTS } from '../data/mockData';
 import type { ThreatObject } from '../types/weather';
+import { fetchApiThreatObjects } from '../services/apiService';
 import { generateEventReportPDF, exportToCSV } from '../utils/exportUtils';
+import { Loader2 } from 'lucide-react';
 
 interface EventDetailProps {
   selectedEventId?: string;
@@ -25,9 +26,9 @@ interface EventDetailProps {
 }
 
 export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNavigateToMap }) => {
-  const [activeEventId, setActiveEventId] = useState<string>(
-    selectedEventId || MOCK_THREAT_OBJECTS[0].id
-  );
+  const [threatObjects, setThreatObjects] = useState<ThreatObject[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [activeEventId, setActiveEventId] = useState<string>(selectedEventId || '');
   const [trajectoryStep, setTrajectoryStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -35,7 +36,24 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
   const [dispatchStatus, setDispatchStatus] = useState<string>('');
 
-  const event: ThreatObject = MOCK_THREAT_OBJECTS.find(e => e.id === activeEventId) || MOCK_THREAT_OBJECTS[0];
+  useEffect(() => {
+    let isMounted = true;
+    async function loadEvents() {
+      setIsLoading(true);
+      const res = await fetchApiThreatObjects();
+      if (isMounted) {
+        setThreatObjects(res);
+        if (!activeEventId && res.length > 0) {
+          setActiveEventId(res[0].id);
+        }
+        setIsLoading(false);
+      }
+    }
+    loadEvents();
+    return () => { isMounted = false; };
+  }, []);
+
+  const event: ThreatObject | undefined = threatObjects.find(e => e.id === activeEventId) || threatObjects[0];
 
   // Reset states when event changes
   useEffect(() => {
@@ -81,6 +99,15 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
     exportToCSV(`${event.id}_Trajectory_Track.csv`, csvRows);
   };
 
+  if (isLoading || !event) {
+    return (
+      <div className="flex items-center justify-center p-16 space-x-3">
+        <Loader2 className="h-6 w-6 text-cyan-400 animate-spin" />
+        <span className="text-sm font-mono text-slate-400">Loading extreme weather event details...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-12">
       {/* Header Banner */}
@@ -125,7 +152,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
 
         {/* Threat Switcher Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pt-2 pb-1">
-          {MOCK_THREAT_OBJECTS.map(t => {
+          {threatObjects.map((t: ThreatObject) => {
             const isCyclone = t.id.includes('CYC') || (t.hazardType && t.hazardType.toLowerCase().includes('cyclone')) || t.name.toLowerCase().includes('cyclone');
             const isWind = t.id.includes('WIND') || (t.hazardType && t.hazardType.toLowerCase().includes('wind')) || t.name.toLowerCase().includes('squall');
             const isHeat = t.id.includes('HEAT') || (t.hazardType && t.hazardType.toLowerCase().includes('heat'));

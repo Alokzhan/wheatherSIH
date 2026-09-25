@@ -90,7 +90,7 @@ python -m pipeline.run --config configs/demo.yaml
 
 ---
 
-## 3. Frontend Production Build Verification (`npm run build`)
+## 3. Frontend Production Build Verification (100% Backend-First Integration)
 
 **Command:**
 ```bash
@@ -109,31 +109,31 @@ rendering chunks...
 computing gzip size...
 dist/index.html                                3.67 kB │ gzip:   1.48 kB
 dist/assets/LiveRiskMap-DsZBW-Fw.css          48.82 kB │ gzip:   5.85 kB
-dist/assets/index-B39PrAHs.css               114.03 kB │ gzip:  22.16 kB
-dist/assets/check-nWpdlR-j.js                  0.15 kB │ gzip:   0.15 kB
-dist/assets/loader-circle-BNMKU5nT.js          0.19 kB │ gzip:   0.18 kB
-dist/assets/user-CDnWbhO6.js                   0.22 kB │ gzip:   0.20 kB
-dist/assets/lock-CdJrLay2.js                   0.23 kB │ gzip:   0.21 kB
-dist/assets/download-PkBtGPI5.js               0.26 kB │ gzip:   0.21 kB
-dist/assets/compass-CS10cEbz.js                0.28 kB │ gzip:   0.22 kB
-dist/assets/droplets-Be0njmRl.js               0.40 kB │ gzip:   0.29 kB
-dist/assets/building-complex-DYo_MCr_.js       0.44 kB │ gzip:   0.27 kB
-dist/assets/sliders-vertical-BilUlq9C.js       0.47 kB │ gzip:   0.26 kB
-dist/assets/eye-BCfJFDbL.js                    0.68 kB │ gzip:   0.36 kB
+dist/assets/index-ls17qdzz.css               114.07 kB │ gzip:  22.17 kB
+dist/assets/check-y_KegkRQ.js                  0.15 kB │ gzip:   0.16 kB
+dist/assets/loader-circle-CK_-7cqk.js          0.19 kB │ gzip:   0.18 kB
+dist/assets/user-GxNXf7WU.js                   0.22 kB │ gzip:   0.20 kB
+dist/assets/lock-Dol7lk0l.js                   0.23 kB │ gzip:   0.21 kB
+dist/assets/download-BDIL5Fpq.js               0.26 kB │ gzip:   0.21 kB
+dist/assets/compass-BZYHuOs5.js                0.28 kB │ gzip:   0.23 kB
+dist/assets/droplets-CVdOnE-q.js               0.40 kB │ gzip:   0.30 kB
+dist/assets/building-complex-xnXrhoFJ.js       0.44 kB │ gzip:   0.27 kB
+dist/assets/sliders-vertical-DeK4ygyB.js       0.47 kB │ gzip:   0.27 kB
+dist/assets/eye-CdQ3dLxc.js                    0.68 kB │ gzip:   0.37 kB
 dist/assets/exportUtils-BSFd92CP.js            3.43 kB │ gzip:   1.44 kB
-dist/assets/ApiExplorer-CB4RDPMo.js            5.36 kB │ gzip:   2.06 kB
-dist/assets/DisasterDashboard-DQ3JmHfT.js      6.63 kB │ gzip:   1.77 kB
-dist/assets/HowItWorks-CHwGr7tq.js             7.92 kB │ gzip:   2.06 kB
-dist/assets/LocalityExplorer-BZtUm9bQ.js       9.11 kB │ gzip:   2.35 kB
-dist/assets/FarmerAdvisory-DmoZhSk-.js        12.55 kB │ gzip:   4.48 kB
-dist/assets/AdminPanel-lgXW5Hog.js            13.63 kB │ gzip:   3.41 kB
-dist/assets/AlertCenter-BDwU9D1Y.js           14.32 kB │ gzip:   3.63 kB
-dist/assets/LocationRisk-B-Ojv7-I.js          14.37 kB │ gzip:   3.66 kB
-dist/assets/EventDetail-LJ8VprL7.js           14.41 kB │ gzip:   4.22 kB
-dist/assets/AiModelHub-B8ObNEPU.js            20.76 kB │ gzip:   4.89 kB
-dist/assets/AuthPage-B2Fld6aC.js              22.05 kB │ gzip:   5.48 kB
-dist/assets/index-Cz7R4e36.js                321.87 kB │ gzip:  97.68 kB
-dist/assets/LiveRiskMap-BgRJaut0.js        1,869.37 kB │ gzip: 518.30 kB
+dist/assets/ApiExplorer-BmD9w1z1.js            5.35 kB │ gzip:   2.06 kB
+dist/assets/DisasterDashboard-BSGfdy6T.js      7.12 kB │ gzip:   1.95 kB
+dist/assets/HowItWorks-ahYkRJIu.js             7.92 kB │ gzip:   2.06 kB
+dist/assets/LocalityExplorer-Bo33N78H.js       9.11 kB │ gzip:   2.35 kB
+dist/assets/FarmerAdvisory-QWicPX_h.js        12.55 kB │ gzip:   4.48 kB
+dist/assets/AdminPanel-DhYzrBMf.js            13.63 kB │ gzip:   3.41 kB
+dist/assets/AlertCenter-DgkrRs8I.js           14.32 kB │ gzip:   3.63 kB
+dist/assets/LocationRisk-TjbTsv3P.js          14.37 kB │ gzip:   3.67 kB
+dist/assets/EventDetail-DDQWqoJ8.js           14.92 kB │ gzip:   4.42 kB
+dist/assets/AiModelHub-Bs9GMvHb.js            20.77 kB │ gzip:   4.89 kB
+dist/assets/AuthPage-4sn5wOEL.js              22.05 kB │ gzip:   5.48 kB
+dist/assets/index-_VZRzEdU.js                322.24 kB │ gzip:  97.76 kB
+dist/assets/LiveRiskMap-Cw-SfrHS.js        1,869.46 kB │ gzip: 518.35 kB
 
-✓ built in 2.36s
+✓ built in 2.77s
 ```

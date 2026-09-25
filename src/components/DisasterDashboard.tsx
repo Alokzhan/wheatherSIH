@@ -1,24 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Radio, 
   Users, 
   ShieldAlert, 
   Download, 
   Building2, 
-  Anchor
+  Anchor,
+  Loader2
 } from 'lucide-react';
-import { MOCK_DISASTER_RESOURCES } from '../data/mockData';
+import { fetchApiDisasterResources } from '../services/apiService';
 
 export const DisasterDashboard: React.FC = () => {
-  const [districtList] = useState(MOCK_DISASTER_RESOURCES);
+  const [districtList, setDistrictList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const totalNdrf = districtList.reduce((acc, curr) => acc + curr.ndrfTeams, 0);
-  const totalBoats = districtList.reduce((acc, curr) => acc + curr.evacuationBoats, 0);
-  const totalCamps = districtList.reduce((acc, curr) => acc + curr.reliefCamps, 0);
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      setIsLoading(true);
+      const data = await fetchApiDisasterResources();
+      if (isMounted) {
+        setDistrictList(data);
+        setIsLoading(false);
+      }
+    }
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
+
+  const totalNdrf = districtList.reduce((acc, curr) => acc + (curr.ndrfTeams || 0), 0);
+  const totalBoats = districtList.reduce((acc, curr) => acc + (curr.evacuationBoats || 0), 0);
+  const totalCamps = districtList.reduce((acc, curr) => acc + (curr.reliefCamps || 0), 0);
 
   const handlePrintBriefing = () => {
     window.print();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-16 space-x-3">
+        <Loader2 className="h-6 w-6 text-cyan-400 animate-spin" />
+        <span className="text-sm font-mono text-slate-400">Loading operational disaster resource matrix...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-12">

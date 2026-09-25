@@ -18,8 +18,8 @@ import {
   Compass,
 } from 'lucide-react';
 import type { MapLayerId, ThreatObject, GridCell5km, IndiaRegionId } from '../types/weather';
-import { MOCK_5KM_GRID, INDIA_REGION_PRESETS } from '../data/mockData';
-import { fetchApiThreatObjects } from '../services/apiService';
+import { INDIA_REGION_PRESETS } from '../data/mockData';
+import { fetchApiThreatObjects, fetchApiRiskGrid } from '../services/apiService';
 import { API_CONFIG } from '../config/apiConfig';
 
 interface LiveRiskMapProps {
@@ -224,7 +224,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   const [selectedTimeStep, setSelectedTimeStep] = useState<number>(12);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [layerOpacity, setLayerOpacity] = useState<number>(0.80);
-  const [selectedCell, setSelectedCell] = useState<GridCell5km | null>(MOCK_5KM_GRID[0] || null);
+  const [riskGrid, setRiskGrid] = useState<GridCell5km[]>([]);
+  const [selectedCell, setSelectedCell] = useState<GridCell5km | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [is3DEnabled, setIs3DEnabled] = useState<boolean>(true);
   const [showLayerPanel, setShowLayerPanel] = useState<boolean>(true);
@@ -233,11 +234,20 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
 
   useEffect(() => {
     let isMounted = true;
-    fetchApiThreatObjects().then(res => {
-      if (isMounted) setThreatObjects(res);
+    Promise.all([
+      fetchApiThreatObjects(),
+      fetchApiRiskGrid(selectedRegion)
+    ]).then(([threats, grid]) => {
+      if (isMounted) {
+        setThreatObjects(threats);
+        setRiskGrid(grid);
+        if (grid.length > 0) {
+          setSelectedCell(grid[0]);
+        }
+      }
     });
     return () => { isMounted = false; };
-  }, []);
+  }, [selectedRegion]);
 
 
   const toggleMapStyle = useCallback(() => {
@@ -456,7 +466,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       });
 
       // --- 5. 5km Grid Cells Overlay ---
-      const gridFeatures = MOCK_5KM_GRID.map(cell => ({
+      const gridFeatures = riskGrid.map((cell: GridCell5km) => ({
         type: 'Feature' as const,
         geometry: {
           type: 'Polygon' as const,
@@ -876,7 +886,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         if (!e.features?.length) return;
         const props = (e.features[0] as any).properties;
         if (!props) return;
-        const cell = MOCK_5KM_GRID.find(c => c.id === props.id);
+        const cell = riskGrid.find((c: GridCell5km) => c.id === props.id);
         if (cell) setSelectedCell(cell);
       });
     });

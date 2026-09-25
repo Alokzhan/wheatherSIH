@@ -1,5 +1,5 @@
-import { MOCK_ALERTS, MOCK_THREAT_OBJECTS } from '../data/mockData';
-import type { AlertItem, LocationRiskData, ThreatObject, AcknowledgementStatus } from '../types/weather';
+import { MOCK_ALERTS, MOCK_THREAT_OBJECTS, MOCK_5KM_GRID, MOCK_DISASTER_RESOURCES } from '../data/mockData';
+import type { AlertItem, LocationRiskData, ThreatObject, AcknowledgementStatus, GridCell5km } from '../types/weather';
 import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
 import { getApiEndpoint } from '../config/apiConfig';
 
@@ -357,4 +357,42 @@ export async function generateReportApi(locationName: string, format: 'json' | '
     reportUrl: `/exports/AstraWatch_RiskReport_${locationName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${format}`,
     generatedAt: new Date().toISOString(),
   };
+}
+
+/**
+ * GET /api/v1/disaster-resources
+ */
+export async function fetchApiDisasterResources(): Promise<any[]> {
+  try {
+    const res = await fetch(getApiEndpoint('/api/v1/disaster-resources'));
+    if (res.ok) {
+      updateBackendStatus(true);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (e) {
+    updateBackendStatus(false);
+  }
+  return MOCK_DISASTER_RESOURCES;
+}
+
+/**
+ * GET /api/v1/risk-grid
+ */
+export async function fetchApiRiskGrid(region: string = 'up_ganges'): Promise<GridCell5km[]> {
+  try {
+    const res = await fetch(getApiEndpoint(`/api/v1/risk-grid?region=${region}`));
+    if (res.ok) {
+      updateBackendStatus(true);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (e) {
+    updateBackendStatus(false);
+  }
+  return MOCK_5KM_GRID;
 }

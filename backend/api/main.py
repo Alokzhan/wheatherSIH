@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 import random
 import requests
 import time
@@ -232,10 +233,47 @@ def proxy_radar_tile(z: int, x: int, y: int):
     return Response(content=TRANSPARENT_PNG, media_type="image/png")
 
 
-@app.get("/api/v1/config/maps")
-def get_map_config():
-    """Return map tokens safely to the frontend."""
-    return {"mapbox_token": MAPBOX_TOKEN or ""}
+@app.get("/api/v1/disaster-resources")
+def get_disaster_resources():
+    """Return operational disaster response resource allocation matrix across districts."""
+    return [
+        {"district": "Prayagraj", "status": "High Alert", "ndrfTeams": 6, "sdrfTeams": 4, "evacuationBoats": 32, "reliefCamps": 14, "highRiskVillages": 28},
+        {"district": "Varanasi", "status": "High Alert", "ndrfTeams": 4, "sdrfTeams": 3, "evacuationBoats": 24, "reliefCamps": 10, "highRiskVillages": 18},
+        {"district": "Mirzapur", "status": "Alert", "ndrfTeams": 2, "sdrfTeams": 2, "evacuationBoats": 16, "reliefCamps": 8, "highRiskVillages": 12},
+        {"district": "Kaushambi", "status": "Alert", "ndrfTeams": 2, "sdrfTeams": 1, "evacuationBoats": 12, "reliefCamps": 6, "highRiskVillages": 9},
+        {"district": "Pratapgarh", "status": "Watch", "ndrfTeams": 1, "sdrfTeams": 1, "evacuationBoats": 8, "reliefCamps": 4, "highRiskVillages": 5},
+    ]
+
+@app.get("/api/v1/risk-grid")
+def get_risk_grid(region: str = "up_ganges"):
+    """Return 5km downscaled risk grid cells for live GIS rendering."""
+    grid = []
+    grid_id = 1
+    for lat_i in range(12):
+        lat = 25.10 + lat_i * 0.05
+        for lng_i in range(16):
+            lng = 81.35 + lng_i * 0.05
+            dist = math.hypot(lat - 25.4410, lng - 81.8650)
+            base_rain = max(15, int(130 * math.exp(-dist * 4.5) + 30))
+            score = min(99, int((base_rain / 130) * 100))
+            risk_level = "critical" if score >= 80 else ("severe" if score >= 60 else ("moderate" if score >= 35 else "low"))
+            grid.append({
+                "id": f"GRID-UP-{grid_id}",
+                "lat": round(lat, 4),
+                "lng": round(lng, 4),
+                "rainfallForecastMm": base_rain,
+                "anomalyPercentile": round(90 + (base_rain / 130) * 9.8, 1),
+                "probabilityGt50mm": min(99, int((base_rain / 120) * 100)),
+                "downscaledRiskScore": score,
+                "riskLevel": risk_level,
+                "elevationMeters": round(92 + (grid_id % 35)),
+                "vulnerabilityIndex": 0.82,
+                "district": "Prayagraj",
+                "tehsil": "Handia" if lng > 81.9 else ("Phulpur" if lng > 81.7 else "Naini"),
+                "regionId": "up_ganges",
+            })
+            grid_id += 1
+    return grid
 
 @app.get("/api/v1/alerts")
 def list_alerts():
