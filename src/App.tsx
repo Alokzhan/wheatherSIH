@@ -84,6 +84,7 @@ export function App() {
       case 'locality':
         return <LocalityExplorer initialSearchQuery={topSearchQuery} />;
       case 'models':
+      case 'evaluation':
         return <AiModelHub />;
       case 'location':
         return (
@@ -102,8 +103,8 @@ export function App() {
       case 'alerts':
         return <AlertCenter />;
       case 'historical':
-      case 'evaluation':
         return <HistoricalAnalysis />;
+
       case 'farmer':
         return <FarmerAdvisory lang="en" setLang={() => {}} />;
       case 'how-it-works':
