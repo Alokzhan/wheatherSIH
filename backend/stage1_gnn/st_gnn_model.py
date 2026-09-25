@@ -17,7 +17,10 @@ except ImportError:
 try:
     from backend.data.fetch_real_weather_archive import RealWeatherArchiveDownloader
 except ImportError:
-    from fetch_real_weather_archive import RealWeatherArchiveDownloader
+    try:
+        from data.fetch_real_weather_archive import RealWeatherArchiveDownloader
+    except ImportError:
+        from fetch_real_weather_archive import RealWeatherArchiveDownloader
 
 class MultiHeadSpatialGraphAttention(nn.Module):
     """
