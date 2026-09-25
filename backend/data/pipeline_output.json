@@ -161,7 +161,7 @@
       "riskLevel": "moderate"
     }
   ],
-  "downscaled_peak_preservation": 67.11508791838592,
+  "downscaled_peak_preservation": 52.247014231305656,
   "advisory": {
     "event_id": "EV-2026-001",
     "centroid": [
@@ -169,7 +169,7 @@
       88.35
     ],
     "severity": "WARNING",
-    "composite_risk_score": 64.4,
+    "composite_risk_score": 63.9,
     "affected_area_km2": 576.0,
     "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
   }
