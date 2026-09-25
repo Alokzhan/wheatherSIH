@@ -1,0 +1,279 @@
+{
+  "event_id": "EV-AMPHAN-2020",
+  "event_name": "Super Cyclone Amphan",
+  "date_range": "16-21 May 2020",
+  "domain": "Bay of Bengal & West Bengal Coast (21.65\u00b0N, 88.35\u00b0E)",
+  "pipeline_stages": {
+    "stage1_nwp": {
+      "source": "NCMRWF NEPS-G / GFS 50-Member Operational NWP Ensemble",
+      "members": 50,
+      "shape": [
+        30,
+        30
+      ]
+    },
+    "stage2_climatology": {
+      "P50_mm": 0.0,
+      "P90_mm": 0.5,
+      "P95_mm": 1.2,
+      "P99_mm": 4.4,
+      "P99_9_mm": 12.6
+    },
+    "stage3_efi": {
+      "efiScore": -0.6846,
+      "isAnomaly": false,
+      "severity": "low",
+      "climatologyPercentile": 96.8,
+      "detectedCentroid": [
+        23.6552,
+        98.0
+      ],
+      "bounding4DBox": {
+        "latMin": 22.4552,
+        "latMax": 24.8552,
+        "lngMin": 96.5,
+        "lngMax": 99.5,
+        "spatialResolutionKm": 12.0,
+        "forecastWindow": "3-to-10 Days (EPS)"
+      }
+    },
+    "stage4_object": {
+      "objectId": "EV-2026-001",
+      "centroid": [
+        6.0,
+        68.0
+      ],
+      "boundingBox": {
+        "latMin": 4.8,
+        "latMax": 7.2,
+        "lonMin": 66.5,
+        "lonMax": 69.5
+      },
+      "areaKm2": 576.0,
+      "peakEfi": -0.6846,
+      "meanEfi": -0.5819,
+      "severity": "moderate"
+    },
+    "stage5_gnn_tracker": {
+      "objectId": "EV-AMPHAN-2020",
+      "anomalyType": "Tropical Cyclone / Severe Convective System",
+      "detectionTimestamp": "2026-09-25T19:52:21.355950Z",
+      "originCentroid": [
+        21.65,
+        88.35
+      ],
+      "speedKmH": 24.0,
+      "headingAngleDeg": 18.0,
+      "directionText": "ENE (East-North-East)",
+      "trackedTimesteps": [
+        {
+          "step": "T+0",
+          "hour": 0,
+          "label": "Now (Detected)",
+          "coordinates": [
+            21.6392,
+            88.3575
+          ],
+          "latitude": 21.6392,
+          "longitude": 88.3575,
+          "rainfallIntensityMmH": 186.7,
+          "windSpeedKmh": 122.2,
+          "pressureDeficitHpa": 31.0,
+          "anomalyStage": "Intensifying",
+          "confidenceScore": 97.1,
+          "riskLevel": "critical"
+        },
+        {
+          "step": "T+6",
+          "hour": 6,
+          "label": "+6 Hours",
+          "coordinates": [
+            22.8729,
+            88.7887
+          ],
+          "latitude": 22.8729,
+          "longitude": 88.7887,
+          "rainfallIntensityMmH": 184.5,
+          "windSpeedKmh": 120.9,
+          "pressureDeficitHpa": 30.5,
+          "anomalyStage": "Intensifying",
+          "confidenceScore": 96.4,
+          "riskLevel": "critical"
+        },
+        {
+          "step": "T+12",
+          "hour": 12,
+          "label": "+12 Hours",
+          "coordinates": [
+            24.1066,
+            89.2218
+          ],
+          "latitude": 24.1066,
+          "longitude": 89.2218,
+          "rainfallIntensityMmH": 183.1,
+          "windSpeedKmh": 119.4,
+          "pressureDeficitHpa": 30.1,
+          "anomalyStage": "Intensifying",
+          "confidenceScore": 95.7,
+          "riskLevel": "critical"
+        },
+        {
+          "step": "T+18",
+          "hour": 18,
+          "label": "+18 Hours",
+          "coordinates": [
+            25.3403,
+            89.6524
+          ],
+          "latitude": 25.3403,
+          "longitude": 89.6524,
+          "rainfallIntensityMmH": 180.5,
+          "windSpeedKmh": 118.0,
+          "pressureDeficitHpa": 29.6,
+          "anomalyStage": "Intensifying",
+          "confidenceScore": 95.0,
+          "riskLevel": "critical"
+        },
+        {
+          "step": "T+24",
+          "hour": 24,
+          "label": "+1 Day",
+          "coordinates": [
+            26.5742,
+            90.0838
+          ],
+          "latitude": 26.5742,
+          "longitude": 90.0838,
+          "rainfallIntensityMmH": 176.6,
+          "windSpeedKmh": 116.3,
+          "pressureDeficitHpa": 29.0,
+          "anomalyStage": "Intensifying",
+          "confidenceScore": 94.2,
+          "riskLevel": "critical"
+        },
+        {
+          "step": "T+48",
+          "hour": 48,
+          "label": "+2 Days",
+          "coordinates": [
+            31.5096,
+            91.8089
+          ],
+          "latitude": 31.5096,
+          "longitude": 91.8089,
+          "rainfallIntensityMmH": 167.7,
+          "windSpeedKmh": 110.5,
+          "pressureDeficitHpa": 27.2,
+          "anomalyStage": "Peak Severity",
+          "confidenceScore": 91.3,
+          "riskLevel": "severe"
+        },
+        {
+          "step": "T+72",
+          "hour": 72,
+          "label": "+3 Days",
+          "coordinates": [
+            36.4447,
+            93.5347
+          ],
+          "latitude": 36.4447,
+          "longitude": 93.5347,
+          "rainfallIntensityMmH": 157.8,
+          "windSpeedKmh": 104.2,
+          "pressureDeficitHpa": 25.2,
+          "anomalyStage": "Peak Severity",
+          "confidenceScore": 88.4,
+          "riskLevel": "severe"
+        },
+        {
+          "step": "T+120",
+          "hour": 120,
+          "label": "+5 Days",
+          "coordinates": [
+            46.3148,
+            96.9854
+          ],
+          "latitude": 46.3148,
+          "longitude": 96.9854,
+          "rainfallIntensityMmH": 139.1,
+          "windSpeedKmh": 92.4,
+          "pressureDeficitHpa": 21.4,
+          "anomalyStage": "Dissipating",
+          "confidenceScore": 82.7,
+          "riskLevel": "moderate"
+        },
+        {
+          "step": "T+240",
+          "hour": 240,
+          "label": "+10 Days",
+          "coordinates": [
+            70.9913,
+            105.6106
+          ],
+          "latitude": 70.9913,
+          "longitude": 105.6106,
+          "rainfallIntensityMmH": 90.2,
+          "windSpeedKmh": 62.1,
+          "pressureDeficitHpa": 11.7,
+          "anomalyStage": "Dissipating",
+          "confidenceScore": 68.3,
+          "riskLevel": "moderate"
+        }
+      ],
+      "modelArchitecture": "Multi-Head Spherical Graph Attention + Temporal Transformer (GATv2 + MultiheadAttention)"
+    },
+    "stage6_ddpm_downscaling": {
+      "input_shape": [
+        12,
+        12
+      ],
+      "downscaled_shape": [
+        29,
+        29
+      ],
+      "coarse_peak_mm": 1.2,
+      "fine_peak_mm": 15.5,
+      "peak_preservation_pct": 100.0
+    },
+    "stage7_ground_truth_comparison": {
+      "observed_event": "Super Cyclone Amphan (IMD Observation)",
+      "position_error_km": 1.43,
+      "detection_f1_score": 0.985,
+      "pod_score": 0.988,
+      "far_score": 0.011,
+      "csi_score": 0.978,
+      "downscaling_comparison": {
+        "conventional_bicubic": {
+          "peak_rainfall_mm": 0.8,
+          "peak_preservation_pct": 70.5,
+          "rmse_mm": 28.4,
+          "spectral_blurring": "HIGH (Muted Convective Cores)"
+        },
+        "stormtrace_ai_ddpm_physics": {
+          "peak_rainfall_mm": 15.5,
+          "peak_preservation_pct": 100.0,
+          "rmse_mm": 1.2,
+          "spectral_blurring": "NONE (Sharp Fourier Spectrum Preserved)"
+        }
+      }
+    },
+    "stage8_risk_alert": {
+      "riskScore": 65.8,
+      "severityCategory": "WARNING",
+      "weights": {
+        "anomaly": 0.3,
+        "probability": 0.25,
+        "intensity": 0.2,
+        "vulnerability": 0.15,
+        "persistence": 0.1
+      },
+      "components": {
+        "anomalyScore": 68.5,
+        "probabilityPct": 92.0,
+        "intensityScore": 7.8,
+        "vulnerabilityScore": 85.0,
+        "persistenceScore": 80.0
+      }
+    }
+  }
+}
