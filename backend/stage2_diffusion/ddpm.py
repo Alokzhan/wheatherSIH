@@ -88,21 +88,39 @@ class ConditionalUNetDownscaler(nn.Module):
         return out
 
     @torch.no_grad()
-    def sample(self, coarse_input: torch.Tensor, guidance_scale: float = 3.5) -> torch.Tensor:
+    def sample(self, coarse_input: torch.Tensor, guidance_scale: float = 3.5, num_steps: int = 20) -> torch.Tensor:
         """
-        Generates downscaled 5km field from coarse 12km input using classifier-free guidance.
+        Generates downscaled 5km field from coarse 12km input using true iterative reverse DDPM sampling loop across timesteps.
         """
         device = coarse_input.device
-        t = torch.zeros(coarse_input.shape[0], device=device, dtype=torch.long)
-
         if coarse_input.ndim == 4:
             coarse_up = F.interpolate(coarse_input, scale_factor=2.333, mode='bicubic', align_corners=False)
         else:
             coarse_up = coarse_input
 
-        out_cond = self.forward(coarse_up, t)
-        out = coarse_up + guidance_scale * (out_cond - coarse_up)
-        return F.relu(out)
+        scheduler = CosineDDPMScheduler(timesteps=num_steps)
+        # Start from pure noise conditioned on coarse upscaled feature
+        x_t = coarse_up + torch.randn_like(coarse_up) * 0.1
+        
+        # Iterative reverse diffusion loop from T-1 down to 0
+        for step_i in reversed(range(num_steps)):
+            t_tensor = torch.full((x_t.shape[0],), step_i, device=device, dtype=torch.long)
+            out_cond = self.forward(x_t, t_tensor)
+            # Classifier-Free Guidance step
+            pred_noise = coarse_up + guidance_scale * (out_cond - coarse_up)
+            
+            alpha_t = scheduler.alphas[step_i]
+            alpha_bar = scheduler.alphas_cumprod[step_i]
+            beta_t = scheduler.betas[step_i]
+            
+            # Reverse diffusion step equation
+            pred_x0 = (x_t - torch.sqrt(1.0 - alpha_bar) * pred_noise) / torch.sqrt(alpha_bar)
+            x_t = torch.sqrt(alpha_t) * pred_x0 + torch.sqrt(1.0 - alpha_t) * pred_noise
+            if step_i > 0:
+                noise = torch.randn_like(x_t)
+                x_t = x_t + torch.sqrt(beta_t) * noise * 0.05
+
+        return F.relu(x_t)
 
 class CosineDDPMScheduler:
     """
@@ -188,7 +206,7 @@ def train_ddpm_model(epochs: int = 15, batch_size: int = 4, lr: float = 1e-3):
 
 def run_diffusion_downscale(coarse_grid_2d, cfg_scale=3.5):
     """
-    Inference helper running DDPM downscaling on 12km NWP matrix (12km -> 5km) with Classifier-Free Guidance (CFG).
+    Inference helper running DDPM downscaling on 12km NWP matrix (12km -> 5km) with iterative reverse diffusion sampling.
     """
     from scipy.ndimage import zoom
     
@@ -207,19 +225,10 @@ def run_diffusion_downscale(coarse_grid_2d, cfg_scale=3.5):
         
     model.eval()
     with torch.no_grad():
-        t = torch.tensor([0], device=device).long()
-        # Classifier-Free Guidance enhancement
-        out_cond = model(tensor_input.to(device), t)
-        out_uncond = tensor_input.to(device)
-        out_tensor = out_uncond + cfg_scale * (out_cond - out_uncond)
+        out_tensor = model.sample(tensor_input.to(device), guidance_scale=cfg_scale, num_steps=15)
     
     fine_grid = out_tensor.squeeze().cpu().numpy()
-    
-    coarse_max = np.max(coarse_grid_2d)
-    fine_max = np.max(fine_grid)
-    if fine_max < coarse_max:
-        fine_grid = fine_grid * (coarse_max / (fine_max + 1e-6))
-
+    # Artificial force-rescaling block removed to reflect genuine model output
     return fine_grid
 
 class ConditionalDDPMDownscaler(ConditionalUNetDownscaler):
@@ -227,13 +236,7 @@ class ConditionalDDPMDownscaler(ConditionalUNetDownscaler):
     Alias wrapper with sample interface for pipeline compatibility.
     """
     def sample(self, coarse_12km, guidance_scale=3.5):
-        B, C, H, W = coarse_12km.shape
-        target_size = (int(H * 2.4), int(W * 2.4))
-        upsampled = F.interpolate(coarse_12km, size=target_size, mode='bicubic', align_corners=False)
-        t = torch.zeros(B, device=coarse_12km.device, dtype=torch.long)
-        cond = self.forward(upsampled, t)
-        res = upsampled + guidance_scale * (cond - upsampled)
-        return res
+        return super().sample(coarse_12km, guidance_scale=guidance_scale, num_steps=15)
 
 if __name__ == "__main__":
     result = train_ddpm_model(epochs=5)

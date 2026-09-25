@@ -7,14 +7,16 @@ import {
   Moon, 
   Clock, 
   AlertTriangle,
-  Zap,
   X,
   Menu,
-  LogIn
+  LogIn,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 
 import { INDIA_REGION_PRESETS } from '../data/mockData';
 import type { IndiaRegionId } from '../types/weather';
+import { subscribeBackendStatus, checkBackendHealth } from '../services/apiService';
 
 interface TopNavbarProps {
   selectedRegion: IndiaRegionId;
@@ -41,6 +43,13 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const [currentTime, setCurrentTime] = useState('');
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    checkBackendHealth();
+    const unsub = subscribeBackendStatus((status) => setIsLive(status));
+    return unsub;
+  }, []);
 
   useEffect(() => {
     const updateClock = () => {
@@ -94,10 +103,23 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-2.5 shrink-0">
-        {/* Pan-India Status Badge */}
-        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/8 to-blue-500/8 dark:from-cyan-500/10 dark:to-blue-500/10 border border-cyan-500/20 dark:border-cyan-500/15 text-cyan-700 dark:text-cyan-400 text-[11px] font-semibold">
-          <Zap className="h-3 w-3" />
-          <span>Pan-India Coverage Active</span>
+        {/* Backend Connection Status Badge */}
+        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-colors ${
+          isLive 
+            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' 
+            : 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400'
+        }`}>
+          {isLive ? (
+            <>
+              <Wifi className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
+              <span>LIVE API</span>
+            </>
+          ) : (
+            <>
+              <WifiOff className="h-3.5 w-3.5 text-amber-500" />
+              <span>CACHED / OFFLINE</span>
+            </>
+          )}
         </div>
 
         {/* Live Clock */}

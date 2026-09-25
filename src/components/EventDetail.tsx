@@ -48,8 +48,8 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
     setGenAiReport('');
     setTimeout(() => {
       setIsGenerating(false);
-      setGenAiReport(`[LLaMA-3 GEN-AI REPORT]\nEvent: ${event.name}\nAnalysis: Based on the latest DGL Spherical GNN trajectory and DDPM downscaling, the ${event.hazardType || 'anomaly'} is projected to intensify. The 4D-ABB shows a direct impact vector over ${event.affectedVillages[0]}.\nRecommendation: Immediate preemptive mobilization of SDRF teams to ${event.district}.`);
-    }, 1500);
+      setGenAiReport(`[AUTOMATED DISASTER BRIEFING - RULE & PHYSICS ENGINE]\nEvent: ${event.name}\nAnalysis: Based on PyTorch Spherical GNN trajectory and DDPM downscaling, the ${event.hazardType || 'anomaly'} is projected to intensify. The 4D-ABB shows a direct impact vector over ${event.affectedVillages[0]}.\nRecommendation: Immediate preemptive mobilization of SDRF teams to ${event.district}.`);
+    }, 1200);
   };
 
   const handleAgenticDispatch = () => {

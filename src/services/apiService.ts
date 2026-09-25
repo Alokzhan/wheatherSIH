@@ -7,6 +7,43 @@ import { getApiEndpoint } from '../config/apiConfig';
 const LOCAL_STORAGE_ALERTS_KEY = 'STORMTRACE_ALERTS_DB_V1';
 const LOCAL_STORAGE_DATASETS_KEY = 'STORMTRACE_DATASETS_DB_V1';
 
+let backendLiveState = false;
+type StatusListener = (isLive: boolean) => void;
+let statusListeners: StatusListener[] = [];
+
+export function isBackendConnected(): boolean {
+  return backendLiveState;
+}
+
+export function subscribeBackendStatus(listener: StatusListener): () => void {
+  statusListeners.push(listener);
+  listener(backendLiveState);
+  return () => {
+    statusListeners = statusListeners.filter(l => l !== listener);
+  };
+}
+
+function updateBackendStatus(isLive: boolean) {
+  if (backendLiveState !== isLive) {
+    backendLiveState = isLive;
+    statusListeners.forEach(l => l(isLive));
+  }
+}
+
+export async function checkBackendHealth(): Promise<boolean> {
+  try {
+    const res = await fetch(getApiEndpoint('/api/v1/health'));
+    if (res.ok) {
+      updateBackendStatus(true);
+      return true;
+    }
+  } catch (e) {
+    // Health check failed
+  }
+  updateBackendStatus(false);
+  return false;
+}
+
 export interface DatasetRecord {
   id: string;
   name: string;
@@ -22,9 +59,11 @@ export async function fetchAppConfig(): Promise<{ mapbox_token: string }> {
   try {
     const res = await fetch(getApiEndpoint('/api/v1/config/maps'));
     if (res.ok) {
+      updateBackendStatus(true);
       return await res.json();
     }
   } catch (e) {
+    updateBackendStatus(false);
     console.error('Failed to fetch app config', e);
   }
   return { mapbox_token: '' };
@@ -59,6 +98,7 @@ export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: '
   try {
     const res = await fetch(getApiEndpoint('/api/v1/alerts'));
     if (res.ok) {
+      updateBackendStatus(true);
       const data: AlertItem[] = await res.json();
       const filtered = regionFilter && regionFilter !== 'all' 
         ? data.filter(a => a.regionId === regionFilter)
@@ -68,6 +108,7 @@ export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: '
       return { status: 'success', count: filtered.length, alerts: filtered };
     }
   } catch (e) {
+    updateBackendStatus(false);
     console.warn('Backend alerts failed, using local storage:', e);
   }
 
