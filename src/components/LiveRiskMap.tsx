@@ -18,7 +18,8 @@ import {
   Compass,
 } from 'lucide-react';
 import type { MapLayerId, ThreatObject, GridCell5km, IndiaRegionId } from '../types/weather';
-import { MOCK_THREAT_OBJECTS, MOCK_5KM_GRID, INDIA_REGION_PRESETS } from '../data/mockData';
+import { MOCK_5KM_GRID, INDIA_REGION_PRESETS } from '../data/mockData';
+import { fetchApiThreatObjects } from '../services/apiService';
 import { API_CONFIG } from '../config/apiConfig';
 
 interface LiveRiskMapProps {
@@ -226,8 +227,17 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   const [selectedCell, setSelectedCell] = useState<GridCell5km | null>(MOCK_5KM_GRID[0] || null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [is3DEnabled, setIs3DEnabled] = useState<boolean>(true);
-  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark');
   const [showLayerPanel, setShowLayerPanel] = useState<boolean>(true);
+  const [threatObjects, setThreatObjects] = useState<ThreatObject[]>([]);
+  const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark');
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchApiThreatObjects().then(res => {
+      if (isMounted) setThreatObjects(res);
+    });
+    return () => { isMounted = false; };
+  }, []);
 
 
   const toggleMapStyle = useCallback(() => {
@@ -516,11 +526,11 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       });
 
       // --- 6. Threat Footprints GeoJSON ---
-      const threatFeatures = MOCK_THREAT_OBJECTS.map(threat => ({
+      const threatFeatures = threatObjects.map((threat: ThreatObject) => ({
         type: 'Feature' as const,
         geometry: {
           type: 'Polygon' as const,
-          coordinates: [threat.polygonCoords.map(([lat, lng]) => [lng, lat]).concat([
+          coordinates: [threat.polygonCoords.map(([lat, lng]: [number, number]) => [lng, lat]).concat([
             [threat.polygonCoords[0][1], threat.polygonCoords[0][0]]
           ])],
         },
@@ -581,11 +591,11 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       });
 
       // --- 7. Trajectories & Markers ---
-      const trajectoryFeatures = MOCK_THREAT_OBJECTS.map(threat => ({
+      const trajectoryFeatures = threatObjects.map((threat: ThreatObject) => ({
         type: 'Feature' as const,
         geometry: {
           type: 'LineString' as const,
-          coordinates: threat.trajectoryPoints.map(p => [p.lng, p.lat]),
+          coordinates: threat.trajectoryPoints.map((p: any) => [p.lng, p.lat]),
         },
         properties: {
           id: threat.id,
@@ -613,8 +623,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         },
       });
 
-      const waypointFeatures = MOCK_THREAT_OBJECTS.flatMap(threat => 
-        threat.trajectoryPoints.map((p, idx) => ({
+      const waypointFeatures = threatObjects.flatMap((threat: ThreatObject) => 
+        threat.trajectoryPoints.map((p: any, idx: number) => ({
           type: 'Feature' as const,
           geometry: {
             type: 'Point' as const,
@@ -734,7 +744,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       });
 
       // Add HTML markers for threat centroids with dynamic hazard badges (Cyclone, Wind Squall, Heat Dome, Rain Cell)
-      MOCK_THREAT_OBJECTS.forEach(threat => {
+      threatObjects.forEach((threat: ThreatObject) => {
         const el = document.createElement('div');
         el.className = 'threat-marker-container';
 

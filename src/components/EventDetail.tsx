@@ -293,11 +293,11 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
               {event.advisory}
             </p>
 
-            {/* Gen AI Integration */}
+            {/* Automated Briefing Integration */}
             <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
               <h4 className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5" />
-                Gen AI Incident Copilot
+                Automated Incident Briefing
               </h4>
               {!genAiReport ? (
                 <button
@@ -305,7 +305,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
                   disabled={isGenerating}
                   className="w-full py-2 rounded-lg bg-cyan-950/50 hover:bg-cyan-900/50 border border-cyan-800 text-cyan-400 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  {isGenerating ? 'Generating LLM Report...' : 'Generate Auto-Report (LLM)'}
+                  {isGenerating ? 'Generating briefing...' : 'Generate Auto-Briefing'}
                 </button>
               ) : (
                 <div className="bg-slate-900 p-3 rounded-lg border border-cyan-900 text-[10px] text-cyan-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">

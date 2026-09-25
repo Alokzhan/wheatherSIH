@@ -168,12 +168,12 @@
     "exceedance_probability": 1.0
   },
   "metrics": {
-    "extreme_peak_preservation_pct": 37.62,
-    "max_absolute_error_mm": 17.4,
-    "csi_score": 0.001,
-    "pod_score": 0.001,
-    "far_score": 0.0,
-    "physics_mass_conservation_loss": 1662.178
+    "extreme_peak_preservation_pct": 100.0,
+    "max_absolute_error_mm": 1561.35,
+    "csi_score": 0.952,
+    "pod_score": 1.0,
+    "far_score": 0.048,
+    "physics_mass_conservation_loss": 753287.875
   },
   "alert": {
     "event_id": "EV-2026-001",
@@ -181,8 +181,8 @@
       21.65,
       88.35
     ],
-    "severity": "WARNING",
-    "composite_risk_score": 63.5,
+    "severity": "CRITICAL",
+    "composite_risk_score": 82.5,
     "affected_area_km2": 576.0,
     "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
   }

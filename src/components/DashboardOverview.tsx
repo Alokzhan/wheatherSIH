@@ -1,4 +1,4 @@
-import React, { useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { 
   Activity, 
   MapPin, 
@@ -11,8 +11,8 @@ import {
   TrendingUp
 } from 'lucide-react';
 
-import { MOCK_ALERTS, MOCK_THREAT_OBJECTS } from '../data/mockData';
-import type { IndiaRegionId, ThreatObject } from '../types/weather';
+import type { IndiaRegionId, ThreatObject, AlertItem } from '../types/weather';
+import { fetchApiAlerts, fetchApiThreatObjects } from '../services/apiService';
 
 // Lazy load to enable proper code splitting with App.tsx
 const LiveRiskMap = lazy(() => import('./LiveRiskMap').then(m => ({ default: m.LiveRiskMap })));
@@ -52,14 +52,32 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   onNavigate,
   onSelectThreat,
 }) => {
-  // Memoize alert data
-  const alertStats = useMemo(() => ({
-    critical: MOCK_ALERTS.filter(a => a.riskLevel === 'critical').length,
-    severe: MOCK_ALERTS.filter(a => a.riskLevel === 'severe').length,
-    total: MOCK_ALERTS.length,
-  }), []);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [threatObjects, setThreatObjects] = useState<ThreatObject[]>([]);
 
-  const threatCount = useMemo(() => MOCK_THREAT_OBJECTS.length, []);
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDashboardData() {
+      const [alertsRes, threatsRes] = await Promise.all([
+        fetchApiAlerts(selectedRegion),
+        fetchApiThreatObjects()
+      ]);
+      if (isMounted) {
+        setAlerts(alertsRes.alerts);
+        setThreatObjects(threatsRes);
+      }
+    }
+    loadDashboardData();
+    return () => { isMounted = false; };
+  }, [selectedRegion]);
+
+  const alertStats = useMemo(() => ({
+    critical: alerts.filter(a => a.riskLevel === 'critical').length,
+    severe: alerts.filter(a => a.riskLevel === 'severe').length,
+    total: alerts.length,
+  }), [alerts]);
+
+  const threatCount = useMemo(() => threatObjects.length, [threatObjects]);
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
@@ -221,7 +239,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
 
             <div className="space-y-3">
-              {MOCK_ALERTS.map((alert) => (
+              {alerts.slice(0, 3).map((alert) => (
                 <div
                   key={alert.id}
                   onClick={() => onNavigate('alerts')}

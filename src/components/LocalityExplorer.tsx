@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   MapPin, 
@@ -9,29 +9,49 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
-import { MOCK_LOCATION_RISKS } from '../data/mockData';
 import type { LocationRiskData } from '../types/weather';
-import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
+import { fetchApiLocationRisk } from '../services/apiService';
 
 interface LocalityExplorerProps {
   initialSearchQuery?: string;
 }
 
 export const LocalityExplorer: React.FC<LocalityExplorerProps> = ({ initialSearchQuery }) => {
-  const [activeLoc, setActiveLoc] = useState<LocationRiskData>(MOCK_LOCATION_RISKS.prayagraj);
+  const [activeLoc, setActiveLoc] = useState<LocationRiskData | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery || '');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isSearching, setIsSearching] = useState<boolean>(true);
 
-  React.useEffect(() => {
-    if (initialSearchQuery && initialSearchQuery.trim()) {
-      setSearchQuery(initialSearchQuery);
-      setIsSearching(true);
-      getPanIndiaLocationRisk(initialSearchQuery.trim())
-        .then(res => setActiveLoc(res))
-        .catch(err => console.error('Error fetching search location:', err))
-        .finally(() => setIsSearching(false));
-    }
+  useEffect(() => {
+    let isMounted = true;
+    const query = (initialSearchQuery && initialSearchQuery.trim()) || 'Prayagraj';
+    setIsSearching(true);
+    fetchApiLocationRisk(query)
+      .then(res => {
+        if (isMounted) setActiveLoc(res.data);
+      })
+      .catch(err => console.error('Error fetching locality risk:', err))
+      .finally(() => {
+        if (isMounted) setIsSearching(false);
+      });
+    return () => { isMounted = false; };
   }, [initialSearchQuery]);
+
+  if (isSearching && !activeLoc) {
+    return (
+      <div className="flex items-center justify-center p-12 space-x-3">
+        <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+        <span className="text-sm font-mono text-slate-400">Loading downscaled locality forecast...</span>
+      </div>
+    );
+  }
+
+  if (!activeLoc) {
+    return (
+      <div className="p-8 text-center text-slate-400 font-mono text-sm">
+        No location risk data available for "{searchQuery}". Try searching for Prayagraj, Varanasi, Delhi, or Wayanad.
+      </div>
+    );
+  }
 
   const loc: LocationRiskData = activeLoc;
 
@@ -42,8 +62,8 @@ export const LocalityExplorer: React.FC<LocalityExplorerProps> = ({ initialSearc
 
     setIsSearching(true);
     try {
-      const res = await getPanIndiaLocationRisk(q);
-      setActiveLoc(res);
+      const res = await fetchApiLocationRisk(q);
+      setActiveLoc(res.data);
     } catch (err) {
       console.error('Search error:', err);
     } finally {

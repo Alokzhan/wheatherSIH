@@ -4,8 +4,8 @@
     21.65,
     88.35
   ],
-  "severity": "WARNING",
-  "composite_risk_score": 63.5,
+  "severity": "CRITICAL",
+  "composite_risk_score": 82.5,
   "affected_area_km2": 576.0,
   "action": "Deploy NDRF Search and Rescue Units to Eastern Coastal Sector"
 }

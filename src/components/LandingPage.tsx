@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Map, 
   Search, 
@@ -12,7 +12,8 @@ import {
   Sparkles,
   Compass
 } from 'lucide-react';
-import { MOCK_THREAT_OBJECTS, MOCK_LOCATION_RISKS } from '../data/mockData';
+import type { ThreatObject } from '../types/weather';
+import { fetchApiThreatObjects, fetchApiLocationRisk } from '../services/apiService';
 
 interface LandingPageProps {
   onNavigate: (tab: string) => void;
@@ -21,8 +22,32 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLocation }) => {
   const [quickQuery, setQuickQuery] = useState('');
+  const [threats, setThreats] = useState<ThreatObject[]>([]);
+  const [locationRisks, setLocationRisks] = useState<Record<string, any>>({});
 
-  const criticalThreat = MOCK_THREAT_OBJECTS.find(t => t.riskLevel === 'critical') || MOCK_THREAT_OBJECTS[0];
+  useEffect(() => {
+    let isMounted = true;
+    fetchApiThreatObjects().then(res => {
+      if (isMounted) setThreats(res);
+    });
+    
+    async function loadLocations() {
+      const keys = ['prayagraj', 'varanasi', 'mirzapur', 'kaushambi'];
+      const results = await Promise.all(keys.map(k => fetchApiLocationRisk(k)));
+      if (isMounted) {
+        const map: Record<string, any> = {};
+        keys.forEach((k, idx) => {
+          map[k] = results[idx];
+        });
+        setLocationRisks(map);
+      }
+    }
+    loadLocations();
+
+    return () => { isMounted = false; };
+  }, []);
+
+  const criticalThreat = threats.find(t => t.riskLevel === 'critical') || threats[0];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,11 +244,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.entries(MOCK_LOCATION_RISKS).map(([key, loc]) => {
+          {Object.entries(locationRisks).map(([key, loc]: [string, any]) => {
+            const riskLevel = loc?.currentRiskLevel || 'moderate';
             const riskColor = 
-              loc.currentRiskLevel === 'critical' ? 'border-red-500/50 bg-red-950/20 text-red-400' :
-              loc.currentRiskLevel === 'severe' ? 'border-orange-500/50 bg-orange-950/20 text-orange-400' :
-              loc.currentRiskLevel === 'moderate' ? 'border-amber-500/50 bg-amber-950/20 text-amber-400' :
+              riskLevel === 'critical' ? 'border-red-500/50 bg-red-950/20 text-red-400' :
+              riskLevel === 'severe' ? 'border-orange-500/50 bg-orange-950/20 text-orange-400' :
+              riskLevel === 'moderate' ? 'border-amber-500/50 bg-amber-950/20 text-amber-400' :
               'border-emerald-500/50 bg-emerald-950/20 text-emerald-400';
 
             return (
@@ -237,22 +263,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-slate-100 text-sm">{loc.locationName}</span>
+                    <span className="font-bold text-slate-100 text-sm">{loc?.locationName || key}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase ${
-                      loc.currentRiskLevel === 'critical' ? 'bg-red-600 text-white' : 'bg-orange-600 text-white'
+                      riskLevel === 'critical' ? 'bg-red-600 text-white' : 'bg-orange-600 text-white'
                     }`}>
-                      {loc.currentRiskLevel}
+                      {riskLevel}
                     </span>
                   </div>
 
                   <div className="text-xs space-y-1 text-slate-300">
                     <div className="flex justify-between">
                       <span className="text-slate-400">24h Rainfall:</span>
-                      <span className="font-mono font-bold">{loc.forecast24h.rainMm} mm</span>
+                      <span className="font-mono font-bold">{loc?.forecast24h?.rainMm ?? 0} mm</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Exceedance Prob:</span>
-                      <span className="font-mono font-bold text-cyan-300">{loc.forecast24h.prob}%</span>
+                      <span className="font-mono font-bold text-cyan-300">{loc?.forecast24h?.prob ?? 0}%</span>
                     </div>
                   </div>
                 </div>

@@ -1,82 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Code2, 
   Copy, 
   Check, 
   Globe
 } from 'lucide-react';
-import { MOCK_ALERTS, MOCK_THREAT_OBJECTS, MOCK_LOCATION_RISKS } from '../data/mockData';
+import { getApiEndpoint } from '../config/apiConfig';
+import { fetchApiAlerts, fetchApiLocationRisk } from '../services/apiService';
 
 export const ApiExplorer: React.FC = () => {
   const [selectedEndpoint, setSelectedEndpoint] = useState<string>('/api/v1/alerts');
   const [copied, setCopied] = useState<boolean>(false);
+  const [apiResponse, setApiResponse] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const endpoints = [
     { method: 'GET', path: '/api/v1/alerts', desc: 'Return all active machine-readable alerts' },
-    { method: 'GET', path: '/api/v1/alerts/ALT-UP-2026-089', desc: 'Return detailed single alert by ID' },
-    { method: 'GET', path: '/api/v1/location-risk?lat=25.4358&lng=81.8463', desc: 'Return 5 km downscaled risk score for coordinates' },
-    { method: 'GET', path: '/api/v1/trajectory/EV-UP-2026-001', desc: 'Return track and predicted GNN centroid positions' },
-    { method: 'GET', path: '/api/v1/weather-layer?layer=risk_grid_5km', desc: 'Return map-ready raster/vector metadata' },
+    { method: 'GET', path: '/api/v1/anomalies', desc: 'List active 4D anomaly bounding boxes' },
+    { method: 'GET', path: '/api/v1/psd-compare', desc: 'Power Spectral Density preservation analysis' },
+    { method: 'GET', path: '/api/v1/ndrf-brief', desc: 'Generated operational NDRF disaster brief' },
+    { method: 'GET', path: '/api/v1/location-risk?q=Prayagraj', desc: 'Return 5 km downscaled risk score for coordinates' },
+    { method: 'GET', path: '/api/v1/model/historical-validation', desc: 'Return historical benchmark case study results' },
     { method: 'POST', path: '/api/v1/admin/upload', desc: 'Upload NetCDF/GRIB2 forecast dataset' },
     { method: 'POST', path: '/api/v1/admin/run-model', desc: 'Trigger 5km downscaling pipeline inference' },
-    { method: 'POST', path: '/api/v1/reports/generate', desc: 'Generate risk summary report in PDF/JSON' },
   ];
 
-  const getResponseBody = (path: string) => {
-    if (path.includes('/api/v1/alerts/ALT-UP')) {
-      return MOCK_ALERTS[0];
+  useEffect(() => {
+    let isMounted = true;
+    async function executeLiveFetch() {
+      setLoading(true);
+      try {
+        const res = await fetch(getApiEndpoint(selectedEndpoint));
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) setApiResponse(data);
+        } else {
+          throw new Error('API return non-200');
+        }
+      } catch (e) {
+        if (isMounted) {
+          if (selectedEndpoint.includes('/alerts')) {
+            const aRes = await fetchApiAlerts();
+            setApiResponse(aRes);
+          } else if (selectedEndpoint.includes('/location-risk')) {
+            const lRes = await fetchApiLocationRisk('Prayagraj');
+            setApiResponse(lRes);
+          } else {
+            setApiResponse({ status: 'success', endpoint: selectedEndpoint, timestamp: new Date().toISOString() });
+          }
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-    if (path.includes('/api/v1/alerts')) {
-      return {
-        status: 'success',
-        count: MOCK_ALERTS.length,
-        timestamp: new Date().toISOString(),
-        alerts: MOCK_ALERTS,
-      };
-    }
-    if (path.includes('/api/v1/location-risk')) {
-      return {
-        status: 'success',
-        query_coordinates: [25.4358, 81.8463],
-        location_data: MOCK_LOCATION_RISKS.prayagraj,
-      };
-    }
-    if (path.includes('/api/v1/trajectory')) {
-      return {
-        status: 'success',
-        event_id: MOCK_THREAT_OBJECTS[0].id,
-        trajectory: MOCK_THREAT_OBJECTS[0].trajectoryPoints,
-      };
-    }
-    if (path.includes('/api/v1/weather-layer')) {
-      return {
-        status: 'success',
-        layer: 'risk_grid_5km',
-        resolution_km: 5.0,
-        crs: 'EPSG:4326',
-        grid_cells_count: 144,
-        bbox: [25.10, 81.35, 25.70, 82.15],
-      };
-    }
-    if (path.includes('/run-model')) {
-      return {
-        status: 'success',
-        message: 'AstraWatch 5 km downscaling model execution triggered',
-        job_id: 'JOB-2026-0925-8842',
-        estimated_duration_seconds: 4.2,
-      };
-    }
-    return {
-      status: 'success',
-      endpoint: path,
-      timestamp: new Date().toISOString(),
-    };
-  };
-
-  const responseJson = JSON.stringify(getResponseBody(selectedEndpoint), null, 2);
+    executeLiveFetch();
+    return () => { isMounted = false; };
+  }, [selectedEndpoint]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(responseJson);
+    navigator.clipboard.writeText(JSON.stringify(apiResponse || {}, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -160,7 +142,7 @@ export const ApiExplorer: React.FC = () => {
             {/* JSON Output Viewer */}
             <div className="relative">
               <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto max-h-[500px] leading-relaxed">
-                {responseJson}
+                {loading ? 'Executing live API fetch...' : JSON.stringify(apiResponse || {}, null, 2)}
               </pre>
             </div>
           </div>

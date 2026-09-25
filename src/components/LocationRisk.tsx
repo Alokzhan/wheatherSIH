@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   MapPin, 
@@ -11,9 +11,8 @@ import {
   ArrowRight,
   Loader2
 } from 'lucide-react';
-import { MOCK_LOCATION_RISKS } from '../data/mockData';
 import type { LocationRiskData } from '../types/weather';
-import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
+import { fetchApiLocationRisk } from '../services/apiService';
 
 interface LocationRiskProps {
   initialLocKey?: string;
@@ -21,12 +20,23 @@ interface LocationRiskProps {
 }
 
 export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'prayagraj', onNavigateToEvent }) => {
-  const [selectedKey, setSelectedKey] = useState<string>(initialLocKey in MOCK_LOCATION_RISKS ? initialLocKey : 'prayagraj');
   const [activeLoc, setActiveLoc] = useState<LocationRiskData | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isSearching, setIsSearching] = useState<boolean>(true);
 
-  const locData: LocationRiskData = activeLoc || MOCK_LOCATION_RISKS[selectedKey] || MOCK_LOCATION_RISKS.prayagraj;
+  useEffect(() => {
+    let isMounted = true;
+    async function loadInitial() {
+      setIsSearching(true);
+      const res = await fetchApiLocationRisk(initialLocKey || 'Prayagraj');
+      if (isMounted) {
+        setActiveLoc(res.data);
+        setIsSearching(false);
+      }
+    }
+    loadInitial();
+    return () => { isMounted = false; };
+  }, [initialLocKey]);
 
   const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,19 +45,23 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
 
     setIsSearching(true);
     try {
-      const res = await getPanIndiaLocationRisk(q);
-      setActiveLoc(res);
+      const res = await fetchApiLocationRisk(q);
+      setActiveLoc(res.data);
     } catch (err) {
-      console.error('Pan India search error:', err);
+      console.error('Location risk search error:', err);
     } finally {
       setIsSearching(false);
     }
   };
 
-  const handlePillSelect = (key: string) => {
-    setSelectedKey(key);
-    setActiveLoc(MOCK_LOCATION_RISKS[key]);
+  const handlePillSelect = async (key: string) => {
+    setIsSearching(true);
+    const res = await fetchApiLocationRisk(key);
+    setActiveLoc(res.data);
+    setIsSearching(false);
   };
+
+  const locData = activeLoc!;
 
   return (
     <div className="space-y-8 pb-10">
@@ -67,17 +81,17 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
 
           {/* Location Selector Pills */}
           <div className="flex items-center gap-2 flex-wrap max-w-xl">
-            {Object.entries(MOCK_LOCATION_RISKS).slice(0, 8).map(([k, d]) => (
+            {['Prayagraj', 'Varanasi', 'Mirzapur', 'Kaushambi', 'Delhi', 'Wayanad', 'Mumbai', 'Kolkata'].map((locName) => (
               <button
-                key={k}
-                onClick={() => handlePillSelect(k)}
+                key={locName}
+                onClick={() => handlePillSelect(locName)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  (activeLoc ? activeLoc.locationName.toLowerCase().includes(k) : selectedKey === k)
+                  (activeLoc && activeLoc.locationName.toLowerCase().includes(locName.toLowerCase()))
                     ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
                     : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
                 }`}
               >
-                {d.locationName.split(',')[0].split(' ')[0]}
+                {locName}
               </button>
             ))}
           </div>
@@ -103,8 +117,17 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
         </form>
       </div>
 
-      {/* Main Location Risk Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {isSearching && !activeLoc ? (
+        <div className="flex items-center justify-center p-12 space-x-3">
+          <Loader2 className="h-6 w-6 text-cyan-400 animate-spin" />
+          <span className="text-sm font-mono text-slate-400">Loading location risk intelligence...</span>
+        </div>
+      ) : !activeLoc ? (
+        <div className="p-8 text-center text-slate-400 font-mono text-sm">
+          No location risk data available for "{searchQuery || initialLocKey}". Try searching for Prayagraj, Varanasi, or Delhi.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Risk Cards & Hourly Curves */}
         <div className="lg:col-span-8 space-y-6">
           {/* Main Status Spotlight Card */}
@@ -328,6 +351,7 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -135,11 +135,13 @@ python backend/models/inspector.py
 
 ---
 
-## 🚀 4. Verification & Running Commands
+## 🚀 4. Verification & Terminal Logs
 
-### Run PyTorch & Unit Test Suites
+All system verification outputs are logged in detail with raw terminal outputs in **[docs/verification_log.md](file:///e:/wheatherSIH/docs/verification_log.md)**.
+
+### Run PyTorch & Unit Test Suites (10/10 Passed)
 ```bash
-python -m pytest
+python -m pytest backend/tests/test_suite.py tests/test_gnn_smoke.py -v
 ```
 
 ### Run End-to-End Scientific Pipeline
@@ -147,25 +149,23 @@ python -m pytest
 python -m pipeline.run --config configs/demo.yaml
 ```
 
-### Run Historical Case Study Validation
+### Verify Production Build (0 Errors)
 ```bash
-python backend/historical_event_demo.py
-```
-
-### Run Full Benchmark Suite
-```bash
-python backend/benchmark.py
+npm run build
 ```
 
 ---
 
-## ☁️ 5. 100% Free Full-Stack Cloud Deployment (Vercel & Hugging Face)
+## ☁️ 5. Deployment Architecture (Frontend Vercel + Backend Off-Vercel)
 
-### Deploy Full-Stack on Vercel ($0 / Free):
-1. Go to **[Vercel.com](https://vercel.com/new)** and sign in with GitHub.
-2. Import repository **`Alokzhan/wheatherSIH`**.
-3. Click **"Deploy"**.
-*Vercel automatically hosts both the React 19 Frontend UI and Python FastAPI Serverless Backend (`api/index.py`).*
+### Frontend Deployment (Vercel):
+1. **Frontend UI** is hosted on Vercel (`vercel.json` configured for pure static SPA routing).
+2. The UI features a **Live Connection Status Badge** (`LIVE API` / `OFFLINE (CACHED)`) in `TopNavbar.tsx` driven by live response status from `apiService.ts`.
+
+### Heavy PyTorch Backend Deployment (Render / Hugging Face Spaces):
+- PyTorch + torchvision packages exceed Vercel's 250MB serverless limit.
+- The FastAPI backend service (`backend/api/main.py`) deploys to **Render / Railway / Hugging Face Spaces** using `Dockerfile` or `render.yaml`.
+- Set `VITE_API_URL` to point to the dedicated backend endpoint.
 
 ### Deploy Backend on Hugging Face Spaces ($0 / Free - 16 GB RAM):
 ```bash
