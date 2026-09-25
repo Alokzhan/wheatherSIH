@@ -153,6 +153,7 @@ export const FarmerAdvisory: React.FC<FarmerAdvisoryProps> = ({ lang, setLang })
                   onChange={(e) => setSelectedVillage(e.target.value)}
                   className="bg-slate-900 border border-slate-700 text-slate-100 font-bold text-base px-3 py-1.5 rounded-xl mt-1 focus:outline-none cursor-pointer"
                 >
+                  <option value="Chinour">Chinour, Shahjahanpur (चिनौर, शाहजहाँपुर)</option>
                   <option value="Phulpur">Phulpur (फूलपुर)</option>
                   <option value="Handia">Handia (हंडिया)</option>
                   <option value="Naini">Naini (नैनी)</option>

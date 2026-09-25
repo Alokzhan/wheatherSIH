@@ -414,6 +414,35 @@ export const MOCK_LOCATION_RISKS: Record<string, LocationRiskData> = {
       official: 'Pre-position State Disaster Response Teams at Pipalkoti and Joshimath.',
     },
   },
+  chinour: {
+    locationName: 'Chinour, Shahjahanpur (UP)',
+    district: 'Shahjahanpur',
+    state: 'Uttar Pradesh',
+    pinCode: '242001',
+    coordinates: [27.8804, 79.9096],
+    regionId: 'up_ganges',
+    currentRiskLevel: 'critical',
+    riskScore: 94,
+    forecast24h: { rainMm: 168.5, prob: 96, risk: 'critical' },
+    forecast48h: { rainMm: 92.0, prob: 82, risk: 'severe' },
+    forecast72h: { rainMm: 38.0, prob: 48, risk: 'moderate' },
+    forecast5d: { rainMm: 14.0, prob: 22, risk: 'low' },
+    hourlyProbabilities: [
+      { hour: '12:00 PM', prob: 88, rainMm: 28.5 },
+      { hour: '03:00 PM', prob: 96, rainMm: 52.0 },
+      { hour: '06:00 PM', prob: 94, rainMm: 45.0 },
+      { hour: '09:00 PM', prob: 85, rainMm: 25.0 },
+      { hour: '12:00 AM', prob: 70, rainMm: 12.0 },
+      { hour: '03:00 AM', prob: 50, rainMm: 6.0 },
+    ],
+    nearestThreatDistanceKm: 2.8,
+    nearestThreatName: 'EV-UP-2026-003 (Garra & Khautra River Basin Continuous Rain Cell)',
+    safetyAdvisory: {
+      public: 'CRITICAL RAINFALL ALERT: Continuous downpour since yesterday (168.5 mm accumulated). Moderate waterlogging in low-lying residential areas of Chinour & Shahjahanpur City.',
+      farmer: 'Paddy & sugarcane fields along Garra river plain face 48h standing water. Ensure field drainage channels are cleared immediately to prevent root rotting.',
+      official: 'District Emergency Operations Centre (DEOC Shahjahanpur): Monitor Garra river level at Azizganj bridge and activate pumps in flooded wards.',
+    },
+  },
 };
 
 export const MOCK_ALERTS: AlertItem[] = [
