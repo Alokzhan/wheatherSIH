@@ -363,13 +363,18 @@ from data_pipeline import RealERA5DataPipeline, NWPDataPipeline
 from stage1_gnn.efi_compute import compute_efi_1d, compute_multi_hazard_efi
 from stage1_gnn.icosahedral_mesh import build_spherical_icosahedral_mesh
 from stage1_gnn.gnn_model import run_gnn_inference, predict_anomaly_trajectory, train_gnn_model
+from stage1_gnn.st_gnn_model import track_anomaly_object_st_gnn, train_st_gnn_model
 from stage2_diffusion.ddpm import run_diffusion_downscale, train_ddpm_model
 from stage2_diffusion.downscale_cnn import calculate_metrics
 from stage2_diffusion.physics_loss import physics_informed_loss, compute_physics_loss_with_breakdown
 from stage2_diffusion.evaluation_metrics import compute_quantitative_metrics
+from ensemble_engine import EnsembleNWPEngine
+from historical_validation import HistoricalValidationEngine
 
 pipeline = RealERA5DataPipeline()
 legacy_pipeline = NWPDataPipeline()
+ensemble_engine = EnsembleNWPEngine(num_members=50)
+historical_suite = HistoricalValidationEngine()
 
 @app.get("/api/v1/data/era5")
 def get_real_era5_data():
@@ -402,6 +407,44 @@ def trigger_gnn_training(epochs: int = 10):
         "status": "success",
         "gnnTrainingResult": res
     }
+
+@app.post("/api/v1/model/train-st-gnn")
+def trigger_st_gnn_training(epochs: int = 10):
+    """Triggers PyTorch ST-GNN Spatio-Temporal Model Training Loop."""
+    res = train_st_gnn_model(epochs=epochs)
+    return {
+        "status": "success",
+        "stGnnTrainingResult": res
+    }
+
+@app.get("/api/v1/model/st-gnn-track")
+def run_st_gnn_object_tracking(objectId: str = "STORM-A17-BOB", lat: float = 19.5, lon: float = 88.5):
+    """
+    ST-GNN Anomaly Object Tracker:
+    Processes 4D spatio-temporal weather fields, extracts explicit anomaly objects (Object ID, trajectory cones,
+    multi-variable intensity evolution, and confidence scores across T+0 to T+240).
+    """
+    res = track_anomaly_object_st_gnn(object_id=objectId, origin_lat=lat, origin_lon=lon)
+    return res
+
+@app.get("/api/v1/model/ensemble-uncertainty")
+def get_ensemble_uncertainty(threshold_mm: float = 50.0):
+    """
+    50-Member Ensemble NWP & Spatial Uncertainty Estimation Endpoint.
+    """
+    grid_info = pipeline.generate_calibrated_era5_grid(for_api=False)
+    coarse_rain = grid_info["variables"]["total_precipitation_mm_24h"][:20, :20]
+    res = ensemble_engine.process_ensemble_forecast(coarse_rain, threshold_mm=threshold_mm)
+    return res
+
+@app.get("/api/v1/model/historical-validation")
+def get_historical_event_validation():
+    """
+    Historical Benchmark Validation Suite:
+    Evaluates StormTrace AI against 4 major Indian extreme events (Cyclone Amphan, North India Heat Dome, Mumbai Flood, Kosi Cloudburst).
+    """
+    res = historical_suite.evaluate_historical_case_studies()
+    return res
 
 @app.post("/api/v1/model/train-ddpm")
 def trigger_ddpm_training(epochs: int = 10):
