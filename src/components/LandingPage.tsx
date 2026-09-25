@@ -54,7 +54,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
             </h1>
 
             <p className="text-slate-300 text-base leading-relaxed">
-              AstraWatch AI downscales 12 km NWP ensemble forecasts into terrain-aware 5 km probabilistic risk maps. It detects weather anomalies, tracks threat trajectory footprints, and delivers early warning intelligence for Uttar Pradesh / Prayagraj.
+              StormTrace AI downscales 12 km NWP ensemble forecasts into terrain-aware 5 km probabilistic risk maps. It detects weather anomalies, tracks threat trajectory footprints, and delivers early warning intelligence for Uttar Pradesh / Prayagraj.
             </p>
 
             {/* Quick Search Form */}
@@ -121,7 +121,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
               <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
                 <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
                   <span className="text-slate-400 block text-[10px]">Peak Rain Rate</span>
-                  <span className="text-slate-100 font-bold text-sm">{criticalThreat.peakIntensityMmH} mm/hr</span>
+                  <span className="text-slate-100 font-bold text-sm">{criticalThreat.hazardMetricDisplay || `${criticalThreat.peakIntensityMmH} mm/hr`}</span>
                 </div>
                 <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
                   <span className="text-slate-400 block text-[10px]">Exceedance Prob (&gt;50mm)</span>
@@ -322,7 +322,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
             <span className="text-[10px] font-mono text-cyan-400 block mb-1">STEP 04 • AI DOWNSCALING</span>
             <h4 className="font-bold text-slate-100 mb-1">5 km Risk Grid</h4>
             <p className="text-[11px] text-slate-400 leading-tight">
-              U-Net / ResNet conditional diffusion preserving peak extreme quantiles
+              Conditional DDPM/DDIM preserving peak multi-hazard quantiles
             </p>
           </div>
 

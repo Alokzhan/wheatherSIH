@@ -25,7 +25,7 @@ export const HistoricalAnalysis: React.FC = () => {
               Historical Event Replay &amp; Downscaling Validation Engine
             </h2>
             <p className="text-xs text-slate-400">
-              Evaluate 5 km AstraWatch downscaling against coarse NWP forecasts and IMD ground rain-gauge observations.
+              Evaluate 5 km StormTrace DDPM downscaling against coarse NWP forecasts and IMD ground observations.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export const HistoricalAnalysis: React.FC = () => {
           <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
             <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
               <BarChart2 className="h-5 w-5 text-cyan-400" />
-              Peak Rainfall Intensity Preservation Benchmark (mm/24h)
+              Peak Intensity Preservation Benchmark (PSD Avoidance Metric)
             </h3>
 
             <div className="space-y-4 text-xs">
@@ -92,16 +92,16 @@ export const HistoricalAnalysis: React.FC = () => {
                 </div>
               </div>
 
-              {/* AstraWatch 5km */}
+              {/* StormTrace 5km */}
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-cyan-300 font-bold">AstraWatch AI 5 km Downscaled:</span>
-                  <span className="font-mono text-cyan-300 font-bold">{event.peakRainfallAstraWatchMm} mm (High Accuracy)</span>
+                  <span className="text-cyan-300 font-bold">StormTrace AI 5 km DDPM Downscaled:</span>
+                  <span className="font-mono text-cyan-300 font-bold">{event.peakRainfallStormTraceMm} mm (High Accuracy)</span>
                 </div>
                 <div className="h-4 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
                   <div 
                     className="h-full bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50"
-                    style={{ width: `${(event.peakRainfallAstraWatchMm / 200) * 100}%` }}
+                    style={{ width: `${(event.peakRainfallStormTraceMm / 200) * 100}%` }}
                   />
                 </div>
               </div>
@@ -174,7 +174,7 @@ export const HistoricalAnalysis: React.FC = () => {
               </div>
 
               <div className="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 col-span-2">
-                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Peak Preservation Error (95th/99th Quantile)</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">PSD Spectral Deviation % (Spectral Smoothing Error)</span>
                 <span className="text-xl font-bold text-emerald-400 font-mono">{event.metrics.peakPreservationErrorPercent}% <span className="text-xs font-normal text-slate-400">(vs 45.2% in coarse NWP)</span></span>
                 <span className="text-[10px] text-emerald-400 block mt-1">Extremes preserved by Conditional Diffusion loss</span>
               </div>

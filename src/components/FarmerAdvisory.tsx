@@ -17,6 +17,49 @@ interface FarmerAdvisoryProps {
 export const FarmerAdvisory: React.FC<FarmerAdvisoryProps> = ({ lang, setLang }) => {
   const [selectedVillage, setSelectedVillage] = useState<string>('Phulpur');
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [liveData, setLiveData] = useState<{ rain: string; prob: string; loading: boolean }>({
+    rain: 'Loading...',
+    prob: 'Loading...',
+    loading: true
+  });
+
+  // Coordinates for live data fetching
+  const villageCoords: Record<string, { lat: number; lon: number }> = {
+    'Chinour': { lat: 27.88, lon: 79.91 },
+    'Phulpur': { lat: 25.55, lon: 82.08 },
+    'Handia': { lat: 25.37, lon: 82.18 },
+    'Naini': { lat: 25.39, lon: 81.85 },
+    'Karchhana': { lat: 25.29, lon: 81.93 },
+    'Soraon': { lat: 25.61, lon: 81.85 },
+    'Bara': { lat: 25.21, lon: 81.71 },
+  };
+
+  React.useEffect(() => {
+    const coords = villageCoords[selectedVillage] || villageCoords['Phulpur'];
+    setLiveData(prev => ({ ...prev, loading: true }));
+    
+    // Fetch live weather data using Open-Meteo API
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=precipitation_sum,precipitation_probability_max&timezone=Asia/Kolkata&forecast_days=1`)
+      .then(res => res.json())
+      .then(data => {
+        const rainRaw = data?.daily?.precipitation_sum?.[0];
+        const probRaw = data?.daily?.precipitation_probability_max?.[0];
+        
+        setLiveData({
+          rain: rainRaw !== undefined ? `${rainRaw} mm` : 'No Data',
+          prob: probRaw !== undefined ? `${probRaw}%` : 'N/A',
+          loading: false
+        });
+      })
+      .catch(err => {
+        console.error("Failed to fetch live weather", err);
+        setLiveData({
+          rain: 'Offline',
+          prob: 'Offline',
+          loading: false
+        });
+      });
+  }, [selectedVillage]);
 
   const advisoryText = {
     en: {
@@ -190,12 +233,16 @@ export const FarmerAdvisory: React.FC<FarmerAdvisoryProps> = ({ lang, setLang })
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
                 <span className="text-slate-400 block text-xs">Expected Rain (24h)</span>
-                <span className="text-xl font-bold text-red-400 font-mono">{currentText.rain24h}</span>
+                <span className="text-xl font-bold text-red-400 font-mono">
+                  {liveData.loading ? '...' : liveData.rain} {liveData.loading ? '' : '(Live)'}
+                </span>
               </div>
 
               <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
                 <span className="text-slate-400 block text-xs">Rain Probability</span>
-                <span className="text-xl font-bold text-cyan-300 font-mono">{currentText.prob}</span>
+                <span className="text-xl font-bold text-cyan-300 font-mono">
+                  {liveData.loading ? '...' : liveData.prob} {liveData.loading ? '' : '(Live)'}
+                </span>
               </div>
             </div>
           </div>

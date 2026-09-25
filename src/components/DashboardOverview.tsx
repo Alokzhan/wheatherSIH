@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, lazy, Suspense } from 'react';
 import { 
   Activity, 
   MapPin, 
@@ -7,11 +7,14 @@ import {
   AlertTriangle, 
   ArrowRight, 
   Layers,
-  Sparkles
+  Sparkles,
+  TrendingUp
 } from 'lucide-react';
-import { MOCK_ALERTS } from '../data/mockData';
-import { LiveRiskMap } from './LiveRiskMap';
+import { MOCK_ALERTS, MOCK_THREAT_OBJECTS } from '../data/mockData';
 import type { IndiaRegionId, ThreatObject } from '../types/weather';
+
+// Lazy load to enable proper code splitting with App.tsx
+const LiveRiskMap = lazy(() => import('./LiveRiskMap').then(m => ({ default: m.LiveRiskMap })));
 
 interface DashboardOverviewProps {
   selectedRegion: IndiaRegionId;
@@ -19,125 +22,189 @@ interface DashboardOverviewProps {
   onSelectThreat: (threat: ThreatObject) => void;
 }
 
+// Stat card component for reuse
+const StatCard: React.FC<{
+  label: string;
+  value: string;
+  subtext: React.ReactNode;
+  icon: React.ElementType;
+  iconBg: string;
+  iconColor: string;
+  accentColor?: string;
+}> = ({ label, value, subtext, icon: Icon, iconBg, iconColor, accentColor }) => (
+  <div className="storm-card storm-card-hover p-5 flex items-center justify-between stat-shimmer">
+    <div>
+      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">{label}</span>
+      <span className={`text-2xl font-black font-mono ${accentColor || 'text-slate-900 dark:text-slate-100'}`}>
+        {value}
+      </span>
+      <div className="mt-1 text-[10px]">{subtext}</div>
+    </div>
+    <div className={`h-12 w-12 rounded-2xl ${iconBg} border flex items-center justify-center ${iconColor}`}>
+      <Icon className="h-6 w-6" />
+    </div>
+  </div>
+);
+
 export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   selectedRegion,
   onNavigate,
   onSelectThreat,
 }) => {
+  // Memoize alert data
+  const alertStats = useMemo(() => ({
+    critical: MOCK_ALERTS.filter(a => a.riskLevel === 'critical').length,
+    severe: MOCK_ALERTS.filter(a => a.riskLevel === 'severe').length,
+    total: MOCK_ALERTS.length,
+  }), []);
+
+  const threatCount = useMemo(() => MOCK_THREAT_OBJECTS.length, []);
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  }, []);
+
+  const [liveStats, setLiveStats] = React.useState({
+    temp: 'Loading...',
+    rain: 'Loading...',
+    loading: true
+  });
+
+  React.useEffect(() => {
+    // Fetch live data for New Delhi (Central reference)
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.23&daily=precipitation_sum&current_weather=true&timezone=Asia/Kolkata')
+      .then(res => res.json())
+      .then(data => {
+        setLiveStats({
+          temp: data?.current_weather?.temperature ? `${data.current_weather.temperature}°C` : 'N/A',
+          rain: data?.daily?.precipitation_sum?.[0] !== undefined ? `${data.daily.precipitation_sum[0]} mm` : '0 mm',
+          loading: false
+        });
+      })
+      .catch(err => {
+        console.error('Failed to fetch dashboard live weather:', err);
+        setLiveStats({ temp: 'Offline', rain: 'Offline', loading: false });
+      });
+  }, []);
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Welcome Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0f1628] p-6 rounded-2xl border border-slate-200 dark:border-[#1a2540] shadow-sm transition-colors">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>AI-Powered Extreme Weather Tracking &amp; Hyperlocal Alerts</span>
+            <span>AI-Powered Extreme Weather Tracking & Hyperlocal Alerts</span>
           </div>
           <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">
-            Good Morning, Disaster Officer
+            {greeting}, Disaster Officer
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Here is the latest Pan-India weather downscaling and extreme event activity snapshot.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Pan-India weather downscaling and extreme event activity snapshot — {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => onNavigate('map')}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-blue-600/20"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
           >
-            Open Interactive GIS Map
+            <Layers className="h-4 w-4" />
+            Open 3D GIS Map
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* 4 Stat Cards Row (Screen 2 from Mockup) */}
+      {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1 */}
-        <div className="storm-card p-5 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">Active Events</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">5 Tracked</span>
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-1">
-              <span className="text-red-500 font-bold">Severe: 3</span> • 
-              <span className="text-amber-500 font-bold">Moderate: 2</span>
+        <StatCard
+          label="Active Events"
+          value={`${threatCount} Tracked`}
+          subtext={
+            <div className="flex items-center gap-2 text-slate-500">
+              <span className="text-red-500 font-bold">Critical: {alertStats.critical}</span> • 
+              <span className="text-amber-500 font-bold"> Severe: {alertStats.severe}</span>
             </div>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50 flex items-center justify-center text-red-600 dark:text-red-400">
-            <Activity className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="storm-card p-5 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">Areas at Risk</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">12 Districts</span>
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-1">
+          }
+          icon={Activity}
+          iconBg="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/40"
+          iconColor="text-red-600 dark:text-red-400"
+        />
+        <StatCard
+          label="Areas at Risk"
+          value="12 Districts"
+          subtext={
+            <div className="flex items-center gap-2 text-slate-500">
               <span className="text-red-500 font-bold">High: 5</span> • 
-              <span className="text-amber-500 font-bold">Mod: 5</span> • 
-              <span className="text-emerald-500 font-bold">Low: 2</span>
+              <span className="text-amber-500 font-bold"> Mod: 5</span> • 
+              <span className="text-emerald-500 font-bold"> Low: 2</span>
             </div>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-400">
-            <MapPin className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="storm-card p-5 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">Total Precipitation (24h)</span>
-            <span className="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">78 mm</span>
-            <span className="text-[10px] text-slate-500 block mt-1 font-mono">Max: 142 mm (Prayagraj / Mumbai)</span>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
-            <CloudRain className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Card 4 */}
-        <div className="storm-card p-5 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">Avg. Temperature</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">32°C</span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-1">+1.2°C vs yesterday</span>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-            <Thermometer className="h-6 w-6" />
-          </div>
-        </div>
+          }
+          icon={MapPin}
+          iconBg="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40"
+          iconColor="text-amber-600 dark:text-amber-400"
+        />
+        <StatCard
+          label="Total Precipitation (Live)"
+          value={liveStats.loading ? '...' : liveStats.rain}
+          subtext={<span className="text-slate-500 font-mono">24h Data (New Delhi Ref)</span>}
+          icon={CloudRain}
+          iconBg="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/40"
+          iconColor="text-blue-600 dark:text-blue-400"
+          accentColor="text-blue-600 dark:text-blue-400"
+        />
+        <StatCard
+          label="Current Temperature"
+          value={liveStats.loading ? '...' : liveStats.temp}
+          subtext={
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" />
+              Live API Sync
+            </span>
+          }
+          icon={Thermometer}
+          iconBg="bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40"
+          iconColor="text-emerald-600 dark:text-emerald-400"
+        />
       </div>
 
-      {/* Split Section: Active Weather Events Radar Map + Recent Alerts Feed */}
+      {/* Map + Alerts Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 65%: Radar GIS Map Preview */}
+        {/* Map Preview */}
         <div className="lg:col-span-8 storm-card overflow-hidden flex flex-col h-[520px]">
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
+          <div className="p-4 border-b border-slate-200 dark:border-[#1a2540] flex items-center justify-between bg-white dark:bg-[#0f1628]">
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-blue-600" />
+              <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">
-                Active Weather Events &amp; 5 km Downscaled Radar
+                Active Weather Events & 3D Downscaled Radar
               </h3>
             </div>
             <button
               onClick={() => onNavigate('map')}
-              className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline"
+              className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1"
             >
-              Expand Full Map
+              Expand Full Map <ArrowRight className="h-3 w-3" />
             </button>
           </div>
-
           <div className="flex-1 relative">
-            <LiveRiskMap selectedRegion={selectedRegion} onSelectThreat={onSelectThreat} />
+            <Suspense fallback={
+              <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[#0a0f1e]">
+                <div className="text-xs text-slate-400 font-mono animate-pulse">Loading 3D Map Engine...</div>
+              </div>
+            }>
+              <LiveRiskMap selectedRegion={selectedRegion} onSelectThreat={onSelectThreat} />
+            </Suspense>
           </div>
         </div>
 
-        {/* Right 35%: Recent Alerts Feed (Screen 2 Mockup) */}
+        {/* Recent Alerts Feed */}
         <div className="lg:col-span-4 storm-card p-5 space-y-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#1a2540] pb-3 mb-3">
               <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-500" />
                 Recent Hazard Alerts
@@ -155,19 +222,18 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                 <div
                   key={alert.id}
                   onClick={() => onNavigate('alerts')}
-                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 hover:border-blue-500 cursor-pointer transition-all space-y-1"
+                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111827]/60 border border-slate-200 dark:border-[#1e2d48] hover:border-blue-500/50 dark:hover:border-blue-500/40 cursor-pointer transition-all space-y-1 group"
                 >
                   <div className="flex items-center justify-between">
                     <span className={`text-[9px] px-2 py-0.5 rounded font-mono font-bold uppercase ${
-                      alert.riskLevel === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300' :
-                      'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300'
+                      alert.riskLevel === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300' :
+                      'bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300'
                     }`}>
                       {alert.riskLevel}
                     </span>
                     <span className="text-[10px] text-slate-400 font-mono">{alert.district}</span>
                   </div>
-
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs line-clamp-1">
+                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {alert.title}
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
@@ -180,7 +246,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
           <button
             onClick={() => onNavigate('alerts')}
-            className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-2 transition-colors border border-slate-200 dark:border-slate-700"
+            className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-[#111827] hover:bg-slate-200 dark:hover:bg-[#1e2d48] text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-slate-200 dark:border-[#1e2d48]"
           >
             Open Alert Center Dispatch
             <ArrowRight className="h-3.5 w-3.5" />

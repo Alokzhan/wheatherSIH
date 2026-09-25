@@ -13,10 +13,25 @@ import { MOCK_LOCATION_RISKS } from '../data/mockData';
 import type { LocationRiskData } from '../types/weather';
 import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
 
-export const LocalityExplorer: React.FC = () => {
+interface LocalityExplorerProps {
+  initialSearchQuery?: string;
+}
+
+export const LocalityExplorer: React.FC<LocalityExplorerProps> = ({ initialSearchQuery }) => {
   const [activeLoc, setActiveLoc] = useState<LocationRiskData>(MOCK_LOCATION_RISKS.prayagraj);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery || '');
   const [isSearching, setIsSearching] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (initialSearchQuery && initialSearchQuery.trim()) {
+      setSearchQuery(initialSearchQuery);
+      setIsSearching(true);
+      getPanIndiaLocationRisk(initialSearchQuery.trim())
+        .then(res => setActiveLoc(res))
+        .catch(err => console.error('Error fetching search location:', err))
+        .finally(() => setIsSearching(false));
+    }
+  }, [initialSearchQuery]);
 
   const loc: LocationRiskData = activeLoc;
 

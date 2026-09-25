@@ -85,7 +85,7 @@ export const AdminPanel: React.FC = () => {
 
     setTimeout(() => {
       setLogs(prev => [
-        `[STAGE 2 U-NET] Downscaling 12km coarse grid to 5km grid using moisture consistency loss...`,
+        `[STAGE 2 DDPM] Downscaling 12km coarse grid to 5km grid using physics conservation loss...`,
         `[SUCCESS] 5 km Probabilistic Risk Grid successfully updated in PostGIS database!`,
         ...prev
       ]);

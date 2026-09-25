@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Activity, 
   MapPin, 
@@ -9,7 +9,11 @@ import {
   Play, 
   Pause, 
   AlertTriangle, 
-  ArrowRight
+  ArrowRight,
+  Bot,
+  Sparkles,
+  Shield,
+  Truck
 } from 'lucide-react';
 import { MOCK_THREAT_OBJECTS } from '../data/mockData';
 import type { ThreatObject } from '../types/weather';
@@ -26,8 +30,36 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
   );
   const [trajectoryStep, setTrajectoryStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [genAiReport, setGenAiReport] = useState<string>('');
+  const [isDispatching, setIsDispatching] = useState<boolean>(false);
+  const [dispatchStatus, setDispatchStatus] = useState<string>('');
 
   const event: ThreatObject = MOCK_THREAT_OBJECTS.find(e => e.id === activeEventId) || MOCK_THREAT_OBJECTS[0];
+
+  // Reset states when event changes
+  useEffect(() => {
+    setGenAiReport('');
+    setDispatchStatus('');
+  }, [activeEventId]);
+
+  const handleGenerateReport = () => {
+    setIsGenerating(true);
+    setGenAiReport('');
+    setTimeout(() => {
+      setIsGenerating(false);
+      setGenAiReport(`[LLaMA-3 GEN-AI REPORT]\nEvent: ${event.name}\nAnalysis: Based on the latest DGL Spherical GNN trajectory and DDPM downscaling, the ${event.hazardType || 'anomaly'} is projected to intensify. The 4D-ABB shows a direct impact vector over ${event.affectedVillages[0]}.\nRecommendation: Immediate preemptive mobilization of SDRF teams to ${event.district}.`);
+    }, 1500);
+  };
+
+  const handleAgenticDispatch = () => {
+    setIsDispatching(true);
+    setDispatchStatus('Agent analyzing resource availability...');
+    setTimeout(() => {
+      setDispatchStatus('Agent successfully routed 3 SDRF units & 2 Medical Copters to ' + event.affectedVillages[0]);
+      setIsDispatching(false);
+    }, 2000);
+  };
 
   const handleExportPDF = () => {
     generateEventReportPDF(event);
@@ -126,7 +158,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
 
             <div className="glass-panel p-4 rounded-xl border border-slate-800">
               <span className="text-[10px] text-slate-400 block uppercase font-semibold">Peak Intensity</span>
-              <span className="text-xl font-bold text-red-400 font-mono">{event.peakIntensityMmH} <span className="text-xs font-normal text-slate-400">mm/h</span></span>
+              <span className="text-xl font-bold text-red-400 font-mono">{event.hazardMetricDisplay || <>{event.peakIntensityMmH} <span className="text-xs font-normal text-slate-400">mm/h</span></>}</span>
               <span className="text-[10px] text-red-400 block mt-1">Convective Cell Core</span>
             </div>
 
@@ -191,7 +223,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
           <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
             <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
               <Layers className="h-5 w-5 text-cyan-400" />
-              12 km Coarse Grid vs AstraWatch 5 km Downscaled Risk Grid
+              12 km Coarse Grid vs StormTrace 5 km Downscaled Risk Grid
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -202,24 +234,24 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
                   <span className="font-mono text-amber-400">Smoothed Extreme</span>
                 </div>
                 <p className="text-slate-400 text-[11px]">
-                  Standard numerical weather models average rainfall over large 144 km² cells, missing localized convective peaks and river confluence flash floods.
+                  Standard numerical weather models average extreme anomalies over large 144 km² cells, missing localized convective peaks and river confluence flash floods.
                 </p>
                 <div className="bg-slate-950 p-2 rounded border border-slate-800 text-slate-400 font-mono text-[11px]">
-                  Simulated Peak Rainfall: ~54.0 mm/24h (Underestimates flood risk)
+                  Simulated Coarse Anomaly: ~54.0 mm/24h equivalent (Underestimates flood risk)
                 </div>
               </div>
 
-              {/* AstraWatch 5km */}
+              {/* StormTrace 5km */}
               <div className="bg-cyan-950/30 border border-cyan-500/50 p-4 rounded-xl space-y-2">
                 <div className="flex justify-between font-bold text-cyan-300">
-                  <span>AstraWatch 5 km Downscaling</span>
+                  <span>StormTrace 5 km DDPM Downscaling</span>
                   <span className="font-mono text-emerald-400">Peak Preserved</span>
                 </div>
                 <p className="text-slate-300 text-[11px]">
-                  Uses terrain DEM elevation, moisture flux constraints, and quantile loss to preserve local peak intensity in 25 km² high-resolution grid blocks.
+                  Uses terrain DEM elevation, multi-hazard flux constraints, and physics loss to preserve local peak intensity in 25 km² high-resolution grid blocks.
                 </p>
                 <div className="bg-cyan-950/80 p-2 rounded border border-cyan-800 text-cyan-200 font-mono font-bold text-[11px]">
-                  Downscaled Peak Rainfall: 118.4 mm/24h (Accurate alert)
+                  Downscaled Extreme Anomaly: 118.4 mm/24h equivalent (Accurate alert)
                 </div>
               </div>
             </div>
@@ -253,10 +285,54 @@ export const EventDetail: React.FC<EventDetailProps> = ({ selectedEventId, onNav
               {event.advisory}
             </p>
 
+            {/* Gen AI Integration */}
+            <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
+              <h4 className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Gen AI Incident Copilot
+              </h4>
+              {!genAiReport ? (
+                <button
+                  onClick={handleGenerateReport}
+                  disabled={isGenerating}
+                  className="w-full py-2 rounded-lg bg-cyan-950/50 hover:bg-cyan-900/50 border border-cyan-800 text-cyan-400 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isGenerating ? 'Generating LLM Report...' : 'Generate Auto-Report (LLM)'}
+                </button>
+              ) : (
+                <div className="bg-slate-900 p-3 rounded-lg border border-cyan-900 text-[10px] text-cyan-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
+                  {genAiReport}
+                </div>
+              )}
+            </div>
+
+            {/* Agentic AI Integration */}
+            <div className="mt-2 pt-3 border-t border-slate-700 space-y-3">
+              <h4 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                <Bot className="h-3.5 w-3.5" />
+                Agentic Resource Dispatch
+              </h4>
+              {!dispatchStatus ? (
+                <button
+                  onClick={handleAgenticDispatch}
+                  disabled={isDispatching}
+                  className="w-full py-2 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/50 border border-emerald-800 text-emerald-400 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Truck className="h-3.5 w-3.5" />
+                  {isDispatching ? 'Agent Negotiating...' : 'Trigger Autonomous Dispatch'}
+                </button>
+              ) : (
+                <div className="bg-slate-900 p-3 rounded-lg border border-emerald-900 text-[10px] text-emerald-200 font-mono flex items-start gap-2 shadow-inner">
+                  <Shield className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
+                  <span>{dispatchStatus}</span>
+                </div>
+              )}
+            </div>
+
             {onNavigateToMap && (
               <button
                 onClick={onNavigateToMap}
-                className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-lg"
+                className="w-full mt-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-lg"
               >
                 View Threat Polygon on GIS Map
                 <ArrowRight className="h-3.5 w-3.5" />

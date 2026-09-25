@@ -1,42 +1,102 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* StormTrace / AstraWatch Premium UI System */
+/* ═══════════════════════════════════════════════════════════
+   StormTrace AI — Premium Enterprise Design System v3.0
+   Senior-Grade Design Tokens & Utility Classes
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Design Tokens (Light) ─── */
 :root {
-  --sidebar-bg: #0f172a;
-  --sidebar-hover: #1e293b;
-  --sidebar-active: #2563eb;
-  --sidebar-text: #94a3b8;
+  /* Sidebar */
+  --sidebar-bg: #0a0f1e;
+  --sidebar-hover: #151d33;
+  --sidebar-active: #3b82f6;
+  --sidebar-text: #8896b3;
   --sidebar-text-active: #ffffff;
-  
-  --bg-main: #f8fafc;
+
+  /* Surfaces */
+  --bg-main: #f4f7fc;
+  --bg-subtle: #eef2f9;
   --card-bg: #ffffff;
-  --card-border: #e2e8f0;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  
-  --color-primary: #2563eb;
+  --card-bg-hover: #fafbff;
+  --card-border: #e1e8f0;
+
+  /* Typography */
+  --text-primary: #0c1631;
+  --text-secondary: #3d4f6e;
+  --text-muted: #6b7d99;
+  --text-accent: #2563eb;
+
+  /* Brand Colors */
+  --color-primary: #3b82f6;
+  --color-primary-glow: rgba(59, 130, 246, 0.15);
   --color-cyan: #06b6d4;
+  --color-cyan-glow: rgba(6, 182, 212, 0.12);
   --color-emerald: #10b981;
   --color-amber: #f59e0b;
   --color-orange: #ea580c;
   --color-red: #ef4444;
+  --color-violet: #8b5cf6;
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #8b5cf6 100%);
+  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+  --gradient-card-shine: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,255,0.6) 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(12, 22, 49, 0.04), 0 1px 2px rgba(12, 22, 49, 0.02);
+  --shadow-md: 0 4px 16px rgba(12, 22, 49, 0.06), 0 1px 4px rgba(12, 22, 49, 0.04);
+  --shadow-lg: 0 12px 40px rgba(12, 22, 49, 0.08), 0 4px 12px rgba(12, 22, 49, 0.04);
+  --shadow-glow-blue: 0 0 24px rgba(59, 130, 246, 0.15);
+  --shadow-glow-cyan: 0 0 24px rgba(6, 182, 212, 0.12);
+  --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.15);
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-default: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ─── Design Tokens (Dark) ─── */
 [data-theme="dark"] {
-  --sidebar-bg: #090d16;
-  --sidebar-hover: #1e293b;
-  --sidebar-active: #2563eb;
-  --sidebar-text: #94a3b8;
+  --sidebar-bg: #060a14;
+  --sidebar-hover: #111827;
+  --sidebar-active: #3b82f6;
+  --sidebar-text: #6b7d99;
   --sidebar-text-active: #ffffff;
-  
-  --bg-main: #0b1120;
-  --card-bg: #111827;
-  --card-border: #1f2937;
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
+
+  --bg-main: #070b16;
+  --bg-subtle: #0c1120;
+  --card-bg: #0f1628;
+  --card-bg-hover: #141d32;
+  --card-border: #1a2540;
+
+  --text-primary: #f0f4ff;
+  --text-secondary: #b4c1db;
+  --text-muted: #6b7d99;
+  --text-accent: #60a5fa;
+
+  --gradient-surface: linear-gradient(180deg, #0f1628 0%, #0a1020 100%);
+  --gradient-card-shine: linear-gradient(135deg, rgba(15,22,40,0.95) 0%, rgba(10,16,32,0.8) 100%);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── Global Reset & Base ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -44,87 +104,215 @@ body {
   padding: 0;
   background-color: var(--bg-main);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom Scrollbars */
+/* ─── Premium Scrollbars ─── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #c8d1e0;
+  border-radius: 10px;
+  transition: background var(--transition-fast);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: #1e2d48;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #2a3f5f;
 }
 
-/* Card Styling */
+/* ─── Card System ─── */
 .storm-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 0.85rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.storm-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-default);
+}
+
+.storm-card:hover::before {
+  opacity: 1;
 }
 
 .storm-card-hover:hover {
-  border-color: rgba(37, 99, 235, 0.4);
-  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.1);
-  transform: translateY(-1px);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: var(--shadow-md), var(--shadow-glow-blue);
+  transform: translateY(-2px);
 }
 
-/* Ticker Marquee */
+/* ─── Glass Panel (Dark Mode Premium) ─── */
+.glass-panel {
+  background: rgba(15, 22, 40, 0.85);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(20, 29, 50, 0.92);
+  border-color: rgba(59, 130, 246, 0.25);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+/* ─── Ticker Marquee Animation ─── */
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
 .animate-marquee {
-  animation: marquee 32s linear infinite;
+  animation: marquee 40s linear infinite;
 }
 .animate-marquee:hover {
   animation-play-state: paused;
 }
 
-/* Leaflet Map Styling */
+/* ─── Pulse Glow Animation ─── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ─── Gradient Text Utility ─── */
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Leaflet Map Styling ─── */
 .leaflet-container {
-  background-color: #e2e8f0 !important;
+  background-color: #e8ecf4 !important;
   font-family: inherit !important;
 }
 [data-theme="dark"] .leaflet-container {
-  background-color: #0f172a !important;
+  background-color: #0a0f1e !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #0f172a !important;
+  background: rgba(10, 15, 30, 0.95) !important;
   color: #ffffff !important;
-  border: 1px solid #2563eb;
-  backdrop-filter: blur(8px);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .leaflet-popup-tip {
-  background: #0f172a !important;
+  background: rgba(10, 15, 30, 0.95) !important;
 }
 
-/* Hazard Risk Badges */
+/* ─── Mapbox GL Overrides ─── */
+.mapboxgl-map {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+
+.mapboxgl-canvas {
+  outline: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.mapboxgl-popup-content {
+  background: rgba(10, 15, 30, 0.95) !important;
+  color: #f0f4ff !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 12px !important;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: rgba(10, 15, 30, 0.95) !important;
+}
+
+.mapboxgl-ctrl-group {
+  background: rgba(10, 15, 30, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.mapboxgl-ctrl-group button {
+  background: transparent !important;
+  border: none !important;
+  color: #b4c1db !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  background: rgba(10, 15, 30, 0.7) !important;
+  color: #6b7d99 !important;
+  font-size: 10px !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+}
+
+/* ─── Risk Severity Badges ─── */
 .badge-critical {
   background-color: #fef2f2;
   color: #dc2626;
   border: 1px solid #fecaca;
 }
 [data-theme="dark"] .badge-critical {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: rgba(239, 68, 68, 0.12);
   color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.25);
 }
 
 .badge-severe {
@@ -133,9 +321,9 @@ body {
   border: 1px solid #ffedd5;
 }
 [data-theme="dark"] .badge-severe {
-  background-color: rgba(249, 115, 22, 0.15);
+  background-color: rgba(249, 115, 22, 0.12);
   color: #fdba74;
-  border-color: rgba(249, 115, 22, 0.3);
+  border-color: rgba(249, 115, 22, 0.25);
 }
 
 .badge-moderate {
@@ -144,9 +332,9 @@ body {
   border: 1px solid #fef3c7;
 }
 [data-theme="dark"] .badge-moderate {
-  background-color: rgba(245, 158, 11, 0.15);
+  background-color: rgba(245, 158, 11, 0.12);
   color: #fde047;
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.25);
 }
 
 .badge-low {
@@ -155,7 +343,59 @@ body {
   border: 1px solid #a7f3d0;
 }
 [data-theme="dark"] .badge-low {
-  background-color: rgba(16, 185, 129, 0.15);
+  background-color: rgba(16, 185, 129, 0.12);
   color: #6ee7b7;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+/* ─── Stat Card Shimmer Effect ─── */
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.stat-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: shimmer-slide 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Loading Skeleton ─── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--card-border) 25%, transparent 50%, var(--card-border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Focus States (Accessibility) ─── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Selection Color ─── */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: inherit;
 }

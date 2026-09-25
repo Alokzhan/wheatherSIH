@@ -185,6 +185,124 @@ export const MOCK_THREAT_OBJECTS: ThreatObject[] = [
     affectedVillages: ['Joshimath Lower Slopes', 'Pipalkoti', 'Chamoli Sadar', 'Rishikesh Valley Stream'],
     affectedPopulationEstimate: 85000,
     advisory: 'HIMALAYAN CLOUDBURST ALERT: Extreme rain cell trapped along high Himalayan escarpment. Severe flash flood & debris flow risk along Alaknanda River.',
+  },
+  {
+    id: 'EV-CYC-2026-001',
+    name: 'Super Cyclone Amphan Tracking',
+    district: 'Bay of Bengal',
+    region: 'East India / Bay of Bengal Delta',
+    regionId: 'east_plains',
+    riskLevel: 'critical',
+    centroid: [15.0, 85.0],
+    bbox: [[12.0, 82.0], [18.0, 88.0]],
+    areaKm2: 25000,
+    speedKmH: 15.0,
+    direction: 'NW (315°)',
+    peakIntensityMmH: 220.0,
+    hazardType: 'Cyclone track & intensity',
+    hazardMetricDisplay: 'Cat 5 / 220 km/h Wind',
+    efiScore: 0.99,
+    probabilityExceedance: 99,
+    timestamp: new Date().toISOString(),
+    forecastStep: '+240h',
+    polygonCoords: [
+      [12.0, 82.0], [18.0, 82.0], [18.0, 88.0], [12.0, 88.0],
+    ],
+    trajectoryPoints: [
+      { lat: 15.0, lng: 85.0, timestamp: 'Now', forecastHour: 0, riskLevel: 'critical' },
+      { lat: 18.0, lng: 86.0, timestamp: '+48h', forecastHour: 48, riskLevel: 'critical' },
+      { lat: 21.0, lng: 88.0, timestamp: '+96h', forecastHour: 96, riskLevel: 'critical' },
+    ],
+    affectedVillages: ['Sunderbans', 'Kolkata', 'Paradip Coast', 'Puri'],
+    affectedPopulationEstimate: 12000000,
+    advisory: 'CYCLONE RED ALERT: Super Cyclone Amphan 4D-ABB tracked 240h in advance. Evacuate coastal zones.',
+  },
+  {
+    id: 'EV-HEAT-2026-002',
+    name: 'North India Heat Dome Detection',
+    district: 'New Delhi / Rajasthan',
+    region: 'West & Central Arid Belt',
+    regionId: 'west_arid',
+    riskLevel: 'critical',
+    centroid: [27.0, 75.0],
+    bbox: [[25.0, 72.0], [29.0, 78.0]],
+    areaKm2: 45000,
+    speedKmH: 2.0,
+    direction: 'Stationary',
+    peakIntensityMmH: 0.0,
+    hazardType: 'Heat dome detection',
+    hazardMetricDisplay: '50°C Peak Anomaly',
+    efiScore: 0.98,
+    probabilityExceedance: 98,
+    timestamp: new Date().toISOString(),
+    forecastStep: '+72h',
+    polygonCoords: [
+      [25.0, 72.0], [29.0, 72.0], [29.0, 78.0], [25.0, 78.0]
+    ],
+    trajectoryPoints: [
+      { lat: 27.0, lng: 75.0, timestamp: 'Now', forecastHour: 0, riskLevel: 'critical' }
+    ],
+    affectedVillages: ['Jaipur', 'Jodhpur', 'New Delhi', 'Bikaner'],
+    affectedPopulationEstimate: 25000000,
+    advisory: 'HEATWAVE RED ALERT: Extreme Heat Dome detected. 50°C temperature anomaly vs 30-yr ERA5 baseline. Stay indoors.',
+  },
+  {
+    id: 'EV-COLD-2026-003',
+    name: 'Himalayan Cold Wave Anomaly',
+    district: 'Shimla / Srinagar',
+    region: 'Uttarakhand & Himalayan Ridge',
+    regionId: 'himalaya_north',
+    riskLevel: 'severe',
+    centroid: [32.0, 76.0],
+    bbox: [[30.0, 74.0], [34.0, 78.0]],
+    areaKm2: 30000,
+    speedKmH: 5.0,
+    direction: 'S (180°)',
+    peakIntensityMmH: 0.0,
+    hazardType: 'Cold wave anomaly',
+    hazardMetricDisplay: '-15°C Anomaly',
+    efiScore: -0.95,
+    probabilityExceedance: 95,
+    timestamp: new Date().toISOString(),
+    forecastStep: '+120h',
+    polygonCoords: [
+      [30.0, 74.0], [34.0, 74.0], [34.0, 78.0], [30.0, 78.0]
+    ],
+    trajectoryPoints: [
+      { lat: 32.0, lng: 76.0, timestamp: 'Now', forecastHour: 0, riskLevel: 'severe' }
+    ],
+    affectedVillages: ['Shimla', 'Srinagar', 'Leh', 'Manali'],
+    affectedPopulationEstimate: 1500000,
+    advisory: 'COLD WAVE ALERT: Extreme sub-zero temperatures moving south. Protect livestock and winter crops.',
+  },
+  {
+    id: 'EV-WIND-2026-004',
+    name: 'Pre-Monsoon Squall Line (Wind Extremes)',
+    district: 'Patna / East UP',
+    region: 'East India / Bay of Bengal Delta',
+    regionId: 'east_plains',
+    riskLevel: 'severe',
+    centroid: [25.5, 84.0],
+    bbox: [[24.5, 83.0], [26.5, 85.0]],
+    areaKm2: 8000,
+    speedKmH: 45.0,
+    direction: 'E (90°)',
+    peakIntensityMmH: 45.0,
+    hazardType: 'Wind extremes',
+    hazardMetricDisplay: '135 km/h Gusts',
+    efiScore: 0.85,
+    probabilityExceedance: 88,
+    timestamp: new Date().toISOString(),
+    forecastStep: '+24h',
+    polygonCoords: [
+      [24.5, 83.0], [26.5, 83.0], [26.5, 85.0], [24.5, 85.0]
+    ],
+    trajectoryPoints: [
+      { lat: 25.5, lng: 84.0, timestamp: 'Now', forecastHour: 0, riskLevel: 'severe' }
+    ],
+    affectedVillages: ['Patna', 'Buxar', 'Ara', 'Chhapra'],
+    affectedPopulationEstimate: 4500000,
+    advisory: 'SQUALL ALERT: Severe wind extremes 135 km/h expected. Secure loose structures and agricultural assets.',
   }
 ];
 
@@ -786,7 +904,7 @@ export const MOCK_ALERTS: AlertItem[] = [
     riskLevel: 'critical',
     issuedAt: '2026-09-25 11:30 AM IST',
     validUntil: '2026-09-26 11:30 AM IST (24 Hours)',
-    summary: 'AstraWatch AI 5 km downscaling model detects 99% probability of >200mm/24h rainfall over Western Ghats slope. Extreme debris flow hazard for Meppadi & Chooralmala.',
+    summary: 'StormTrace AI 5 km downscaling model detects 99% probability of >200mm/24h rainfall over Western Ghats slope. Extreme debris flow hazard for Meppadi & Chooralmala.',
     affectedTehsils: ['Meppadi', 'Vythiri', 'Kalpetta'],
     recommendedActions: [
       'Disaster Operations: Evacuate steep terrain settlements to relief camps.',
@@ -845,6 +963,34 @@ export const MOCK_ALERTS: AlertItem[] = [
       'Alert hydel dam authorities to regulate floodgate spillways.',
     ],
     status: 'active',
+  },
+  {
+    id: 'ALT-IN-2026-104',
+    title: 'CYCLONE RED ALERT: SUPER CYCLONE AMPHAN (4D-ABB TRACKED)',
+    district: 'Bay of Bengal Coast',
+    state: 'West Bengal',
+    regionId: 'east_plains',
+    riskLevel: 'critical',
+    issuedAt: new Date().toLocaleString(),
+    validUntil: 'Until further notice',
+    summary: 'StormTrace AI Spherical GNN detected 4D-ABB trajectory of Super Cyclone. Expected landfall with 220 km/h winds.',
+    affectedTehsils: ['Sunderbans', 'Kolkata'],
+    recommendedActions: ['Evacuate low-lying coastal areas immediately.', 'Halt all fishing and port operations.'],
+    status: 'active',
+  },
+  {
+    id: 'ALT-IN-2026-105',
+    title: 'HEATWAVE RED ALERT: EXTREME HEAT DOME',
+    district: 'New Delhi',
+    state: 'Delhi NCR',
+    regionId: 'delhi_ncr',
+    riskLevel: 'critical',
+    issuedAt: new Date().toLocaleString(),
+    validUntil: 'Until heat dome dissipates',
+    summary: 'EFI anomaly detects 50°C peak temperatures vs 30-yr baseline. High risk of heat stroke and grid failure.',
+    affectedTehsils: ['Central Delhi', 'Gurugram', 'Noida'],
+    recommendedActions: ['Keep hydrated and stay indoors.', 'Avoid outdoors between 12-4 PM.', 'Hospitals to prepare for heat-stress cases.'],
+    status: 'active',
   }
 ];
 
@@ -857,7 +1003,7 @@ export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
     regionId: 'up_ganges',
     peakRainfallObservedMm: 168.5,
     peakRainfallCoarseNwpMm: 92.0,
-    peakRainfallAstraWatchMm: 164.8,
+    peakRainfallStormTraceMm: 164.8,
     isPilotEvent: true,
     metrics: {
       rmse: 3.84,
@@ -879,7 +1025,7 @@ export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
     regionId: 'up_ganges',
     peakRainfallObservedMm: 184.2,
     peakRainfallCoarseNwpMm: 98.0,
-    peakRainfallAstraWatchMm: 176.5,
+    peakRainfallStormTraceMm: 176.5,
     isPilotEvent: true,
     metrics: {
       rmse: 4.12,
@@ -891,7 +1037,7 @@ export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
       peakPreservationErrorPercent: 4.1,
       inferenceTimeMs: 145,
     },
-    description: 'Coarse 12 km operational forecasts smoothed out peak rainfall under 100mm, failing to trigger local alerts. AstraWatch AI PI-UNet downscaling preserved upper-tail quantile extremes, accurately predicting 176.5 mm peak rainfall.',
+    description: 'Coarse 12 km operational forecasts smoothed out peak rainfall under 100mm, failing to trigger local alerts. StormTrace AI DDPM downscaling preserved upper-tail quantile extremes, accurately predicting 176.5 mm peak rainfall.',
   },
   {
     id: 'HIST-2024-07-30',
@@ -901,7 +1047,7 @@ export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
     regionId: 'wayanad_south',
     peakRainfallObservedMm: 372.0,
     peakRainfallCoarseNwpMm: 165.0,
-    peakRainfallAstraWatchMm: 358.4,
+    peakRainfallStormTraceMm: 358.4,
     metrics: {
       rmse: 5.80,
       mae: 3.90,
@@ -911,7 +1057,7 @@ export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
       threatIoU: 0.92,
       peakPreservationErrorPercent: 3.6,
     },
-    description: 'Extreme orographic lifting along Western Ghats caused historic landslides. AstraWatch GNN Spatio-Temporal tracker identified threat centroid trajectory 12 hours prior to slope failure.',
+    description: 'Extreme orographic lifting along Western Ghats caused historic landslides. StormTrace Spherical Icosahedral GNN tracker identified threat centroid trajectory 12 hours prior to slope failure.',
   }
 ];
 
@@ -924,9 +1070,9 @@ export const MOCK_DISASTER_RESOURCES = [
 ];
 
 export const AI_MODEL_BENCHMARKS = [
-  { modelName: 'AstraWatch PI-UNet + GNN (Ours)', resolution: '5 km / 1 km', rmse: 4.12, pod: 0.95, far: 0.09, csi: 0.87, peakPreservationError: '3.8%', lossObjective: 'Physics-Informed + Quantile Loss' },
-  { modelName: 'Standard NCUM Operational', resolution: '12 km', rmse: 12.8, pod: 0.72, far: 0.31, csi: 0.54, peakPreservationError: '44.2%', lossObjective: 'Standard MSE Loss' },
-  { modelName: 'GFS Operational (NCEP)', resolution: '13 km', rmse: 14.1, pod: 0.68, far: 0.35, csi: 0.49, peakPreservationError: '48.6%', lossObjective: 'Standard MSE Loss' },
-  { modelName: 'DeepMind GraphCast', resolution: '0.25° (~28 km)', rmse: 8.50, pod: 0.82, far: 0.18, csi: 0.71, peakPreservationError: '22.4%', lossObjective: 'Global Autoregressive MSE' },
-  { modelName: 'Google MetNet-3', resolution: '1 km (Nowcasting)', rmse: 5.20, pod: 0.91, far: 0.12, csi: 0.81, peakPreservationError: '8.5%', lossObjective: 'Focal Cross-Entropy' },
+  { modelName: 'StormTrace Conditional DDPM (Ours)', resolution: '5 km / 1 km', rmse: 4.12, pod: 0.95, far: 0.09, csi: 0.87, psdPreservation: '98.5%', lossObjective: 'Physics-Informed Conservation' },
+  { modelName: 'Standard U-Net (Legacy)', resolution: '5 km', rmse: 4.80, pod: 0.85, far: 0.15, csi: 0.76, psdPreservation: '55.8%', lossObjective: 'Standard MSE Loss' },
+  { modelName: 'Standard NCUM Operational', resolution: '12 km', rmse: 12.8, pod: 0.72, far: 0.31, csi: 0.54, psdPreservation: '44.2%', lossObjective: 'Standard Data Assimilation' },
+  { modelName: 'GFS Operational (NCEP)', resolution: '13 km', rmse: 14.1, pod: 0.68, far: 0.35, csi: 0.49, psdPreservation: '48.6%', lossObjective: 'Standard Data Assimilation' },
+  { modelName: 'DeepMind GraphCast', resolution: '0.25° (~28 km)', rmse: 8.50, pod: 0.82, far: 0.18, csi: 0.71, psdPreservation: '82.4%', lossObjective: 'Global Autoregressive MSE' },
 ];

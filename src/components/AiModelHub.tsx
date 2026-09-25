@@ -55,10 +55,10 @@ export const AiModelHub: React.FC = () => {
 
             <h2 className="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight flex items-center gap-3">
               <Cpu className="h-8 w-8 text-cyan-400" />
-              AstraWatch AI &amp; ML Model Architecture Hub
+              StormTrace AI &amp; ML Model Architecture Hub
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl mt-1">
-              Dual-Stage Physics-Informed U-Net (PI-UNet) for 5 km &amp; 1 km Downscaling paired with Spatio-Temporal Graph Neural Networks (ST-GNN) for Storm Trajectory Tracking.
+              Dual-Stage Conditional DDPM/DDIM for 5 km &amp; 1 km Downscaling paired with Spherical Icosahedral GNN for Multi-Hazard Tracking.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export const AiModelHub: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Stage 1 & Stage 2 Deep Dive */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Stage 1: ST-GNN Storm Cell Tracker */}
+          {/* Stage 1: Spherical GNN Tracker */}
           <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-3">
@@ -82,17 +82,17 @@ export const AiModelHub: React.FC = () => {
                   STAGE 1
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-base">Spatio-Temporal Graph Neural Network (ST-GNN + ConvLSTM)</h3>
+                  <h3 className="font-bold text-slate-100 text-base">Spherical Icosahedral GNN (DGL)</h3>
                   <p className="text-xs text-slate-400">Extreme-event object detection &amp; trajectory prediction engine</p>
                 </div>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
-                GNN + ConvLSTM
+                Spherical Mesh
               </span>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Standard meteorological models treat weather as flat 2D arrays. AstraWatch represents intense rain cells as dynamic graph nodes <code className="text-cyan-300">G = (V, E)</code> with spatial connectivity <code className="text-cyan-300">E</code> and temporal ConvLSTM hidden states. Connected components are grouped into threat objects with exact centroid <code className="text-cyan-300">(x_c, y_c)</code>, bounding box polygon, area (km²), and trajectory vectors.
+              Standard models use flat 2D projections. StormTrace uses a Spherical Icosahedral GNN mesh (DGL) to avoid spatial distortions, extracting 4D Anomaly Bounding Boxes (4D-ABB) and precise trajectory cones for extreme multi-hazard objects.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
@@ -105,13 +105,13 @@ export const AiModelHub: React.FC = () => {
                 <span className="text-emerald-400 font-bold text-sm">&lt; 1.8 km Offset</span>
               </div>
               <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                <span className="text-slate-400 block text-[10px]">Threat Polygon IoU</span>
-                <span className="text-amber-400 font-bold text-sm">0.88 Overlap</span>
+                <span className="text-slate-400 block text-[10px]">4D-ABB IoU</span>
+                <span className="text-amber-400 font-bold text-sm">0.89 Overlap</span>
               </div>
             </div>
           </div>
 
-          {/* Stage 2: Physics-Informed U-Net Downscaler */}
+          {/* Stage 2: Conditional DDPM Downscaler */}
           <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-3">
@@ -119,27 +119,27 @@ export const AiModelHub: React.FC = () => {
                   STAGE 2
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-base">Physics-Informed U-Net (PI-UNet) + Conditional Diffusion</h3>
+                  <h3 className="font-bold text-slate-100 text-base">Conditional DDPM/DDIM (HuggingFace Diffusers)</h3>
                   <p className="text-xs text-slate-400">12 km to 5 km &amp; 1 km high-resolution downscaling preserving peak extremes</p>
                 </div>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">
-                ResNet / Diffusion
+                DDPM Diffusion
               </span>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Standard MSE loss in weather AI causes severe smoothing, underestimating dangerous extreme cloudbursts by 40-50%. AstraWatch uses a conditioned loss function combining coarse-grid mass conservation loss, moisture flux loss, and upper-tail quantile preservation loss:
+              Standard U-Net models suffer from spectral smoothing. StormTrace uses a Conditional Diffusion process guided by 4 physical laws: Mass, Moisture, Energy, and Vorticity conservation, avoiding blurring and preserving peak extremes.
             </p>
 
             {/* Rendered Math Formula Block */}
             <div className="bg-slate-950 p-4 rounded-xl border border-cyan-500/30 text-center font-mono text-xs text-cyan-300 space-y-2">
               <span className="text-[10px] text-slate-400 block uppercase tracking-wider font-sans">Multi-Objective Physics Loss Function:</span>
               <div className="text-sm font-bold text-cyan-200 py-1 font-mono">
-                {'L_total = L_recon + λ1*L_coarse + λ2*L_moisture + λ3*L_quantile + λ4*L_spatial'}
+                {'L_total = L_recon + λ1*L_mass + λ2*L_moisture + λ3*L_energy + λ4*L_vorticity'}
               </div>
               <p className="text-[11px] text-slate-400 font-sans">
-                Where <code className="text-cyan-300">L_quantile</code> penalizes 95th/99th percentile underestimation to keep peak rainfall sharp.
+                Where physics losses preserve multi-hazard extremes and ensure thermodynamic consistency.
               </p>
             </div>
           </div>
@@ -161,7 +161,7 @@ export const AiModelHub: React.FC = () => {
                     <th className="p-3">POD (Hit Rate)</th>
                     <th className="p-3">FAR (False Alarms)</th>
                     <th className="p-3">CSI Score</th>
-                    <th className="p-3">Peak Quantile Error</th>
+                    <th className="p-3">PSD Preservation %</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/80">
@@ -192,7 +192,7 @@ export const AiModelHub: React.FC = () => {
           <div className="glass-panel p-5 rounded-2xl border border-cyan-500/40 space-y-4">
             <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2">
               <Zap className="h-4 w-4 text-cyan-400" />
-              Live AI Inference Simulator (Interactive Tensor Downscaling)
+              Live Diffusion Simulator (DDPM Downscaling)
             </h3>
 
             <p className="text-xs text-slate-400">
@@ -256,7 +256,7 @@ export const AiModelHub: React.FC = () => {
                 className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg"
               >
                 {isInferring ? <Activity className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-                {isInferring ? 'Executing PyTorch Tensor Pass...' : 'Run PI-UNet Inference Pass'}
+                {isInferring ? 'Executing PyTorch Tensor Pass...' : 'Run DDPM Diffusion Pass'}
               </button>
             </div>
 

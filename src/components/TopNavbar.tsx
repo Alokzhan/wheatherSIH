@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Search, 
   Globe, 
@@ -6,7 +6,9 @@ import {
   Sun, 
   Moon, 
   Clock, 
-  AlertTriangle
+  AlertTriangle,
+  Zap,
+  X
 } from 'lucide-react';
 import { INDIA_REGION_PRESETS } from '../data/mockData';
 import type { IndiaRegionId } from '../types/weather';
@@ -29,6 +31,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState('');
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     const updateClock = () => {
@@ -48,95 +51,102 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       onSearchSubmit(searchQuery.trim());
     }
-  };
+  }, [searchQuery, onSearchSubmit]);
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between gap-4 sticky top-0 z-30 transition-colors">
-      {/* Search Input Bar */}
+    <header className="h-14 bg-white/95 dark:bg-[#0a0f1e]/95 backdrop-blur-xl border-b border-slate-200 dark:border-[#141d32] px-5 flex items-center justify-between gap-4 sticky top-0 z-30 transition-colors">
+      {/* Search Input */}
       <form onSubmit={handleSearch} className="flex-1 max-w-lg relative">
-        <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search className={`h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${searchFocused ? 'text-blue-500' : 'text-slate-400'}`} />
         <input
           type="text"
-          placeholder="Search location e.g., Prayagraj, Bareilly, Mumbai, Wayanad, 211001..."
+          placeholder="Search Prayagraj, Mumbai, Wayanad, PIN 211001..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all"
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          className="w-full bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d48] rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 dark:focus:ring-blue-500/10 transition-all"
         />
       </form>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 shrink-0">
-        {/* Primary Pilot Focus Badge */}
-        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
-          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span>Pilot Focus: Prayagraj &amp; Shahjahanpur</span>
+      <div className="flex items-center gap-2.5 shrink-0">
+        {/* Pan-India Status Badge */}
+        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/8 to-blue-500/8 dark:from-cyan-500/10 dark:to-blue-500/10 border border-cyan-500/20 dark:border-cyan-500/15 text-cyan-700 dark:text-cyan-400 text-[11px] font-semibold">
+          <Zap className="h-3 w-3" />
+          <span>Pan-India Coverage Active</span>
         </div>
 
-        {/* Live Date/Time Badge & Data Freshness */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-mono">
-          <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-          <span>{currentTime || 'Mon, 28 Apr 2025 10:24 AM IST'}</span>
-          <span className="text-[10px] text-emerald-500 font-bold ml-1">• Fresh (2m)</span>
+        {/* Live Clock */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d48] text-slate-600 dark:text-slate-300 text-[11px] font-mono">
+          <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+          <span>{currentTime || 'Loading...'}</span>
+          <span className="text-[9px] text-emerald-500 font-bold ml-0.5">• Live</span>
         </div>
 
         {/* Region Selector */}
-        <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-200">
-          <Globe className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+        <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d48] rounded-xl px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-200">
+          <Globe className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
           <select
             value={selectedRegion}
             onChange={(e) => setSelectedRegion(e.target.value as IndiaRegionId)}
             className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer text-slate-800 dark:text-slate-200"
           >
             {INDIA_REGION_PRESETS.map(r => (
-              <option key={r.id} value={r.id} className="bg-white dark:bg-slate-900">{r.name}</option>
+              <option key={r.id} value={r.id} className="bg-white dark:bg-[#111827]">{r.name}</option>
             ))}
           </select>
         </div>
 
-        {/* Theme Switcher */}
+        {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+          className="p-2 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d48] text-slate-600 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-[#1e2d48] transition-all"
           title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
         >
           {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
         </button>
 
-        {/* Notification Bell */}
+        {/* Bell Notifications */}
         <div className="relative">
           <button
             onClick={() => setShowAlertModal(!showAlertModal)}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 relative transition-all"
+            className="p-2 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d48] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1e2d48] relative transition-all"
           >
             <Bell className="h-4 w-4" />
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
           </button>
 
-          {/* Quick Notification Dropdown */}
           {showAlertModal && (
-            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-4 z-50 text-xs space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#0f1628] border border-slate-200 dark:border-[#1a2540] rounded-2xl shadow-2xl p-4 z-50 text-xs space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-[#1e2d48] pb-2">
                 <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   Active Severe Alerts (4)
                 </span>
-                <span className="text-[10px] text-blue-600 font-semibold cursor-pointer">Mark All Read</span>
+                <button onClick={() => setShowAlertModal(false)}>
+                  <X className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" />
+                </button>
               </div>
 
               <div className="space-y-2">
-                <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 space-y-1">
+                <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 space-y-1 cursor-pointer hover:border-red-400 dark:hover:border-red-700 transition-colors">
                   <span className="font-bold text-red-600 dark:text-red-400 block">Severe Thunderstorm Alert</span>
                   <span className="text-[10px] text-slate-500 block">Prayagraj / Phulpur • 29m ago</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 space-y-1">
+                <div className="p-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/30 space-y-1 cursor-pointer hover:border-orange-400 dark:hover:border-orange-700 transition-colors">
                   <span className="font-bold text-orange-600 dark:text-orange-400 block">Heavy Rainfall Warning</span>
                   <span className="text-[10px] text-slate-500 block">Mumbai Suburban • 1h ago</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/30 space-y-1 cursor-pointer hover:border-amber-400 dark:hover:border-amber-700 transition-colors">
+                  <span className="font-bold text-amber-600 dark:text-amber-400 block">Flash Flood Risk</span>
+                  <span className="text-[10px] text-slate-500 block">Wayanad / Western Ghats • 2h ago</span>
                 </div>
               </div>
             </div>

@@ -22,7 +22,8 @@ export type MapLayerId =
   | 'trajectory'
   | 'risk_grid_5km'
   | 'admin_boundaries'
-  | 'vulnerability';
+  | 'vulnerability'
+  | 'wind_extremes';
 
 export interface ThreatObject {
   id: string;
@@ -37,6 +38,8 @@ export interface ThreatObject {
   speedKmH: number;
   direction: string;
   peakIntensityMmH: number;
+  hazardType?: string;
+  hazardMetricDisplay?: string;
   efiScore: number; // Extreme Forecast Index (-1 to 1)
   probabilityExceedance: number; // 0 to 100%
   timestamp: string;
@@ -149,7 +152,7 @@ export interface HistoricalEvent {
   regionId: IndiaRegionId;
   peakRainfallObservedMm: number;
   peakRainfallCoarseNwpMm: number;
-  peakRainfallAstraWatchMm: number;
+  peakRainfallStormTraceMm: number;
   metrics: {
     rmse: number;
     mae: number;

@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3 shrink-0 text-[11px] opacity-90">
           <span className="hidden sm:inline">Coverage: All India (3.28M km²)</span>
           <span className="px-2 py-0.5 rounded bg-black/20 font-mono font-bold">
-            PI-UNet + ST-GNN Active
+            DDPM + GNN Active
           </span>
         </div>
       </div>
@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Pan-India 5 km &amp; 1 km Physics-Informed Extreme Rainfall Intelligence
+              Multi-Hazard Extreme Anomaly Tracking + Downscaling Engine
             </p>
           </div>
         </div>
