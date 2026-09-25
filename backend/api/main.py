@@ -538,6 +538,18 @@ def execute_inference(req: InferenceReq):
     }
 
 
+@app.get("/api/v1/model/historical-validation")
+def get_historical_validation():
+    """
+    Returns 10-Year Historical Ground-Truth Validation Suite Results.
+    """
+    try:
+        from historical_validation import HistoricalValidationEngine
+    except ImportError:
+        from backend.historical_validation import HistoricalValidationEngine
+    engine = HistoricalValidationEngine()
+    return engine.evaluate_historical_case_studies()
+
 @app.get("/api/v1/model/validation")
 def get_model_validation():
     """

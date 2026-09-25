@@ -329,3 +329,5 @@ export const HistoricalAnalysis: React.FC = () => {
     </div>
   );
 };
+
+export default HistoricalAnalysis;
