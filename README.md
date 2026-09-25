@@ -63,20 +63,17 @@ StormTrace AI goes beyond rainfall. It features comprehensive multi-hazard modul
 
 ## 🧠 AI/ML Methodology & Mathematical Formulation
 
-### Stage 1: Spherical Icosahedral GNN (DGL)
-To avoid distortions from flat-grid projections, we use a **Spherical Icosahedral GNN**. It constructs an icosahedral mesh on the sphere using Deep Graph Library (DGL). We compute the Extreme Forecast Index (EFI) vs a 30-yr ERA5 baseline to find anomalies, yielding **4D Anomaly Bounding Boxes (x,y,z,t)** and uncertainty trajectory cones.
+### Stage 1: Spherical Icosahedral GNN (DGL) / Statistical EFI Engine
+To avoid distortions from flat-grid projections, the full vision uses a **Spherical Icosahedral GNN**. However, for hackathon deployability and rapid inference, a **lightweight statistical version is implemented**. We compute the Extreme Forecast Index (EFI) vs a 30-yr ERA5 baseline (via real integral equations in SciPy) to find anomalies, yielding **4D Anomaly Bounding Boxes (x,y,z,t)**.
 
-### Stage 2: Conditional Diffusion Downscaler
-We completely eliminated the U-Net architecture due to its tendency for **spectral smoothing**. Instead, we employ a **Conditional DDPM/DDIM** forward and reverse diffusion process. This generates amplitude-preserving high-frequency details.
+### Stage 2: Physics-Informed CNN Downscaler
+We completely eliminated the U-Net architecture due to its tendency for **spectral smoothing**. Instead, we employ a **Statistical Baseline (Bicubic) + Residual CNN**. This generates amplitude-preserving high-frequency details trained in under 2 hours.
 
-#### Physics-Informed Loss (4 Laws)
-The diffusion model is guided by 4 physical conservation laws:
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{recon}} + \lambda_1 \mathcal{L}_{\text{mass}} + \lambda_2 \mathcal{L}_{\text{moisture}} + \lambda_3 \mathcal{L}_{\text{energy}} + \lambda_4 \mathcal{L}_{\text{vorticity}}$$
+#### Physics-Informed Loss (Mass Conservation)
+The downscaling model is guided by physical conservation laws. We implemented a robust and achievable constraint:
+$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{recon}} + \lambda_1 \mathcal{L}_{\text{mass}}$$
 Where:
-- $\mathcal{L}_{\text{mass}}$: Mass conservation between coarse and downscaled grids.
-- $\mathcal{L}_{\text{moisture}}$: Moisture flux conservation.
-- $\mathcal{L}_{\text{energy}}$: Thermodynamic energy conservation.
-- $\mathcal{L}_{\text{vorticity}}$: Kinematic vorticity preservation.
+- $\mathcal{L}_{\text{mass}}$: Mass conservation between coarse and downscaled grids (ensuring total precipitation volume remains physically valid across resolutions).
 
 ### Stage 3: Generative AI & Agentic Workflows
 To transition from mere "prediction" to "action", StormTrace AI features two autonomous workflows:
