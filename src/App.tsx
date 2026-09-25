@@ -4,6 +4,8 @@ import { TopNavbar } from './components/TopNavbar';
 import { DashboardOverview } from './components/DashboardOverview';
 import type { ThreatObject, IndiaRegionId } from './types/weather';
 
+import HistoricalAnalysis from './components/HistoricalAnalysis';
+
 // Lazy loading tab components for code splitting & performance
 const LiveRiskMap = lazy(() => import('./components/LiveRiskMap').then(m => ({ default: m.LiveRiskMap })));
 const LocalityExplorer = lazy(() => import('./components/LocalityExplorer').then(m => ({ default: m.LocalityExplorer })));
@@ -11,7 +13,6 @@ const AiModelHub = lazy(() => import('./components/AiModelHub').then(m => ({ def
 const LocationRisk = lazy(() => import('./components/LocationRisk').then(m => ({ default: m.LocationRisk })));
 const EventDetail = lazy(() => import('./components/EventDetail').then(m => ({ default: m.EventDetail })));
 const AlertCenter = lazy(() => import('./components/AlertCenter').then(m => ({ default: m.AlertCenter })));
-const HistoricalAnalysis = lazy(() => import('./components/HistoricalAnalysis').then(m => ({ default: m.HistoricalAnalysis || m.default })));
 const FarmerAdvisory = lazy(() => import('./components/FarmerAdvisory').then(m => ({ default: m.FarmerAdvisory })));
 const DisasterDashboard = lazy(() => import('./components/DisasterDashboard').then(m => ({ default: m.DisasterDashboard })));
 const AdminPanel = lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
