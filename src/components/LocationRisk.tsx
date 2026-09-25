@@ -8,10 +8,12 @@ import {
   User, 
   Radio, 
   Clock, 
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react';
 import { MOCK_LOCATION_RISKS } from '../data/mockData';
 import type { LocationRiskData } from '../types/weather';
+import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
 
 interface LocationRiskProps {
   initialLocKey?: string;
@@ -20,23 +22,31 @@ interface LocationRiskProps {
 
 export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'prayagraj', onNavigateToEvent }) => {
   const [selectedKey, setSelectedKey] = useState<string>(initialLocKey in MOCK_LOCATION_RISKS ? initialLocKey : 'prayagraj');
+  const [activeLoc, setActiveLoc] = useState<LocationRiskData | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
-  const locData: LocationRiskData = MOCK_LOCATION_RISKS[selectedKey] || MOCK_LOCATION_RISKS.prayagraj;
+  const locData: LocationRiskData = activeLoc || MOCK_LOCATION_RISKS[selectedKey] || MOCK_LOCATION_RISKS.prayagraj;
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const q = searchQuery.toLowerCase().trim();
+    const q = searchQuery.trim();
     if (!q) return;
 
-    // Search match in keys
-    const foundKey = Object.keys(MOCK_LOCATION_RISKS).find(k => 
-      k.includes(q) || MOCK_LOCATION_RISKS[k].locationName.toLowerCase().includes(q) || MOCK_LOCATION_RISKS[k].pinCode === q
-    );
-
-    if (foundKey) {
-      setSelectedKey(foundKey);
+    setIsSearching(true);
+    try {
+      const res = await getPanIndiaLocationRisk(q);
+      setActiveLoc(res);
+    } catch (err) {
+      console.error('Pan India search error:', err);
+    } finally {
+      setIsSearching(false);
     }
+  };
+
+  const handlePillSelect = (key: string) => {
+    setSelectedKey(key);
+    setActiveLoc(MOCK_LOCATION_RISKS[key]);
   };
 
   return (
@@ -45,29 +55,29 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
       <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-mono text-cyan-400 uppercase tracking-wider block">FR-08 LOCATION INTELLIGENCE</span>
+            <span className="text-xs font-mono text-cyan-400 uppercase tracking-wider block">FR-08 PAN-INDIA LOCATION INTELLIGENCE &amp; AI ENGINE</span>
             <h2 className="text-2xl font-black text-slate-100 flex items-center gap-2">
               <MapPin className="h-6 w-6 text-cyan-400" />
-              Location-Specific Risk &amp; Exceedance Advisory
+              Pan-India Hyperlocal Extreme Rain Risk Advisory
             </h2>
             <p className="text-xs text-slate-400">
-              Query 5 km downscaled risk score, probability curves, and safety guidelines by place name, PIN code, or coordinates.
+              Query 5 km / 1 km downscaled AI risk score, exceedance probability curves, and crop safety guidelines for ANY location in India.
             </p>
           </div>
 
           {/* Location Selector Pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {Object.entries(MOCK_LOCATION_RISKS).map(([k, d]) => (
+          <div className="flex items-center gap-2 flex-wrap max-w-xl">
+            {Object.entries(MOCK_LOCATION_RISKS).slice(0, 8).map(([k, d]) => (
               <button
                 key={k}
-                onClick={() => setSelectedKey(k)}
+                onClick={() => handlePillSelect(k)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  selectedKey === k
+                  (activeLoc ? activeLoc.locationName.toLowerCase().includes(k) : selectedKey === k)
                     ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
                     : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
                 }`}
               >
-                {d.locationName.split(' ')[0]}
+                {d.locationName.split(',')[0].split(' ')[0]}
               </button>
             ))}
           </div>
@@ -75,19 +85,20 @@ export const LocationRisk: React.FC<LocationRiskProps> = ({ initialLocKey = 'pra
 
         {/* Search input */}
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 bg-slate-950 border border-slate-700 rounded-xl p-2 max-w-2xl">
-          <Search className="h-5 w-5 text-slate-400 ml-2" />
+          {isSearching ? <Loader2 className="h-5 w-5 text-cyan-400 animate-spin ml-2 shrink-0" /> : <Search className="h-5 w-5 text-slate-400 ml-2 shrink-0" />}
           <input
             type="text"
-            placeholder="Search by city, tehsil, village or PIN (e.g. Prayagraj, Phulpur, Naini, 211001, 25.43,81.84)..."
+            placeholder="Search ANY city, village or PIN code in India (e.g. Chinour, Delhi, Wayanad, 242001)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-400 focus:outline-none px-2"
           />
           <button
             type="submit"
-            className="px-5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-colors shadow-md"
+            disabled={isSearching}
+            className="px-5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-colors shadow-md disabled:opacity-50 shrink-0"
           >
-            Search Location
+            {isSearching ? 'Analyzing...' : 'Search Location'}
           </button>
         </form>
       </div>

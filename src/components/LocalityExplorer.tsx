@@ -6,26 +6,34 @@ import {
   Wind, 
   Droplets, 
   Navigation, 
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { MOCK_LOCATION_RISKS } from '../data/mockData';
 import type { LocationRiskData } from '../types/weather';
+import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
 
 export const LocalityExplorer: React.FC = () => {
-  const [selectedKey, setSelectedKey] = useState<string>('prayagraj');
+  const [activeLoc, setActiveLoc] = useState<LocationRiskData>(MOCK_LOCATION_RISKS.prayagraj);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
-  const loc: LocationRiskData = MOCK_LOCATION_RISKS[selectedKey] || MOCK_LOCATION_RISKS.prayagraj;
+  const loc: LocationRiskData = activeLoc;
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const q = searchQuery.toLowerCase().trim();
+    const q = searchQuery.trim();
     if (!q) return;
 
-    const found = Object.keys(MOCK_LOCATION_RISKS).find(k => 
-      k.includes(q) || MOCK_LOCATION_RISKS[k].locationName.toLowerCase().includes(q)
-    );
-    if (found) setSelectedKey(found);
+    setIsSearching(true);
+    try {
+      const res = await getPanIndiaLocationRisk(q);
+      setActiveLoc(res);
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -33,7 +41,7 @@ export const LocalityExplorer: React.FC = () => {
       {/* Search Header Bar */}
       <div className="storm-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">HYPERLOCAL WEATHER &amp; RADAR EXPLORER</span>
+          <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">HYPERLOCAL PAN-INDIA WEATHER &amp; RADAR EXPLORER</span>
           <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <MapPin className="h-6 w-6 text-blue-600" />
             {loc.locationName}
@@ -45,16 +53,16 @@ export const LocalityExplorer: React.FC = () => {
 
         {/* Quick Search Input */}
         <form onSubmit={handleSearch} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 max-w-md w-full">
-          <Search className="h-4 w-4 text-slate-400 ml-2 shrink-0" />
+          {isSearching ? <Loader2 className="h-4 w-4 text-blue-500 animate-spin ml-2 shrink-0" /> : <Search className="h-4 w-4 text-slate-400 ml-2 shrink-0" />}
           <input
             type="text"
-            placeholder="Search Bareilly, Civil Lines, Phulpur, Naini..."
+            placeholder="Search ANY City, Village or PIN in India (e.g. Chinour, Delhi, Wayanad)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none px-2"
           />
-          <button type="submit" className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shrink-0">
-            Search
+          <button type="submit" disabled={isSearching} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shrink-0 disabled:opacity-50">
+            {isSearching ? 'Analyzing...' : 'Search'}
           </button>
         </form>
       </div>

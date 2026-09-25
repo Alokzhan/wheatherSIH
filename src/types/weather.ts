@@ -8,7 +8,11 @@ export type IndiaRegionId =
   | 'mumbai_west'
   | 'wayanad_south'
   | 'assam_east'
-  | 'himalaya_north';
+  | 'himalaya_north'
+  | 'delhi_ncr'
+  | 'deccan_south'
+  | 'east_plains'
+  | 'west_arid';
 
 export type MapLayerId = 
   | 'rainfall_forecast'
