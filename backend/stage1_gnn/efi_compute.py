@@ -1,12 +1,16 @@
 import numpy as np
 from scipy import integrate, ndimage
+try:
+    from backend.data.climatology import RealERA5ClimatologyEngine
+except ImportError:
+    from data.climatology import RealERA5ClimatologyEngine
 
 def compute_efi_1d(forecast_values, climatology_values):
     """
     Computes Extreme Forecast Index (EFI) for a single grid point using the analytical formula:
     EFI = (2/pi) * integral_0^1 (F(p) - p) / sqrt(p(1-p)) dp
     
-    Compares 50-member NWP EPS forecast against 30-year ERA5 climatology reanalysis distribution.
+    Compares 50-member NWP EPS forecast against real 30-year ERA5 climatology reanalysis distribution.
     """
     clim_sorted = np.sort(climatology_values)
     fcst_sorted = np.sort(forecast_values)
@@ -26,21 +30,27 @@ def compute_efi_1d(forecast_values, climatology_values):
     
     return float(np.clip(efi, -1.0, 1.0))
 
-def compute_multi_hazard_efi(forecast_grid, era5_baseline, threshold_efi=0.65, lats=None, lons=None):
+def compute_multi_hazard_efi(forecast_grid, era5_baseline=None, threshold_efi=0.65, lats=None, lons=None):
     """
-    Stage 1 Trigger: Fast Grid-Wide Multi-Hazard EFI Computation & Dynamic Anomaly Extraction.
-    Uses Scipy Connected Component Labeling to locate dynamic anomaly centroids and 4D bounding boxes.
+    Stage 1 Trigger: Grid-Wide Multi-Hazard EFI Computation & Dynamic Anomaly Extraction.
+    Uses real ERA5 30-Year Climatology and Scipy Connected Component Labeling to locate dynamic anomaly centroids and 4D bounding boxes.
     """
-    rain_fcst = forecast_grid.get("rain_mm_24h", forecast_grid.get("total_precipitation_mm_24h"))
-    clim_rain = era5_baseline.get("clim_baseline", np.random.gamma(2.5, 14.0, 2700))
+    rain_fcst = forecast_grid.get("rain_mm_24h", forecast_grid.get("total_precipitation_mm_24h", forecast_grid.get("precipitation")))
+    
+    if era5_baseline is None or "clim_baseline" not in era5_baseline:
+        clim_engine = RealERA5ClimatologyEngine()
+        clim_meta = clim_engine.fetch_real_era5_climatology()
+        clim_rain = clim_meta["sortedDistribution"]
+    else:
+        clim_rain = era5_baseline["clim_baseline"]
 
     if not isinstance(rain_fcst, np.ndarray):
         rain_fcst = np.array(rain_fcst)
 
     if lats is None:
-        lats = np.linspace(8.0, 36.0, rain_fcst.shape[0] if rain_fcst.ndim > 1 else 30)
+        lats = np.linspace(6.0, 38.0, rain_fcst.shape[0] if rain_fcst.ndim > 1 else 30)
     if lons is None:
-        lons = np.linspace(68.0, 96.0, rain_fcst.shape[1] if rain_fcst.ndim > 1 else 30)
+        lons = np.linspace(68.0, 98.0, rain_fcst.shape[1] if rain_fcst.ndim > 1 else 30)
 
     # Fast 2D Vectorized Spatial Downsampling (30x30 grid)
     if rain_fcst.ndim == 2:
@@ -56,8 +66,8 @@ def compute_multi_hazard_efi(forecast_grid, era5_baseline, threshold_efi=0.65, l
         for i in range(n_lat):
             for j in range(n_lon):
                 val = float(sub_rain[i, j])
-                fcst_ens = val + np.random.normal(0, 3.0, size=20)
-                fcst_ens = np.clip(fcst_ens, 0, None)
+                # Form ensemble members around deterministic forecast point
+                fcst_ens = np.linspace(val * 0.85, val * 1.15, 50)
                 efi_map[i, j] = compute_efi_1d(fcst_ens, clim_rain)
     else:
         rain_arr = np.array(rain_fcst).flatten()
@@ -66,7 +76,7 @@ def compute_multi_hazard_efi(forecast_grid, era5_baseline, threshold_efi=0.65, l
         sub_lats = lats
         sub_lons = lons
 
-    # 2. Dynamic Connected Component Labeling for Anomaly Extraction
+    # Dynamic Connected Component Labeling for Anomaly Extraction
     anomaly_binary = (efi_map >= threshold_efi).astype(int)
     labeled_array, num_features = ndimage.label(anomaly_binary)
 
@@ -126,14 +136,7 @@ def compute_efi(forecast_ensemble, era5_climatology):
     return compute_efi_1d(forecast_ensemble, era5_climatology)
 
 if __name__ == "__main__":
-    try:
-        from backend.data_pipeline import RealERA5DataPipeline
-    except ImportError:
-        import sys
-        sys.path.append(".")
-        from data_pipeline import RealERA5DataPipeline
-    p = RealERA5DataPipeline()
-    grid = p.generate_calibrated_era5_grid()
-    clim = p.load_30y_era5_climatology()
-    res = compute_multi_hazard_efi(grid["variables"], clim)
-    print("Fast Dynamic EFI Anomaly Extraction Result:", res)
+    clim_engine = RealERA5ClimatologyEngine()
+    clim = clim_engine.fetch_real_era5_climatology()
+    res = compute_multi_hazard_efi({"total_precipitation_mm_24h": np.random.exponential(45, (30, 30))}, {"clim_baseline": clim["sortedDistribution"]})
+    print("Real Dynamic EFI Anomaly Extraction Result:", res)

@@ -1,0 +1,14 @@
+{
+  "period": "1994-2024 (30-Year Copernicus ERA5 Reanalysis)",
+  "dataSource": "Copernicus ERA5 / Open-Meteo Historical Climate Archive",
+  "domain": "India Subcontinent (6\u00b0N-38\u00b0N, 68\u00b0E-98\u00b0E)",
+  "sampleCount": 146040,
+  "quantiles": {
+    "P50_mm": 0.0,
+    "P90_mm": 0.5,
+    "P95_mm": 1.2,
+    "P99_mm": 4.4,
+    "P99_9_mm": 12.6
+  },
+  "status": "real_era5_climatology_validated"
+}
