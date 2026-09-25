@@ -70,6 +70,16 @@ export interface GridCell5km {
   regionId: IndiaRegionId;
 }
 
+export interface RiskExplainabilityFactor {
+  factor: string;
+  weight: number; // e.g. 0.35
+  scoreContribution: number; // e.g. +32 pts
+  valueDescription: string; // e.g. "168.5 mm / 24h continuous downpour"
+  impactCategory: 'high' | 'medium' | 'low';
+}
+
+export type AcknowledgementStatus = 'seen' | 'under_review' | 'action_taken' | 'closed' | 'false_alarm';
+
 export interface LocationRiskData {
   locationName: string;
   district: string;
@@ -91,6 +101,15 @@ export interface LocationRiskData {
     farmer: string;
     official: string;
   };
+  explainabilityBreakdown?: RiskExplainabilityFactor[];
+  confidenceLevel?: 'high' | 'medium' | 'low';
+  uncertaintyRangeMm?: [number, number];
+  dataFreshness?: {
+    lastUpdated: string;
+    forecastIssued: string;
+    latencyMinutes: number;
+    source: string;
+  };
 }
 
 export interface AlertItem {
@@ -106,7 +125,20 @@ export interface AlertItem {
   affectedTehsils: string[];
   recommendedActions: string[];
   acknowledgedBy?: string;
+  acknowledgementStatus?: AcknowledgementStatus;
+  acknowledgementNote?: string;
   status: 'active' | 'archived' | 'mitigated';
+  confidencePercent?: number;
+  dataSource?: string;
+  modelVersion?: string;
+  recipientsNotifiedCount?: number;
+}
+
+export interface AlertThresholdConfig {
+  threshold3hMm: number;
+  threshold6hMm: number;
+  threshold24hMm: number;
+  region: string;
 }
 
 export interface HistoricalEvent {
@@ -126,8 +158,10 @@ export interface HistoricalEvent {
     csi: number; // Critical Success Index (0-1)
     threatIoU: number; // Intersection over Union (0-1)
     peakPreservationErrorPercent: number;
+    inferenceTimeMs?: number;
   };
   description: string;
+  isPilotEvent?: boolean;
 }
 
 export interface ModelConfig {

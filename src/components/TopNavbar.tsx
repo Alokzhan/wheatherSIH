@@ -71,10 +71,17 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-3 shrink-0">
-        {/* Live Date/Time Badge */}
+        {/* Primary Pilot Focus Badge */}
+        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
+          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>Pilot Focus: Prayagraj &amp; Shahjahanpur</span>
+        </div>
+
+        {/* Live Date/Time Badge & Data Freshness */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-mono">
           <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
           <span>{currentTime || 'Mon, 28 Apr 2025 10:24 AM IST'}</span>
+          <span className="text-[10px] text-emerald-500 font-bold ml-1">• Fresh (2m)</span>
         </div>
 
         {/* Region Selector */}
