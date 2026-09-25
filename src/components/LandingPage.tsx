@@ -377,13 +377,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSelectLo
             <p className="text-slate-400">Classifies severity into Low, Moderate, Severe, Critical levels. Supports location search by district, village, PIN code or lat/lon.</p>
           </div>
 
-          <div className="glass-panel p-4 rounded-xl border border-slate-800">
-            <div className="flex items-center gap-2 font-bold text-cyan-300 mb-1">
+          <div 
+            onClick={() => onNavigate('historical')}
+            className="glass-panel p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all group"
+          >
+            <div className="flex items-center gap-2 font-bold text-cyan-300 group-hover:text-cyan-200 mb-1">
               <CheckCircle2 className="h-4 w-4 text-emerald-400" />
               FR-09 &amp; FR-10: REST APIs &amp; Historical Replay
             </div>
             <p className="text-slate-400">Exposes machine-readable REST API endpoints (`/api/v1/*`) and enables historical event replay with forecast-vs-observation metrics.</p>
           </div>
+
 
           <div className="glass-panel p-4 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 font-bold text-cyan-300 mb-1">

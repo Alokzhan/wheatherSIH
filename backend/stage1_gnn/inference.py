@@ -2,8 +2,15 @@
 StormTrace AI - Inference Pipeline for PyTorch Spherical ST-GNN Model (SIH26078)
 """
 import os
+import sys
 import torch
 import numpy as np
+
+# Ensure project root is in sys.path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from backend.stage1_gnn.model import PyTorchSTGNNModel
 from backend.stage1_gnn.icosahedral_mesh import build_spherical_icosahedral_mesh
 
@@ -13,8 +20,8 @@ def run_st_gnn_inference(weather_tensor_5d: np.ndarray, initial_lat: float = 21.
     Runs inference using trained ST-GNN checkpoint to predict 4D event trajectory.
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    mesh = build_spherical_icosahedral_mesh(subdivisions=1)
-    edge_index = torch.tensor(mesh["edges_index"].T, dtype=torch.long, device=device)
+    mesh = build_spherical_icosahedral_mesh(level=1)
+    edge_index = mesh["edge_index"].to(device)
 
     # Convert 5D NWP tensor [E, T, V, Y, X] to graph sequence [T, N, V]
     if weather_tensor_5d.ndim == 5:

@@ -4,11 +4,20 @@
 
 export const API_CONFIG = {
   mapboxPublicToken: import.meta.env.VITE_MAPBOX_TOKEN || '',
+  apiUrl: import.meta.env.VITE_API_URL || '',
 };
 
+export function getApiEndpoint(path: string): string {
+  const baseUrl = import.meta.env.VITE_API_URL || '';
+  if (!baseUrl) return path;
+  const cleanBase = baseUrl.replace(/\/$/, '');
+  const cleanPath = path.startsWith('/') ? path : '/' + path;
+  return `${cleanBase}${cleanPath}`;
+}
+
 export function getOpenWeatherTileUrl(layer: 'precipitation_new' | 'clouds_new' | 'temp_new' | 'wind_new' = 'precipitation_new') {
-  // Proxy through our backend to keep OWM_KEY secure
-  return `/api/v1/tiles/owm/${layer}/{z}/{x}/{y}`;
+  // Proxy through backend endpoint when API url is present, else standard relative path
+  return getApiEndpoint(`/api/v1/tiles/owm/${layer}/{z}/{x}/{y}`);
 }
 
 export function getMapboxTileUrl(style: 'satellite-v9' | 'navigation-day-v1' | 'navigation-night-v1' = 'satellite-v9') {

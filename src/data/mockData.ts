@@ -965,13 +965,13 @@ export const MOCK_ALERTS: AlertItem[] = [
     status: 'active',
   },
   {
-    id: 'ALT-IN-2026-104',
+    id: 'ALT-IN-2026-105',
     title: 'CYCLONE RED ALERT: SUPER CYCLONE AMPHAN (4D-ABB TRACKED)',
     district: 'Bay of Bengal Coast',
     state: 'West Bengal',
     regionId: 'east_plains',
     riskLevel: 'critical',
-    issuedAt: new Date().toLocaleString(),
+    issuedAt: '2026-09-25 08:00 AM IST',
     validUntil: 'Until further notice',
     summary: 'StormTrace AI Spherical GNN detected 4D-ABB trajectory of Super Cyclone. Expected landfall with 220 km/h winds.',
     affectedTehsils: ['Sunderbans', 'Kolkata'],
@@ -979,13 +979,13 @@ export const MOCK_ALERTS: AlertItem[] = [
     status: 'active',
   },
   {
-    id: 'ALT-IN-2026-105',
+    id: 'ALT-IN-2026-106',
     title: 'HEATWAVE RED ALERT: EXTREME HEAT DOME',
     district: 'New Delhi',
     state: 'Delhi NCR',
     regionId: 'delhi_ncr',
     riskLevel: 'critical',
-    issuedAt: new Date().toLocaleString(),
+    issuedAt: '2026-09-25 07:30 AM IST',
     validUntil: 'Until heat dome dissipates',
     summary: 'EFI anomaly detects 50°C peak temperatures vs 30-yr baseline. High risk of heat stroke and grid failure.',
     affectedTehsils: ['Central Delhi', 'Gurugram', 'Noida'],
@@ -993,6 +993,7 @@ export const MOCK_ALERTS: AlertItem[] = [
     status: 'active',
   }
 ];
+
 
 export const MOCK_HISTORICAL_EVENTS: HistoricalEvent[] = [
   {

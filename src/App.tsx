@@ -1,4 +1,6 @@
-import { useState, useEffect, lazy, Suspense, useCallback } from 'react';
+import { useState, useEffect, lazy, Suspense, useCallback, Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+
 import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { DashboardOverview } from './components/DashboardOverview';
@@ -20,6 +22,53 @@ const ApiExplorer = lazy(() => import('./components/ApiExplorer').then(m => ({ d
 const HowItWorks = lazy(() => import('./components/HowItWorks').then(m => ({ default: m.HowItWorks })));
 const AuthPage = lazy(() => import('./components/AuthPage').then(m => ({ default: m.AuthPage })));
 
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = {
+    hasError: false
+  };
+
+  public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("StormTrace Tab Component Error Caught:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 max-w-2xl mx-auto my-12 bg-white dark:bg-[#0f1628] rounded-2xl border border-red-200 dark:border-red-900/40 text-center space-y-4 shadow-xl">
+          <div className="h-12 w-12 rounded-2xl bg-red-100 dark:bg-red-950/50 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto text-xl font-bold">
+            ⚠️
+          </div>
+          <h3 className="text-lg font-black text-slate-900 dark:text-slate-100">Module Execution Error</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+            {this.state.error?.message || "An unexpected error occurred in this view."}
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false, error: undefined })}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all"
+          >
+            Reload Module View
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 // Premium loading spinner
 const LoadingFallback = () => (
@@ -31,6 +80,7 @@ const LoadingFallback = () => (
     <span className="text-xs font-mono font-semibold animate-pulse">Loading StormTrace Module...</span>
   </div>
 );
+
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -194,10 +244,13 @@ export function App() {
               : 'overflow-y-auto px-4 sm:px-6 py-6 max-w-7xl w-full mx-auto'
           }`}
         >
-          <Suspense fallback={<LoadingFallback />}>
-            {renderContent()}
-          </Suspense>
+          <ErrorBoundary key={activeTab}>
+            <Suspense fallback={<LoadingFallback />}>
+              {renderContent()}
+            </Suspense>
+          </ErrorBoundary>
         </main>
+
 
       </div>
     </div>

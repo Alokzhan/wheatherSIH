@@ -1,6 +1,7 @@
 import { MOCK_ALERTS, MOCK_THREAT_OBJECTS } from '../data/mockData';
 import type { AlertItem, LocationRiskData, ThreatObject, AcknowledgementStatus } from '../types/weather';
 import { getPanIndiaLocationRisk } from '../utils/panIndiaWeatherEngine';
+import { getApiEndpoint } from '../config/apiConfig';
 
 // Local storage key for persistent alerts database
 const LOCAL_STORAGE_ALERTS_KEY = 'STORMTRACE_ALERTS_DB_V1';
@@ -19,7 +20,7 @@ export interface DatasetRecord {
 
 export async function fetchAppConfig(): Promise<{ mapbox_token: string }> {
   try {
-    const res = await fetch('/api/v1/config/maps');
+    const res = await fetch(getApiEndpoint('/api/v1/config/maps'));
     if (res.ok) {
       return await res.json();
     }
@@ -56,7 +57,7 @@ export function saveStoredAlerts(alerts: AlertItem[]): void {
  */
 export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: 'success'; count: number; alerts: AlertItem[] }> {
   try {
-    const res = await fetch('/api/v1/alerts');
+    const res = await fetch(getApiEndpoint('/api/v1/alerts'));
     if (res.ok) {
       const data: AlertItem[] = await res.json();
       const filtered = regionFilter && regionFilter !== 'all' 
@@ -205,7 +206,7 @@ export async function executeModelInferenceApi(spatialResolutionKm: number = 5.0
   };
 }> {
   try {
-    const res = await fetch('/api/v1/model/inference', {
+    const res = await fetch(getApiEndpoint('/api/v1/model/inference'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ spatialResolutionKm })

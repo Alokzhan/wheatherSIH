@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Set PYTHONPATH to project root
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,10 +24,11 @@ def run_reproducible_benchmark_suite():
     print("=" * 75)
     
     benchmark_report = {
-        "benchmark_timestamp": datetime.utcnow().isoformat() + "Z",
+        "benchmark_timestamp": datetime.now(timezone.utc).isoformat(),
         "system": "StormTrace AI Production Benchmark",
         "results": {}
     }
+
     
     # 1. Trained Model Proof & Inspection
     print("\n[Benchmark 1/5] Verifying PyTorch Trained Model Weights & Parameter Evidence...")

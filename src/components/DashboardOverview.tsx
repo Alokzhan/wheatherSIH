@@ -10,6 +10,7 @@ import {
   Sparkles,
   TrendingUp
 } from 'lucide-react';
+
 import { MOCK_ALERTS, MOCK_THREAT_OBJECTS } from '../data/mockData';
 import type { IndiaRegionId, ThreatObject } from '../types/weather';
 
@@ -117,7 +118,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
+
       </div>
+
 
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

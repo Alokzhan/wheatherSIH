@@ -111,9 +111,12 @@ class SphericalIcosahedralMesh:
             "latlon": torch.tensor(self.nodes_latlon, dtype=torch.float32)
         }
 
-def build_spherical_icosahedral_mesh(level: int = 3):
-    mesh_obj = SphericalIcosahedralMesh(subdivision_level=level)
-    return mesh_obj.to_pyg_dict()
+def build_spherical_icosahedral_mesh(level: int = 3, subdivisions: int = None):
+    sub_level = subdivisions if subdivisions is not None else level
+    mesh_obj = SphericalIcosahedralMesh(subdivision_level=sub_level)
+    d = mesh_obj.to_pyg_dict()
+    d["edges_index"] = d["edge_index"]
+    return d
 
 if __name__ == "__main__":
     mesh = build_spherical_icosahedral_mesh(level=3)

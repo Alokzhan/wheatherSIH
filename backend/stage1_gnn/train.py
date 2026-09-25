@@ -3,9 +3,16 @@ StormTrace AI - Training Script for PyTorch Spherical ST-GNN Model (SIH26078)
 Executes forward pass, loss computation, backward pass, and optimizer.step()
 """
 import os
+import sys
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
+
+# Ensure project root is in sys.path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from backend.stage1_gnn.model import PyTorchSTGNNModel
 from backend.stage1_gnn.dataset import WeatherSphericalGraphDataset
 from backend.stage1_gnn.icosahedral_mesh import build_spherical_icosahedral_mesh
@@ -16,9 +23,8 @@ def train_st_gnn(epochs: int = 5, lr: float = 1e-3):
     print(f"[ST-GNN Training] Initializing PyTorch training loop on device: {device}")
 
     # Build spherical mesh edge index
-    mesh = build_spherical_icosahedral_mesh(subdivisions=1)
-    edges = mesh["edges_index"]
-    edge_index = torch.tensor(edges.T, dtype=torch.long, device=device)
+    mesh = build_spherical_icosahedral_mesh(level=1)
+    edge_index = mesh["edge_index"].to(device)
 
     dataset = WeatherSphericalGraphDataset(num_samples=10, timesteps=9, num_nodes=mesh["num_nodes"])
     model = PyTorchSTGNNModel(in_channels=6, hidden_dim=64, out_channels=2).to(device)

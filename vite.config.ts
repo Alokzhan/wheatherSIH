@@ -8,10 +8,11 @@ export default defineConfig(() => ({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
+
   },
   build: {
     // Mapbox GL JS is ~1.8MB — expected for a 3D map engine
