@@ -9,8 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt --extra-index-url https://dow
 # Copy backend source code
 COPY backend/ ./backend/
 
-EXPOSE 8000
+EXPOSE 7860 8000
 
 ENV PYTHONPATH=/app/backend
 
-CMD ["python", "-m", "uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python -m uvicorn backend.api.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
