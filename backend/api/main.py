@@ -280,6 +280,20 @@ def list_alerts():
     """List active weather anomalies as localized spatial alerts for NDRF/Authorities."""
     return [
         {
+            "id": "ALT-IN-2026-107",
+            "title": "NATIONAL RED ALERT: SIKKIM SEVERE LANDSLIDE SURGE & TEESTA FLASH FLOOD",
+            "district": "Mangan & Gangtok",
+            "state": "Sikkim",
+            "regionId": "sikkim_northeast",
+            "riskLevel": "critical",
+            "issuedAt": datetime.utcnow().isoformat() + "Z",
+            "validUntil": "2026-09-28T18:00:00Z",
+            "summary": "StormTrace AI GNN + DDPM 5km downscaling detects 220mm/24h peak rainfall over North Sikkim slopes. Extreme mountain slope instability & Teesta river flash flood hazard.",
+            "affectedTehsils": ["Mangan", "Gangtok", "Dikchu", "Chungthang"],
+            "recommendedActions": ["Deploy NDRF 2nd Battalion mountain teams", "Halt tourist movement along Gangtok-Mangan highway", "Evacuate riverbank & cliffside settlements"],
+            "status": "active"
+        },
+        {
             "id": "ALT-IN-2026-104",
             "title": "Severe Kosi Basin Heavy Rainfall & Flash Flood Alert",
             "district": "Supaul",

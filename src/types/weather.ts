@@ -7,6 +7,7 @@ export type IndiaRegionId =
   | 'up_ganges'
   | 'mumbai_west'
   | 'wayanad_south'
+  | 'sikkim_northeast'
   | 'assam_east'
   | 'himalaya_north'
   | 'delhi_ncr'
