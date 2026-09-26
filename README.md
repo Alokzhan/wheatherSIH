@@ -2,7 +2,7 @@
 ### **Automated 4D EPS Anomaly Tracking & 5km Physics-Informed Diffusion Downscaling System**
 *SIH Problem Statement SIH26078: Extreme Weather Anomaly Tracking and Hyperlocal Impact Downscaling*
 
-[![Live Demo](https://img.shields.io/badge/Vercel-Live_Deployment-brightgreen?logo=vercel)](https://stromtraceai.vercel.app/)
+[![Live GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Live_Deployment-brightgreen?logo=github)](https://alokzhan.github.io/wheatherSIH/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2.1-EE4C2C?logo=pytorch)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?logo=react)](https://react.dev/)
@@ -47,8 +47,9 @@ However, predicting localized extreme weather anomalies (cyclones, cloudbursts, 
                            ▼
 ┌────────────────────────────────────────────────────────┐
 │  OPERATIONAL DISASTER UI & REAL-TIME DISPATCH         │
-│  • Live Open-Meteo & OpenStreetMap Nominatim APIs      │
-│  • RainViewer Doppler Radar & Mapbox 3D GIS Globe       │
+│  • StormTrace Copilot AI Weather Chatbot (Voice STT/TTS)│
+│  • RainViewer Live Radar & Mapbox 3D GIS Globe         │
+│  • Dynamic Geocoding & Rain Duration ("Kab Tak Rain")  │
 │  • NDRF 9th/2nd Battalion Emergency Dispatch Warnings  │
 └────────────────────────────────────────────────────────┘
 ```
@@ -88,7 +89,18 @@ StormTrace AI incorporates **4 specialized ML engines** working in tandem:
 
 ---
 
-## 📐 3. System Architecture & Data Flow Diagrams (DFD)
+## 💬 3. StormTrace AI Copilot Weather Chatbot
+
+StormTrace AI features an **intelligent Voice-Enabled Assistant (`WeatherChatbot.tsx`)** powered by FastAPI backend (`/api/v1/chatbot/query`) and live client-side fallback geocoding:
+
+- **🎙️ Voice Recognition & Speech Synthesis**: Supports Web Speech Recognition (`en-IN` / `hi-IN`) and Text-to-Speech (TTS).
+- **📍 Dynamic Geocoding & Rain Duration Resolution**: Automatically parses location queries in English, Hindi, or Hinglish (*"lucknow weather"*, *"shahajahanpur weather kab tak rain rahe gi"*, *"mumbai flood alert"*, *"delhi rain forecast"*, *"wayanad status"*).
+- **⏱️ "Kab Tak Rain Rahegi" Engine**: Analyzes 24-hour hourly precipitation curves to report exact rain clearing times (e.g. *"Rains will continue intermittently for 3 to 4 hours and will clear by tonight around 08:30 PM"*).
+- **🚨 Interactive Action Buttons**: Clicking any suggestion pill or action button dynamically updates the conversation and triggers smooth tab navigation (e.g. GIS Map, AI Model Hub, Farmer Advisory, Alert Center).
+
+---
+
+## 📐 4. System Architecture & Data Flow Diagrams (DFD)
 
 ### 🏗️ Complete System Architecture Diagram
 
@@ -118,12 +130,13 @@ graph TD
         D1["FastAPI Server (backend/api/main.py)"]
         D2["SQLite Operations DB (backend/data/stormtrace.db)"]
         D3["Model Checkpoint Inspector (backend/models/inspector.py)"]
+        D4["Chatbot Query Endpoint (/api/v1/chatbot/query)"]
     end
 
     subgraph Layer5 ["5. Interactive GIS Frontend"]
         E1["React 19 + Mapbox GL 3D Globe (LiveRiskMap.tsx)"]
         E2["NDRF Operations & Alert Center (AlertCenter.tsx)"]
-        E3["Real Live Open-Meteo & OpenStreetMap Engine (panIndiaWeatherEngine.ts)"]
+        E3["StormTrace AI Copilot Chatbot (WeatherChatbot.tsx)"]
         E4["Tehsil Velocity & ETA Matrix Tracker (EventDetail.tsx)"]
     end
 
@@ -140,6 +153,7 @@ graph TD
     C4 --> D1
     D3 --> D1
     D2 <--> D1
+    D4 <--> D1
     D1 --> E1
     D1 --> E2
     D1 --> E3
@@ -152,11 +166,11 @@ graph TD
 
 ```mermaid
 graph LR
-    User["Disaster Authorities / NDRF / Public User"] <-->|"Search Query / Location Coordinates"| StormTrace["StormTrace AI Core System"]
+    User["Disaster Authorities / NDRF / Public User"] <-->|"Voice/Text Chat Query & Coordinates"| StormTrace["StormTrace AI Core System"]
     OpenMeteo["Open-Meteo ECMWF Live Weather API"] <-->|"Real-time Live Precipitation & Wind Data"| StormTrace
     Nominatim["OpenStreetMap Nominatim API"] <-->|"Live GIS Geocoding"| StormTrace
     RainViewer["RainViewer Radar Cache"] -->|"Doppler Precipitation Tile Streams"| StormTrace
-    StormTrace -->|"ETA Timestamps, Velocity Vector & 5km Risk Alerts"| User
+    StormTrace -->|"ETA Timestamps, Rain Clearing Time & 5km Risk Alerts"| User
 ```
 
 ---
@@ -165,18 +179,18 @@ graph LR
 
 ```mermaid
 graph TD
-    P1["1.0 User Query & GIS Geocoding"] -->|Lat/Lon Coordinates| P2["2.0 Live Open-Meteo / ERA5 Data Retrieval"]
+    P1["1.0 User Voice/Text Query & Geocoding"] -->|Location Name / Coordinates| P2["2.0 Live Open-Meteo & ERA5 Data Retrieval"]
     P2 -->|3D Weather Grids & Climatology| P3["3.0 SciPy EFI Anomaly & GNN Tracking"]
     P3 -->|4D Anomaly BBoxes & Velocity Vector| P4["4.0 Tehsil Speed & ETA Calculation"]
     P3 -->|Coarse Anomaly Footprint| P5["5.0 PyTorch DDPM 5km Downscaling"]
-    P5 -->|Physics Loss Constrained Grid| P6["6.0 Multi-Hazard Alert Generator"]
+    P5 -->|Physics Loss Constrained Grid| P6["6.0 Multi-Hazard & Rain Duration Assistant"]
     P4 --> P6
-    P6 -->|JSON Payload & Render Stream| P7["7.0 3D GIS Map & Alert Center UI"]
+    P6 -->|JSON Payload & Render Stream| P7["7.0 3D GIS Map & StormTrace AI Copilot UI"]
 ```
 
 ---
 
-## 📊 4. Model Accuracy & Real Dataset Validation Results
+## 📊 5. Model Accuracy & Real Dataset Validation Results
 
 StormTrace models are trained and validated on authentic **Copernicus ERA5 Reanalysis** atmospheric feature tensors ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$). 
 
@@ -206,12 +220,10 @@ Evaluated on historical extreme weather events (**Cyclone Amphan**, **North Indi
 | **Brier Score (Exceedance Prob)** | 0.185 | 0.092 | **0.0208** |
 
 > 🔬 **Reproducible Benchmark Suite**: Run `python -m backend.validation.run_benchmark` to generate verifiable metric reports in `outputs/validation/results.json` and `outputs/validation/results.csv`.
-> 
-> 📄 **Scientific Verification Details**: See [docs/SI26078_SCIENTIFIC_STATUS.md](docs/SI26078_SCIENTIFIC_STATUS.md) and [docs/NEPS_G_DATA_SETUP.md](docs/NEPS_G_DATA_SETUP.md) for data ingestion & audit status.
 
 ---
 
-## 🌐 5. Copernicus ERA5 4-Stream Ingestion System
+## 🌐 6. Copernicus ERA5 4-Stream Ingestion System
 
 StormTrace AI ingests 4 official Copernicus / ECMWF ERA5 atmospheric datasets covering the Indian Subcontinent domain ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$):
 
@@ -227,7 +239,7 @@ python backend/data/download_copernicus_era5.py
 
 ---
 
-## 🧪 6. Model Weight Inspection & Verification
+## 🧪 7. Model Weight Inspection & Verification
 
 Train PyTorch AI Models on ERA5 datasets:
 ```bash
@@ -246,7 +258,7 @@ python backend/models/inspector.py
 
 ---
 
-## 🚀 7. Running the Project Locally
+## 🚀 8. Running & Deploying the Project
 
 ### 1. Frontend Setup (React 19 + Vite)
 ```bash
@@ -271,14 +283,19 @@ uvicorn backend.api.main:app --reload --port 8000
 python -m pytest backend/tests/test_suite.py tests/test_gnn_smoke.py -v
 ```
 
-### 4. Build Production Bundle
+### 4. Build & Deploy to GitHub Pages
 ```bash
+# Production Bundle Build
 npm run build
+
+# Direct Deploy to GitHub Pages
+npm run deploy
 ```
 
 ---
 
-## 📄 8. License & Acknowledgements
+## 📄 9. License & Acknowledgements
 - Developed for **Smart India Hackathon (SIH26078)**.
+- Live Deployment: [https://alokzhan.github.io/wheatherSIH/](https://alokzhan.github.io/wheatherSIH/)
 - Data provided by **Copernicus Climate Data Store (CDS)** & **ECMWF Open Data**.
 - Map tiles provided by **RainViewer Radar Cache** and **OpenStreetMap**.
