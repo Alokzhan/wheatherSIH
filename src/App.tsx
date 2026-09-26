@@ -4,6 +4,7 @@ import type { ErrorInfo, ReactNode } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { DashboardOverview } from './components/DashboardOverview';
+import { WeatherChatbot } from './components/WeatherChatbot';
 import type { ThreatObject, IndiaRegionId } from './types/weather';
 
 import HistoricalAnalysis from './components/HistoricalAnalysis';
@@ -251,7 +252,8 @@ export function App() {
           </ErrorBoundary>
         </main>
 
-
+        {/* Floating AI Weather Assistant Chatbot */}
+        <WeatherChatbot onNavigateToTab={handleNavigate} />
       </div>
     </div>
   );
