@@ -216,7 +216,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     risk_grid_5km: true,
     admin_boundaries: true,
     vulnerability: true,
-    wind_extremes: true,
+    wind_extremes: false,
   });
 
 
@@ -1007,7 +1007,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     setActiveLayers(prev => ({ ...prev, [layerId]: !prev[layerId] }));
   }, []);
 
-  const layerLabels: Record<MapLayerId, { label: string; icon: string }> = {
+  const layerLabels: Partial<Record<MapLayerId, { label: string; icon: string }>> = {
     rainfall_forecast: { label: 'Live Pan-India Rainfall Radar', icon: '🌧️' },
     rainfall_anomaly: { label: 'EFI Climatology Anomaly', icon: '⚡' },
     extreme_probability: { label: 'Extreme Prob (>50mm)', icon: '🎯' },
@@ -1016,10 +1016,11 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     risk_grid_5km: { label: '5 km Risk Grid Overlay', icon: '📐' },
     admin_boundaries: { label: 'State/District Boundaries', icon: '🏛️' },
     vulnerability: { label: 'River Basins & Slope Zones', icon: '🌊' },
-    wind_extremes: { label: 'High Speed Wind & Cyclones', icon: '🌪️' },
   };
 
-  const activeCount = useMemo(() => Object.values(activeLayers).filter(Boolean).length, [activeLayers]);
+  const activeCount = useMemo(() => {
+    return Object.keys(layerLabels).filter(k => activeLayers[k as MapLayerId]).length;
+  }, [activeLayers]);
 
   return (
     <div className={`relative flex flex-col h-full w-full min-h-[500px] ${isFullscreen ? 'fixed inset-0 z-50 bg-[#070b16] p-0' : 'overflow-hidden border border-[#1a2540]'}`}>
@@ -1141,14 +1142,15 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
                 Active GIS Map Layers
               </span>
               <span className="text-[10px] text-cyan-400 font-mono">
-                {activeCount}/9 Active
+                {activeCount}/8 Active
               </span>
             </div>
 
             <div className="space-y-1">
-              {(Object.keys(activeLayers) as MapLayerId[]).map(layerId => {
+              {(Object.keys(layerLabels) as MapLayerId[]).map(layerId => {
                 const info = layerLabels[layerId];
-                const isChecked = activeLayers[layerId];
+                if (!info) return null;
+                const isChecked = !!activeLayers[layerId];
                 return (
                   <button
                     key={layerId}
@@ -1181,8 +1183,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           </div>
         )}
 
-        {/* Selected Cell Inspection Panel */}
-        {selectedCell && (
+        {/* Selected Cell Inspection Panel - Toggles with Eye button */}
+        {showLayerPanel && selectedCell && (
           <div className="absolute top-4 right-4 z-10 w-80 bg-[#0a0f1e]/92 backdrop-blur-xl p-4 rounded-xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/5 space-y-2">
             <div className="flex items-center justify-between pb-2 border-b border-[#1e2d48]">
               <div>
