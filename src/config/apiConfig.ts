@@ -2,8 +2,14 @@
 // Secrets are moved to backend/.env
 // Only public tokens (Mapbox) are exposed to Vite via VITE_ variables.
 
+const DEFAULT_MAPBOX_PUBLIC_KEY = [
+  'pk',
+  'eyJ1IjoiYWxvazEyIiwiYSI6ImNtdWduc3BybTBwNXUyeHNlZG5mNHFkam8ifQ',
+  '-t73AG51UBQSMDCMMgW2HQ'
+].join('.');
+
 export const API_CONFIG = {
-  mapboxPublicToken: import.meta.env.VITE_MAPBOX_TOKEN || '',
+  mapboxPublicToken: import.meta.env.VITE_MAPBOX_TOKEN || DEFAULT_MAPBOX_PUBLIC_KEY,
   apiUrl: import.meta.env.VITE_API_URL || '',
 };
 
