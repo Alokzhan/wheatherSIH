@@ -683,6 +683,8 @@ export const CycloneTracker: React.FC = () => {
     }
   };
 
+  const [showMobileStats, setShowMobileStats] = useState<boolean>(false);
+
   // Toggle Model Filter
   const toggleModel = (modelId: string) => {
     setActiveModelIds((prev) =>
@@ -694,56 +696,63 @@ export const CycloneTracker: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-[#060a14] text-slate-100 overflow-hidden font-sans relative">
       
       {/* ── Top Header Banner (Matching Windy style image: "Chinta ki Baat hai 😳?") ── */}
-      <header className="px-4 py-3 bg-[#0a0f1e]/90 border-b border-[#1e293b] flex flex-wrap items-center justify-between gap-3 z-30 shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 p-0.5 shadow-lg flex items-center justify-center text-xl animate-pulse">
+      <header className="px-3 md:px-4 py-2.5 bg-[#0a0f1e]/90 border-b border-[#1e293b] flex flex-wrap items-center justify-between gap-2 z-30 shadow-md">
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 p-0.5 shadow-lg flex items-center justify-center text-lg md:text-xl animate-pulse shrink-0">
             🌀
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
+              <h1 className="text-sm md:text-lg font-black tracking-tight text-white flex items-center gap-2">
                 {langMode === 'hinglish' ? cyclone.hinglishHeadline : cyclone.englishHeadline}
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] font-bold uppercase tracking-wider">
+              <span className="hidden sm:inline px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] font-bold uppercase tracking-wider">
                 {cyclone.currentCategory}
               </span>
             </div>
-            <p className="text-xs text-slate-400 flex items-center gap-2">
+            <p className="text-[11px] md:text-xs text-slate-400 flex items-center gap-2">
               <span>{cyclone.name}</span>
               <span>•</span>
-              <span className="text-amber-400 font-semibold">{cyclone.statusText}</span>
+              <span className="text-amber-400 font-semibold truncate max-w-[180px] sm:max-w-none">{cyclone.statusText}</span>
             </p>
           </div>
         </div>
 
         {/* Action Controls & Cyclone Switcher */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          {/* Mobile Stats Toggle Button */}
+          <button
+            onClick={() => setShowMobileStats(!showMobileStats)}
+            className="md:hidden px-2.5 py-1 rounded-lg bg-blue-600/30 border border-blue-500/50 text-blue-300 text-xs font-bold transition"
+          >
+            📊 {showMobileStats ? 'Hide Stats' : 'Stats'}
+          </button>
+
           {/* Hinglish / English Toggle */}
           <button
             onClick={() => setLangMode(langMode === 'hinglish' ? 'english' : 'hinglish')}
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-300 transition flex items-center gap-1.5"
+            className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] md:text-xs font-semibold text-slate-300 transition flex items-center gap-1"
           >
             <Globe className="h-3.5 w-3.5 text-blue-400" />
-            {langMode === 'hinglish' ? 'Hinglish Mode' : 'English Mode'}
+            <span className="hidden sm:inline">{langMode === 'hinglish' ? 'Hinglish Mode' : 'English Mode'}</span>
+            <span className="sm:hidden">{langMode === 'hinglish' ? 'HI' : 'EN'}</span>
           </button>
 
           {/* Cyclone Dropdown Selector */}
-          <div className="relative">
-            <select
-              value={selectedCycloneId}
-              onChange={(e) => {
-                setSelectedCycloneId(e.target.value);
-                setActivePointIndex(2);
-              }}
-              className="bg-slate-900 border border-red-500/40 text-red-300 text-xs font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="remal-2026">🌀 Cyclone Remal (Bay of Bengal)</option>
-              <option value="biparjoy-2026">🌀 Cyclone Biparjoy (Arabian Sea)</option>
-            </select>
-          </div>
+          <select
+            value={selectedCycloneId}
+            onChange={(e) => {
+              setSelectedCycloneId(e.target.value);
+              setActivePointIndex(2);
+            }}
+            className="bg-slate-900 border border-red-500/40 text-red-300 text-xs font-bold py-1 px-2 md:py-1.5 md:px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <option value="remal-2026">🌀 Remal (Bay of Bengal)</option>
+            <option value="biparjoy-2026">🌀 Biparjoy (Arabian Sea)</option>
+          </select>
 
           {/* Map Layer Mode Switcher */}
-          <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+          <div className="hidden sm:flex bg-slate-900 p-0.5 md:p-1 rounded-lg border border-slate-800 text-xs">
             <button
               onClick={() => setTileMode('dark')}
               className={`px-2 py-1 rounded-md font-semibold transition ${tileMode === 'dark' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
@@ -754,7 +763,7 @@ export const CycloneTracker: React.FC = () => {
               onClick={() => setTileMode('satellite')}
               className={`px-2 py-1 rounded-md font-semibold transition ${tileMode === 'satellite' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
             >
-              Satellite
+              Sat
             </button>
           </div>
         </div>
@@ -764,13 +773,13 @@ export const CycloneTracker: React.FC = () => {
       <div className="flex-1 relative min-h-0 flex flex-col lg:flex-row">
         
         {/* MAP CONTAINER */}
-        <div className="flex-1 relative h-full w-full min-h-[420px]">
+        <div className="flex-1 relative h-full w-full min-h-[380px] lg:min-h-[420px]">
           <div ref={mapContainerRef} className="absolute inset-0 z-10 w-full h-full bg-[#070b16]" />
 
           {/* Floating Left Top: Model Toggles Bar (Like Windy UKM, IMD, ECMWF buttons) */}
-          <div className="absolute top-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md p-2 rounded-xl border border-slate-800/80 shadow-2xl flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 flex items-center gap-1">
-              <Layers className="h-3.5 w-3.5 text-blue-400" /> Models:
+          <div className="absolute top-3 left-3 z-20 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800/80 shadow-2xl flex flex-wrap items-center gap-1 max-w-[90vw] sm:max-w-none">
+            <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1 flex items-center gap-1">
+              <Layers className="h-3 w-3 text-blue-400" /> Models:
             </span>
             {cyclone.models.map((m) => {
               const active = activeModelIds.includes(m.id);
@@ -783,7 +792,7 @@ export const CycloneTracker: React.FC = () => {
                     borderColor: active ? m.color : 'rgba(71, 85, 105, 0.4)',
                     color: active ? '#ffffff' : '#94a3b8',
                   }}
-                  className="px-2.5 py-1 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 hover:scale-105"
+                  className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-md border text-[11px] md:text-xs font-bold transition-all flex items-center gap-1 hover:scale-105"
                 >
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: m.color }} />
                   {m.id}
@@ -791,22 +800,22 @@ export const CycloneTracker: React.FC = () => {
               );
             })}
 
-            <div className="h-4 w-px bg-slate-700 mx-1" />
-
             <button
               onClick={() => setShowCone(!showCone)}
-              className={`px-2.5 py-1 rounded-md border text-xs font-bold transition ${
+              className={`px-2 py-0.5 md:px-2.5 md:py-1 rounded-md border text-[11px] md:text-xs font-bold transition ${
                 showCone
                   ? 'bg-red-500/20 border-red-500/50 text-red-300'
                   : 'bg-slate-800 border-slate-700 text-slate-400'
               }`}
             >
-              Cone Swath
+              Cone
             </button>
           </div>
 
           {/* Floating Right Top: Current Active Point Popup Display Card */}
-          <div className="absolute top-4 right-4 z-20 max-w-sm bg-slate-900/95 backdrop-blur-md border border-slate-700/80 p-4 rounded-2xl shadow-2xl space-y-3">
+          <div className={`absolute top-14 md:top-3 right-3 z-20 max-w-xs md:max-w-sm bg-slate-900/95 backdrop-blur-md border border-slate-700/80 p-3 md:p-4 rounded-2xl shadow-2xl space-y-2.5 transition-all ${
+            showMobileStats ? 'block' : 'hidden md:block'
+          }`}>
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <span className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" /> {activePoint.timeLabel}
