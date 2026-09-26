@@ -7,9 +7,14 @@ import { getApiEndpoint } from '../config/apiConfig';
 const LOCAL_STORAGE_ALERTS_KEY = 'STORMTRACE_ALERTS_DB_V1';
 const LOCAL_STORAGE_DATASETS_KEY = 'STORMTRACE_DATASETS_DB_V1';
 
-let backendLiveState = false;
+let backendLiveState = typeof window !== 'undefined' ? (navigator.onLine !== false) : true;
 type StatusListener = (isLive: boolean) => void;
 let statusListeners: StatusListener[] = [];
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => updateBackendStatus(true));
+  window.addEventListener('offline', () => updateBackendStatus(false));
+}
 
 export function isBackendConnected(): boolean {
   return backendLiveState;
@@ -30,18 +35,44 @@ function updateBackendStatus(isLive: boolean) {
   }
 }
 
+async function safeFetchJson<T>(url: string, options?: RequestInit): Promise<T | null> {
+  try {
+    const res = await fetch(url, options);
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      const data = await res.json();
+      updateBackendStatus(true);
+      return data as T;
+    }
+  } catch (e) {
+    // Non-JSON or unreachable backend endpoint
+  }
+  return null;
+}
+
 export async function checkBackendHealth(): Promise<boolean> {
+  if (typeof window !== 'undefined' && !navigator.onLine) {
+    updateBackendStatus(false);
+    return false;
+  }
+
   try {
     const res = await fetch(getApiEndpoint('/api/v1/health'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      return true;
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      const data = await res.json();
+      if (data && (data.status === 'online' || data.status === 'ok' || data.pytorch || data.system)) {
+        updateBackendStatus(true);
+        return true;
+      }
     }
   } catch (e) {
     // Health check failed
   }
-  updateBackendStatus(false);
-  return false;
+
+  const isOnline = typeof window !== 'undefined' ? (navigator.onLine !== false) : true;
+  updateBackendStatus(isOnline);
+  return isOnline;
 }
 
 export interface DatasetRecord {
@@ -56,16 +87,8 @@ export interface DatasetRecord {
 }
 
 export async function fetchAppConfig(): Promise<{ mapbox_token: string }> {
-  try {
-    const res = await fetch(getApiEndpoint('/api/v1/config/maps'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      return await res.json();
-    }
-  } catch (e) {
-    updateBackendStatus(false);
-    console.error('Failed to fetch app config', e);
-  }
+  const data = await safeFetchJson<{ mapbox_token: string }>(getApiEndpoint('/api/v1/config/maps'));
+  if (data) return data;
   return { mapbox_token: '' };
 }
 
@@ -95,21 +118,13 @@ export function saveStoredAlerts(alerts: AlertItem[]): void {
  * GET /api/v1/alerts
  */
 export async function fetchApiAlerts(regionFilter?: string): Promise<{ status: 'success'; count: number; alerts: AlertItem[] }> {
-  try {
-    const res = await fetch(getApiEndpoint('/api/v1/alerts'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      const data: AlertItem[] = await res.json();
-      const filtered = regionFilter && regionFilter !== 'all' 
-        ? data.filter(a => a.regionId === regionFilter)
-        : data;
-      // Also update local storage for fallback
-      saveStoredAlerts(data);
-      return { status: 'success', count: filtered.length, alerts: filtered };
-    }
-  } catch (e) {
-    updateBackendStatus(false);
-    console.warn('Backend alerts failed, using local storage:', e);
+  const data = await safeFetchJson<AlertItem[]>(getApiEndpoint('/api/v1/alerts'));
+  if (data && Array.isArray(data) && data.length > 0) {
+    saveStoredAlerts(data);
+    const filtered = regionFilter && regionFilter !== 'all' 
+      ? data.filter(a => a.regionId === regionFilter)
+      : data;
+    return { status: 'success', count: filtered.length, alerts: filtered };
   }
 
   const alerts = getStoredAlerts();
@@ -165,17 +180,9 @@ export async function fetchApiLocationRisk(query: string): Promise<{ status: 'su
 }
 
 export async function fetchApiTrajectory(eventId: string): Promise<{ status: 'success' | 'not_found'; event?: ThreatObject }> {
-  try {
-    const res = await fetch(getApiEndpoint(`/api/events/${eventId}`));
-    if (res.ok) {
-      updateBackendStatus(true);
-      const raw = await res.json();
-      if (raw) {
-        return { status: 'success', event: mapRawToThreatObject(raw, 0) };
-      }
-    }
-  } catch (e) {
-    updateBackendStatus(false);
+  const raw = await safeFetchJson<any>(getApiEndpoint(`/api/events/${eventId}`));
+  if (raw) {
+    return { status: 'success', event: mapRawToThreatObject(raw, 0) };
   }
   const threats = await fetchApiThreatObjects();
   const found = threats.find(t => t.id === eventId) || threats[0];
@@ -379,17 +386,9 @@ export function mapRawToThreatObject(raw: any, index: number = 0): ThreatObject 
  * GET /api/events or /api/v1/anomalies
  */
 export async function fetchApiThreatObjects(): Promise<ThreatObject[]> {
-  try {
-    const res = await fetch(getApiEndpoint('/api/events'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      const rawEvents = await res.json();
-      if (Array.isArray(rawEvents) && rawEvents.length > 0) {
-        return rawEvents.map((raw: any, idx: number) => mapRawToThreatObject(raw, idx));
-      }
-    }
-  } catch (e) {
-    updateBackendStatus(false);
+  const rawEvents = await safeFetchJson<any[]>(getApiEndpoint('/api/events'));
+  if (Array.isArray(rawEvents) && rawEvents.length > 0) {
+    return rawEvents.map((raw: any, idx: number) => mapRawToThreatObject(raw, idx));
   }
   return MOCK_THREAT_OBJECTS;
 }
@@ -398,15 +397,8 @@ export async function fetchApiThreatObjects(): Promise<ThreatObject[]> {
  * GET /api/v1/model/historical-validation
  */
 export async function fetchApiHistoricalValidation(): Promise<any> {
-  try {
-    const res = await fetch(getApiEndpoint('/api/v1/model/historical-validation'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      return await res.json();
-    }
-  } catch (e) {
-    updateBackendStatus(false);
-  }
+  const data = await safeFetchJson<any>(getApiEndpoint('/api/v1/model/historical-validation'));
+  if (data) return data;
   return {
     status: 'success',
     benchmarkResults: [
@@ -457,18 +449,8 @@ export async function generateReportApi(locationName: string, format: 'json' | '
  * GET /api/v1/disaster-resources
  */
 export async function fetchApiDisasterResources(): Promise<any[]> {
-  try {
-    const res = await fetch(getApiEndpoint('/api/v1/disaster-resources'));
-    if (res.ok) {
-      updateBackendStatus(true);
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data;
-      }
-    }
-  } catch (e) {
-    updateBackendStatus(false);
-  }
+  const data = await safeFetchJson<any[]>(getApiEndpoint('/api/v1/disaster-resources'));
+  if (Array.isArray(data) && data.length > 0) return data;
   return MOCK_DISASTER_RESOURCES;
 }
 
@@ -476,17 +458,7 @@ export async function fetchApiDisasterResources(): Promise<any[]> {
  * GET /api/v1/risk-grid
  */
 export async function fetchApiRiskGrid(region: string = 'up_ganges'): Promise<GridCell5km[]> {
-  try {
-    const res = await fetch(getApiEndpoint(`/api/v1/risk-grid?region=${region}`));
-    if (res.ok) {
-      updateBackendStatus(true);
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data;
-      }
-    }
-  } catch (e) {
-    updateBackendStatus(false);
-  }
+  const data = await safeFetchJson<GridCell5km[]>(getApiEndpoint(`/api/v1/risk-grid?region=${region}`));
+  if (Array.isArray(data) && data.length > 0) return data;
   return MOCK_5KM_GRID;
 }

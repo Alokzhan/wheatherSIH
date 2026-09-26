@@ -50,6 +50,7 @@ def main():
             repo_id=repo_id,
             repo_type="space",
             space_sdk="docker",
+            space_hardware="cpu-basic",
             private=False,
             token=hf_token,
             exist_ok=True

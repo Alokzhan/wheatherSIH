@@ -43,11 +43,13 @@ export const AiModelHub: React.FC = () => {
         fetch('/api/v1/model/st-gnn-track'),
         fetch('/api/v1/model/ensemble-uncertainty')
       ]);
-      if (stRes.ok) {
+      const stType = stRes.headers.get('content-type') || '';
+      if (stRes.ok && stType.includes('application/json')) {
         const stJson = await stRes.json();
         setStGnnData(stJson.objectTrackingSummary);
       }
-      if (ensRes.ok) {
+      const ensType = ensRes.headers.get('content-type') || '';
+      if (ensRes.ok && ensType.includes('application/json')) {
         const ensJson = await ensRes.json();
         setEnsembleData(ensJson);
       }
@@ -68,7 +70,8 @@ export const AiModelHub: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ spatialResolutionKm: 5.0 })
       });
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         const ev = data.extremeValuePreservation || data.verificationScores?.groundTruthValidation?.extremeValuePreservation || {
           stormTraceDdpm5kmMaxMm: 185.0,
