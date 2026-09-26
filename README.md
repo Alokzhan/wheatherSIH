@@ -47,16 +47,49 @@ However, predicting localized extreme weather anomalies (cyclones, cloudbursts, 
                            ▼
 ┌────────────────────────────────────────────────────────┐
 │  OPERATIONAL DISASTER UI & REAL-TIME DISPATCH         │
+│  • 8 Active GIS Layers & Independent Eye Buttons       │
+│  • Windy Multi-Model Cyclone Tracker (IMD, ECMWF, GFS) │
 │  • StormTrace Copilot AI Weather Chatbot (Voice STT/TTS)│
-│  • RainViewer Live Radar & Mapbox 3D GIS Globe         │
-│  • Dynamic Geocoding & Rain Duration ("Kab Tak Rain")  │
-│  • NDRF 9th/2nd Battalion Emergency Dispatch Warnings  │
-└────────────────────────────────────────────────────────┘
+│  • Full Phone Responsiveness & "How It Works" Guide   │
+└──────────────────────────┘
 ```
 
 ---
 
-## 🤖 2. Machine Learning Architecture & Model Breakdown
+## 🗺️ 2. 8 Active GIS Map Layers & Independent Eye Buttons
+
+StormTrace AI features **8 fully functional, interactive GIS Map Layers** rendered on a Mapbox GL 3D Globe with independent popup controls and mobile responsiveness:
+
+| # | GIS Layer Name | Algorithm & Data Sources | Interactive Features & Map Reading |
+|---|---|---|---|
+| 1 | **🌧️ Live Pan-India Rainfall Radar** | RainViewer Real-time Radar Raster + Downscaled 24h Isohyets GeoJSON | Click polygon for downscaled 24h rain (mm), district name & EFI percentile. |
+| 2 | **⚡ EFI Climatology Anomaly** | Extreme Forecast Index (ECMWF vs 30-year IMD climatology percentile >96th) | Purple glowing contours showing historical extreme rainfall deviation. |
+| 3 | **🎯 Extreme Prob (>50mm)** | DDPM ensemble probability exceedance (>50mm heavy downpour) | High-contrast crimson outlines for quick risk identification. |
+| 4 | **🛡️ Threat Polygons** | Convective storm cell footprints & active hazard centroids | Animated 🌀 / 🌧️ / 💨 markers with peak intensity (mm/h) & track speed. |
+| 5 | **↗️ GNN Trajectory Track** | Spherical Graph Neural Network (ST-GNN) storm trajectory track | Click waypoints to check forecast hour, coordinates, ETA & speed. |
+| 6 | **📐 5 km Risk Grid Overlay** | High-resolution 5km x 5km DDPM physics downscaled grid cells | Click grid cell to reveal compact 5km Sub-Grid Inspection Card. |
+| 7 | **🏛️ State/District Boundaries** | Pan-India State & District GeoJSON boundary lines | Blue dashed strokes demarcating Prayagraj, Wayanad, Mumbai, Supaul, etc. |
+| 8 | **🌊 River Basins & Slope Zones** | Kosi Basin, Sangam Basin, Wayanad Slopes & Brahmaputra Catchments | Interactive teal basin polygons with slope vulnerability & inundation popups. |
+
+### 👁️ Independent Eye Controls & Mobile Responsiveness
+- **Left Eye Button (`top-left`)**: Independently toggles the Left GIS Layer Control Panel (`showLayerPanel`).
+- **Right Eye Button (`top-right`)**: Independently toggles the Right 5km Sub-Grid Cell Inspection Card (`showCellPanel`).
+- **Mobile Responsiveness**: Auto-fits viewports (`w-[calc(100vw-2.5rem)]`), touch-friendly 44px button targets, and zero popup overlaps.
+
+---
+
+## 🌀 3. Windy-Style Multi-Model Cyclone Tracker
+
+The **Cyclone Tracker (`CycloneTracker.tsx`)** provides an interactive meteorologist workspace:
+- **Multi-Model Overlays**: Real-time trajectory comparison between **IMD**, **UKMET**, **ECMWF**, **GFS**, and **StormTrace AI**.
+- **Landfall ETA & Threat Alert**: Calculates expected landfall target zone (e.g. Sagar Island / Bangladesh) with peak wind speeds (110-130 km/h) and storm surge height.
+- **Cone of Uncertainty**: Renders probabilistic polygon swaths based on model ensemble spreads.
+- **Timeline Scrubber**: Drag-and-play forecast scrubber with 1x, 2x, 4x speed controls.
+- **Language Mode**: Toggle between **Hinglish Mode** (*"Chinta ki Baat hai 😳?"*) and **English Mode**.
+
+---
+
+## 🤖 4. Machine Learning Architecture & Model Breakdown
 
 StormTrace AI incorporates **5 specialized ML & Simulation engines** working in tandem:
 
@@ -87,23 +120,23 @@ StormTrace AI incorporates **5 specialized ML & Simulation engines** working in 
 ### 4️⃣ Model 4: Extended Kalman Filter (EKF) & Bipartite Tracker (`tracker.py`)
 - **Mechanism**: Combines EKF state estimation with Hungarian Bipartite Assignment to track multi-target storm centroids across 50 ensemble members from $T+0$ to $T+240\text{h}$.
 
-### 5️⃣ Engine 5: Windy-Style Multi-Model Trajectory & Ensemble Engine (`CycloneTracker.tsx` & `ensemble_engine.py`)
-- **Mechanism**: Interactive trajectory track rendering, cone of uncertainty swaths, multi-model forecast overlays (**IMD**, **UKM**, **ECMWF**, **GFS**, **StormTrace AI**), node speed badges, floating popup callout cards, and date/time scrubber animation slider.
+### 5️⃣ Engine 5: Ensemble CRPS & Brier Evaluation Engine (`ensemble_engine.py`)
+- **Mechanism**: Computes Continuous Ranked Probability Score (CRPS) and Brier Scores across 50 EPS perturbation members to quantify forecast uncertainty.
 
 ---
 
-## 💬 3. StormTrace AI Copilot Weather Chatbot
+## 💬 5. StormTrace AI Copilot Weather Chatbot
 
 StormTrace AI features an **intelligent Voice-Enabled Assistant (`WeatherChatbot.tsx`)** powered by FastAPI backend (`/api/v1/chatbot/query`) and live client-side fallback geocoding:
 
 - **🎙️ Voice Recognition & Speech Synthesis**: Supports Web Speech Recognition (`en-IN` / `hi-IN`) and Text-to-Speech (TTS).
 - **📍 Dynamic Geocoding & Rain Duration Resolution**: Automatically parses location queries in English, Hindi, or Hinglish (*"lucknow weather"*, *"shahajahanpur weather kab tak rain rahe gi"*, *"mumbai flood alert"*, *"delhi rain forecast"*, *"wayanad status"*).
 - **⏱️ "Kab Tak Rain Rahegi" Engine**: Analyzes 24-hour hourly precipitation curves to report exact rain clearing times (e.g. *"Rains will continue intermittently for 3 to 4 hours and will clear by tonight around 08:30 PM"*).
-- **🚨 Interactive Action Buttons**: Clicking any suggestion pill or action button dynamically updates the conversation and triggers smooth tab navigation (e.g. GIS Map, AI Model Hub, Farmer Advisory, Alert Center).
+- **🚨 Interactive Action Buttons**: Clicking any suggestion pill or action button dynamically updates the conversation and triggers smooth tab navigation.
 
 ---
 
-## 📐 4. System Architecture & Data Flow Diagrams (DFD)
+## 📐 6. System Architecture & Data Flow Diagrams (DFD)
 
 ### 🏗️ Complete System Architecture Diagram
 
@@ -262,7 +295,7 @@ flowchart TD
 
 ---
 
-## 📊 5. Model Accuracy & Real Dataset Validation Results
+## 📊 7. Model Accuracy & Real Dataset Validation Results
 
 StormTrace models are trained and validated on authentic **Copernicus ERA5 Reanalysis** atmospheric feature tensors ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$). 
 
@@ -295,7 +328,7 @@ Evaluated on historical extreme weather events (**Cyclone Amphan**, **North Indi
 
 ---
 
-## 🌐 6. Copernicus ERA5 4-Stream Ingestion System
+## 🌐 8. Copernicus ERA5 4-Stream Ingestion System
 
 StormTrace AI ingests 4 official Copernicus / ECMWF ERA5 atmospheric datasets covering the Indian Subcontinent domain ($6^\circ\text{N}-38^\circ\text{N}, 68^\circ\text{E}-98^\circ\text{E}$):
 
@@ -311,7 +344,7 @@ python backend/data/download_copernicus_era5.py
 
 ---
 
-## 🧪 7. Model Weight Inspection & Verification
+## 🧪 9. Model Weight Inspection & Verification
 
 Train PyTorch AI Models on ERA5 datasets:
 ```bash
@@ -330,7 +363,7 @@ python backend/models/inspector.py
 
 ---
 
-## 🚀 8. Running & Deploying the Project
+## 🚀 10. Running & Deploying the Project
 
 ### 1. Frontend Setup (React 19 + Vite)
 ```bash
@@ -366,7 +399,7 @@ npm run deploy
 
 ---
 
-## 📄 9. License & Acknowledgements
+## 📄 11. License & Acknowledgements
 - Developed for **Smart India Hackathon (SIH26078)**.
 - Live Deployment: [https://alokzhan.github.io/wheatherSIH/](https://alokzhan.github.io/wheatherSIH/)
 - Data provided by **Copernicus Climate Data Store (CDS)** & **ECMWF Open Data**.
