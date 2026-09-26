@@ -1,0 +1,42 @@
+# StormTrace AI - Official Real Data Sources & Region Configuration
+
+data_sources:
+  climatology:
+    provider: ERA5
+    enabled: true
+  india_reanalysis:
+    provider: IMDAA
+    enabled: true
+  ensemble:
+    provider: NEPS-G
+    enabled: true
+  development_fallback:
+    provider: GFS
+    enabled: false
+  live_demo:
+    provider: OPEN_METEO
+    enabled: false
+
+region:
+  north: 38
+  south: 5
+  west: 65
+  east: 100
+
+variables:
+  - temperature
+  - precipitation
+  - u_wind
+  - v_wind
+  - pressure
+  - humidity
+
+ensemble:
+  expected_members: 50
+
+forecast:
+  max_lead_hours: 240
+
+downscaling:
+  coarse_resolution_km: 12
+  target_resolution_km: 5

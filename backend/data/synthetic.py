@@ -6,6 +6,10 @@ Produces canonical 5D weather tensors matching production schema:
 import numpy as np
 from backend.data.schema import CANONICAL_VARIABLES, DEFAULT_DOMAIN
 
+import os
+
+STORMTRACE_MODE = os.getenv("STORMTRACE_MODE", "REAL")
+
 def generate_synthetic_nwp_tensor(
     members: int = 50,
     timesteps: int = 9,
@@ -14,8 +18,15 @@ def generate_synthetic_nwp_tensor(
     seed: int = 42
 ) -> dict:
     """
-    Generates synthetic 5D NWP forecast ensemble tensor matching exact production schema.
+    Generates synthetic 5D NWP forecast ensemble tensor for DEMO mode testing only.
+    Strictly blocked in REAL mode.
     """
+    if STORMTRACE_MODE == "REAL":
+        raise RuntimeError(
+            "❌ REAL DATA ENFORCEMENT FAILURE: STORMTRACE_MODE is set to 'REAL'. "
+            "Synthetic weather tensor generation is prohibited in REAL mode. "
+            "Please use real dataset adapters in backend/data/adapters/."
+        )
     np.random.seed(seed)
     num_vars = len(CANONICAL_VARIABLES)
     

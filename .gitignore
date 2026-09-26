@@ -30,3 +30,13 @@ __pycache__/
 *.db
 *.sqlite
 
+# Large Meteorological Datasets (RAW & PROCESSED)
+data/raw/
+data/processed/
+backend/data/era5/
+backend/data/neps/
+*.nc
+*.grib2
+*.npz
+
+
