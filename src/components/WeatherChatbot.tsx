@@ -374,7 +374,7 @@ export const WeatherChatbot: React.FC<WeatherChatbotProps> = ({ onNavigateToTab 
 
       {/* Glassmorphism Chat Drawer Panel */}
       {isOpen && (
-        <div className="w-[360px] sm:w-[420px] h-[540px] max-h-[85vh] rounded-2xl bg-white/95 dark:bg-[#0b1222]/95 backdrop-blur-2xl border border-slate-200 dark:border-cyan-500/30 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
+        <div className="w-[calc(100vw-2rem)] max-w-sm sm:w-[420px] h-[540px] max-h-[80vh] rounded-2xl bg-white/95 dark:bg-[#0b1222]/95 backdrop-blur-2xl border border-slate-200 dark:border-cyan-500/30 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
           {/* Header Bar */}
           <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">

@@ -1135,7 +1135,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
 
         {/* Floating Layer Controls */}
         {showLayerPanel && (
-          <div className="absolute top-14 left-4 z-10 w-72 bg-[#0a0f1e]/92 backdrop-blur-xl p-3 rounded-xl border border-[#1e2d48] max-h-[80%] overflow-y-auto shadow-2xl">
+          <div className="absolute top-14 left-4 z-10 w-[calc(100vw-2.5rem)] max-w-xs sm:w-72 bg-[#0a0f1e]/92 backdrop-blur-xl p-3 rounded-xl border border-[#1e2d48] max-h-[75vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#1e2d48]">
               <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                 <Layers className="h-4 w-4 text-cyan-400" />
@@ -1155,7 +1155,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
                   <button
                     key={layerId}
                     onClick={() => toggleLayer(layerId)}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-all ${
+                    className={`w-full text-left px-2.5 py-2 min-h-[40px] rounded-lg text-xs flex items-center justify-between transition-all ${
                       isChecked
                         ? 'bg-cyan-950/60 border border-cyan-500/30 text-cyan-200 font-medium'
                         : 'bg-[#111827]/60 border border-[#1e2d48]/80 text-slate-400 hover:text-slate-200 hover:bg-[#151d33]'
@@ -1172,12 +1172,12 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-[#1e2d48] text-[11px]">
-              <span className="text-slate-400 block font-semibold mb-1">Precipitation Severity Legend:</span>
+              <span className="text-slate-400 block font-semibold mb-1">Precipitation Severity (Aasan Bhasha):</span>
               <div className="grid grid-cols-4 gap-1 text-[10px] text-center font-bold">
-                <div className="py-1 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">&lt;50mm</div>
-                <div className="py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">50-100mm</div>
-                <div className="py-1 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">100-150mm</div>
-                <div className="py-1 rounded bg-red-950/60 text-red-400 border border-red-800/40">&gt;150mm</div>
+                <div className="py-1 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">&lt;50mm<br/><span className="text-[8px] opacity-75">Safe</span></div>
+                <div className="py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">50-100mm<br/><span className="text-[8px] opacity-75">Moderate</span></div>
+                <div className="py-1 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">100-150mm<br/><span className="text-[8px] opacity-75">Savdhan</span></div>
+                <div className="py-1 rounded bg-red-950/60 text-red-400 border border-red-800/40">&gt;150mm<br/><span className="text-[8px] opacity-75">Khatra</span></div>
               </div>
             </div>
           </div>
@@ -1185,7 +1185,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
 
         {/* Selected Cell Inspection Panel - Toggles with Eye button */}
         {showLayerPanel && selectedCell && (
-          <div className="absolute top-4 right-4 z-10 w-80 bg-[#0a0f1e]/92 backdrop-blur-xl p-4 rounded-xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/5 space-y-2">
+          <div className="absolute top-14 right-4 sm:top-4 z-10 w-[calc(100vw-2.5rem)] max-w-xs sm:w-80 bg-[#0a0f1e]/92 backdrop-blur-xl p-3.5 rounded-xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/5 space-y-2">
             <div className="flex items-center justify-between pb-2 border-b border-[#1e2d48]">
               <div>
                 <span className="text-[10px] font-mono text-cyan-400 block uppercase tracking-wider">5 KM DOWNSCALED CELL</span>
