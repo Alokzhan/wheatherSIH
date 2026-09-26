@@ -230,8 +230,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       {/* ── AASAN BHASHA MEIN SAMJHEIN (EASY GUIDE MODAL) ── */}
       {showHelpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-[#0f172a] border border-cyan-500/30 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-4 max-h-[90vh] overflow-y-auto text-slate-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-[#0b1329] border border-cyan-500/50 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-4 max-h-[85vh] overflow-y-auto text-slate-100 relative z-[101]">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2 text-cyan-400">
                 <Sparkles className="h-5 w-5 animate-pulse" />
