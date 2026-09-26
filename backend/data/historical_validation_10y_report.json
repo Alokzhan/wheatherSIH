@@ -10,25 +10,25 @@
       "category": "Very Severe Cyclonic Storm",
       "period": "08-14 Oct 2014",
       "region": "Visakhapatnam & Andhra Coast",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/hudhud_2014.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 2.89,
-        "trajectoryIoU": 0.968,
-        "trackDirectionErrorDeg": 1.2
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.986,
-        "recall": 0.977,
-        "f1Score": 0.981,
-        "podScore": 0.977,
-        "farScore": 0.014,
-        "csiScore": 0.976
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.09,
-        "maeMm": 0.76,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -38,25 +38,25 @@
       "category": "Urban Cloudburst / Extreme Rainfall",
       "period": "01-03 Dec 2015",
       "region": "Chennai & Coastal Tamil Nadu",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/chennai_2015.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 1.16,
-        "trajectoryIoU": 0.959,
-        "trackDirectionErrorDeg": 1.0
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.986,
-        "recall": 0.98,
-        "f1Score": 0.983,
-        "podScore": 0.98,
-        "farScore": 0.014,
-        "csiScore": 0.975
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.07,
-        "maeMm": 0.76,
-        "massConservationErrorPct": 0.04
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -66,25 +66,25 @@
       "category": "Very Severe Cyclonic Storm",
       "period": "10-13 Dec 2016",
       "region": "Chennai & North Tamil Nadu",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/vardah_2016.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 0.62,
-        "trajectoryIoU": 0.972,
-        "trackDirectionErrorDeg": 1.0
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.984,
-        "recall": 0.988,
-        "f1Score": 0.986,
-        "podScore": 0.988,
-        "farScore": 0.016,
-        "csiScore": 0.983
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.8,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.07,
-        "maeMm": 0.77,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -94,25 +94,25 @@
       "category": "Extremely Severe Cyclonic Storm",
       "period": "26 Apr - 04 May 2019",
       "region": "Puri & Odisha Coast",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/fani_2019.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 2.39,
-        "trajectoryIoU": 0.958,
-        "trackDirectionErrorDeg": 1.2
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.984,
-        "recall": 0.989,
-        "f1Score": 0.986,
-        "podScore": 0.989,
-        "farScore": 0.016,
-        "csiScore": 0.98
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.8,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 0.95,
-        "maeMm": 0.79,
-        "massConservationErrorPct": 0.04
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -122,25 +122,25 @@
       "category": "Super Cyclonic Storm",
       "period": "16-21 May 2020",
       "region": "Bay of Bengal & West Bengal Coast",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/amphan_2020.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 0.73,
-        "trajectoryIoU": 0.973,
-        "trackDirectionErrorDeg": 0.9
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.987,
-        "recall": 0.983,
-        "f1Score": 0.985,
-        "podScore": 0.983,
-        "farScore": 0.013,
-        "csiScore": 0.981
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.8,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.02,
-        "maeMm": 0.74,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -150,25 +150,25 @@
       "category": "Extremely Severe Cyclonic Storm",
       "period": "14-19 May 2021",
       "region": "Arabian Sea & Gujarat Coast",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/tauktae_2021.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 2.19,
-        "trajectoryIoU": 0.976,
-        "trackDirectionErrorDeg": 1.2
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.989,
-        "recall": 0.981,
-        "f1Score": 0.985,
-        "podScore": 0.981,
-        "farScore": 0.011,
-        "csiScore": 0.977
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.0,
-        "maeMm": 0.78,
-        "massConservationErrorPct": 0.04
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -178,25 +178,25 @@
       "category": "Extreme Monsoonal Deluge",
       "period": "10-15 July 2022",
       "region": "Navsari & South Gujarat",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/gujarat_2022.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 1.42,
-        "trajectoryIoU": 0.969,
-        "trackDirectionErrorDeg": 1.1
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.986,
-        "recall": 0.982,
-        "f1Score": 0.984,
-        "podScore": 0.982,
-        "farScore": 0.014,
-        "csiScore": 0.977
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.0,
-        "maeMm": 0.74,
-        "massConservationErrorPct": 0.04
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -206,25 +206,25 @@
       "category": "Urban Inundation / Cloudburst",
       "period": "26-28 July 2023",
       "region": "Mumbai Suburban & Western Ghats",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/mumbai_inundation_2023.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 2.97,
-        "trajectoryIoU": 0.977,
-        "trackDirectionErrorDeg": 1.1
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.988,
-        "recall": 0.985,
-        "f1Score": 0.986,
-        "podScore": 0.985,
-        "farScore": 0.012,
-        "csiScore": 0.973
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.06,
-        "maeMm": 0.7,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -234,25 +234,25 @@
       "category": "Extreme Temperature Anomaly",
       "period": "18-31 May 2024",
       "region": "Rajasthan, Delhi NCR & Indo-Gangetic Plains",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/heatdome_2024.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 1.38,
-        "trajectoryIoU": 0.96,
-        "trackDirectionErrorDeg": 1.1
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.989,
-        "recall": 0.977,
-        "f1Score": 0.983,
-        "podScore": 0.977,
-        "farScore": 0.011,
-        "csiScore": 0.978
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.9,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 1.0,
-        "maeMm": 0.71,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     },
     {
@@ -262,34 +262,32 @@
       "category": "Flash Flood / Cloudburst",
       "period": "12-15 Sept 2024",
       "region": "Supaul & North Bihar Catchment",
+      "status": "UNVERIFIED",
+      "reason": "N/A \u2014 real validation dataset required in data/raw/historical_events/kosi_flashflood_2024.nc or .json",
       "trackingValidation": {
-        "positionErrorKm": 0.76,
-        "trajectoryIoU": 0.958,
-        "trackDirectionErrorDeg": 1.0
+        "positionErrorKm": "N/A \u2014 real validation dataset required",
+        "trajectoryIoU": "N/A",
+        "trackDirectionErrorDeg": "N/A"
       },
       "contingencyScores": {
-        "precision": 0.987,
-        "recall": 0.983,
-        "f1Score": 0.985,
-        "podScore": 0.983,
-        "farScore": 0.013,
-        "csiScore": 0.971
+        "precision": "N/A",
+        "recall": "N/A",
+        "f1Score": "N/A",
+        "podScore": "N/A \u2014 real validation dataset required",
+        "farScore": "N/A \u2014 real validation dataset required",
+        "csiScore": "N/A \u2014 real validation dataset required"
       },
       "downscalingPerformance": {
-        "peakRainfallPreservationPct": 99.8,
-        "standardUnetSmoothingLossPct": 29.5,
-        "rmseMm": 0.99,
-        "maeMm": 0.75,
-        "massConservationErrorPct": 0.03
+        "peakRainfallPreservationPct": "N/A \u2014 real validation dataset required",
+        "rmseMm": "N/A",
+        "maeMm": "N/A"
       }
     }
   ],
   "overallSummaryMetrics": {
-    "meanPositionErrorKm": 1.65,
-    "meanCsiScore": 0.977,
-    "meanPodScore": 0.983,
-    "meanFarScore": 0.013,
-    "meanExtremePeakPreservationPct": 99.9,
-    "meanMassConservationErrorPct": 0.03
+    "meanPositionErrorKm": "UNVERIFIED (Local Ground-Truth Data Required)",
+    "meanCsiScore": "UNVERIFIED (Local Ground-Truth Data Required)",
+    "meanPodScore": "UNVERIFIED (Local Ground-Truth Data Required)",
+    "meanFarScore": "UNVERIFIED (Local Ground-Truth Data Required)"
   }
 }

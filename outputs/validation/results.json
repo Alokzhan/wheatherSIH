@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-09-26T11:34:31.834172Z",
+  "mode": "REAL",
+  "model_version": "v2.0.0-SIH26078",
+  "total_benchmark_records": 2,
+  "results": [
+    {
+      "dataset": "Real Copernicus ERA5 Reanalysis Dataset",
+      "event": "India_Domain_Atmospheric_State",
+      "model": "ERA5_Ingestion_Pipeline",
+      "prediction": "Atmospheric_Grids",
+      "ground_truth": "Copernicus_Reanalysis",
+      "metric": "ERA5_Verification_Status",
+      "value": "REAL_DATA_VERIFIED",
+      "timestamp": "2026-09-26T11:34:31.834172Z",
+      "model_version": "v2.0.0-SIH26078",
+      "status": "REAL_DATA_VERIFIED"
+    },
+    {
+      "dataset": "NCMRWF NEPS-G 50-Member Operational EPS",
+      "event": "50_Member_EPS_Forecast",
+      "model": "EnsembleNWPEngine",
+      "prediction": "Ensemble_Members_Count_0",
+      "ground_truth": "NCMRWF_Operational_GRIB2",
+      "metric": "NEPS_G_Verification_Status",
+      "value": "UNVERIFIED",
+      "timestamp": "2026-09-26T11:34:31.834172Z",
+      "model_version": "v2.0.0-SIH26078",
+      "status": "UNVERIFIED"
+    }
+  ]
+}

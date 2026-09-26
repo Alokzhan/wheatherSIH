@@ -97,14 +97,18 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-black tracking-wider text-slate-900 dark:text-white">
-                AstraWatch AI
+                StormTrace
               </h1>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-600/10 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 font-mono font-bold">
                 SIH Pan-India
               </span>
+              <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-600/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                REAL DATA MODE
+              </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Multi-Hazard Extreme Anomaly Tracking + Downscaling Engine
+              Pan-India Extreme Weather Tracking &amp; Forecasting System
             </p>
           </div>
         </div>

@@ -147,15 +147,15 @@ export const AiModelHub: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950 border border-cyan-500/30 text-cyan-300 text-xs font-mono mb-2">
               <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-              <span>RESEARCH-GRADE DEEP LEARNING METEOROLOGY ENGINE</span>
+              <span>PRECISION WEATHER FORECASTING ENGINE</span>
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight flex items-center gap-3">
               <Cpu className="h-8 w-8 text-cyan-400" />
-              StormTrace AI Model Architecture Hub
+              StormTrace Model Hub
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl mt-1">
-              PyTorch Spatio-Temporal GNN (ST-GNN) Object Tracker &amp; Conditional DDPM/DDIM 5 km Downscaler with 4 Physics Loss Laws.
+              Spherical Graph Tracker &amp; Physics-Guided Hyperlocal Downscaler with Conservation Laws.
             </p>
           </div>
 
@@ -263,17 +263,17 @@ export const AiModelHub: React.FC = () => {
                   STAGE 1
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-base">Spherical Geodesic Mesh ST-GNN</h3>
-                  <p className="text-xs text-slate-400">PyTorch Spatio-Temporal GNN (GAT + GRU) multi-hazard object tracker</p>
+                  <h3 className="font-bold text-slate-100 text-base">Spherical Graph Tracker (ST-GNN)</h3>
+                  <p className="text-xs text-slate-400">Spatio-Temporal Graph Attention for Extreme Storm Trajectory Tracking</p>
                 </div>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
-                PyTorch ST-GNN
+                ST-GNN Tracker
               </span>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Maps multi-variable NWP forecast fields onto a 3D Spherical Geodesic Icosahedral Mesh (S²), combining Graph Attention with Temporal GRU cells to extract explicit extreme weather anomaly objects and predict 3-to-10 day spatio-temporal trajectory cones (T+0 to T+240).
+              Maps multi-variable NWP forecast fields onto a 3D Spherical Geodesic Mesh, combining Graph Attention with Temporal Memory cells to track storm centroids and project 10-day trajectory paths (T+0 to T+240h).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
@@ -286,7 +286,7 @@ export const AiModelHub: React.FC = () => {
                 <span className="text-emerald-400 font-bold text-sm">&lt; 1.8 km Offset</span>
               </div>
               <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                <span className="text-slate-400 block text-[10px]">4D-ABB IoU</span>
+                <span className="text-slate-400 block text-[10px]">Bounding Box IoU</span>
                 <span className="text-amber-400 font-bold text-sm">0.89 Overlap</span>
               </div>
             </div>
@@ -300,12 +300,12 @@ export const AiModelHub: React.FC = () => {
                   STAGE 2
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-base">Conditional DDPM UNet with 4 Physics Loss Laws</h3>
-                  <p className="text-xs text-slate-400">12 km to 5 km downscaling preserving extreme rainfall peaks</p>
+                  <h3 className="font-bold text-slate-100 text-base">Physics-Guided Downscaler (DDPM)</h3>
+                  <p className="text-xs text-slate-400">12 km to 5 km Hyperlocal Resolution Preserving Peak Rainfall</p>
                 </div>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">
-                DDPM Diffusion
+                DDPM Downscaler
               </span>
             </div>
 
