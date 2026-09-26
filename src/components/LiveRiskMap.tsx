@@ -754,6 +754,160 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         }
       });
 
+      // --- 9. State / District Boundaries Layer ---
+      const adminBoundaryFeatures = [
+        {
+          name: 'Uttar Pradesh State & District Boundaries',
+          district: 'Prayagraj / Varanasi / Lucknow',
+          coords: [[80.5, 24.5], [83.5, 24.5], [84.0, 27.5], [80.0, 27.5], [80.5, 24.5]]
+        },
+        {
+          name: 'Maharashtra State & Coastal Boundaries',
+          district: 'Mumbai Suburban / Thane / Raigad',
+          coords: [[72.5, 18.5], [74.5, 18.5], [74.5, 20.5], [72.5, 20.5], [72.5, 18.5]]
+        },
+        {
+          name: 'Kerala Malabar & High Range Boundaries',
+          district: 'Wayanad / Kozhikode / Malappuram',
+          coords: [[75.5, 11.0], [77.2, 11.0], [77.2, 12.5], [75.5, 12.5], [75.5, 11.0]]
+        },
+        {
+          name: 'Assam Valley & Northeast Boundaries',
+          district: 'Kamrup / Guwahati / Dibrugarh',
+          coords: [[89.8, 25.0], [95.5, 25.0], [95.5, 28.0], [89.8, 28.0], [89.8, 25.0]]
+        },
+        {
+          name: 'Odisha Coastal Belt Boundaries',
+          district: 'Cuttack / Puri / Balasore',
+          coords: [[84.5, 19.5], [87.5, 19.5], [87.5, 22.0], [84.5, 22.0], [84.5, 19.5]]
+        }
+      ].map((item, idx) => ({
+        type: 'Feature' as const,
+        geometry: {
+          type: 'Polygon' as const,
+          coordinates: [item.coords]
+        },
+        properties: {
+          id: `ADMIN-${idx + 1}`,
+          name: item.name,
+          district: item.district,
+          color: '#38bdf8'
+        }
+      }));
+
+      map.addSource('admin-boundaries-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: adminBoundaryFeatures
+        }
+      });
+
+      map.addLayer({
+        id: 'admin-districts-line',
+        type: 'line',
+        source: 'admin-boundaries-source',
+        paint: {
+          'line-color': '#38bdf8',
+          'line-width': 1.8,
+          'line-dasharray': [3, 1],
+          'line-opacity': 0.85
+        }
+      });
+
+      map.addLayer({
+        id: 'admin-states-line',
+        type: 'line',
+        source: 'admin-boundaries-source',
+        paint: {
+          'line-color': '#60a5fa',
+          'line-width': 2.5,
+          'line-opacity': 0.95
+        }
+      });
+
+      // --- 10. River Basins & Orographic Slope Vulnerability Layer ---
+      const riverBasinFeatures = [
+        {
+          name: 'Kosi River Catchment & Floodplain Inundation Zone',
+          basin: 'Kosi Basin (Bihar)',
+          vulnerability: 'Critical Slope Siltation Risk',
+          coords: [[86.2, 25.5], [87.5, 25.5], [87.5, 26.8], [86.2, 26.8], [86.2, 25.5]]
+        },
+        {
+          name: 'Yamuna-Ganges Sangam River Basin Zone',
+          basin: 'Ganga-Yamuna Basin (Prayagraj)',
+          vulnerability: 'High Urban Confluence Surge Risk',
+          coords: [[81.2, 25.0], [82.5, 25.0], [82.5, 25.8], [81.2, 25.8], [81.2, 25.0]]
+        },
+        {
+          name: 'Western Ghats Wayanad Slope Landslide Corridor',
+          basin: 'Periyar-Kabini Catchment',
+          vulnerability: 'Extreme Orographic Slope Debris Flow',
+          coords: [[75.8, 11.3], [76.6, 11.3], [76.6, 12.1], [75.8, 12.1], [75.8, 11.3]]
+        },
+        {
+          name: 'Brahmaputra Middle Valley Inundation Basin',
+          basin: 'Brahmaputra Basin (Guwahati)',
+          vulnerability: 'Severe Riverine Embankment Breach Risk',
+          coords: [[91.0, 25.8], [92.8, 25.8], [92.8, 26.8], [91.0, 26.8], [91.0, 25.8]]
+        }
+      ].map((item, idx) => ({
+        type: 'Feature' as const,
+        geometry: {
+          type: 'Polygon' as const,
+          coordinates: [item.coords]
+        },
+        properties: {
+          id: `BASIN-${idx + 1}`,
+          name: item.name,
+          basin: item.basin,
+          vulnerability: item.vulnerability,
+          color: '#06b6d4'
+        }
+      }));
+
+      map.addSource('vulnerability-basins-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: riverBasinFeatures
+        }
+      });
+
+      map.addLayer({
+        id: 'river-basins-fill',
+        type: 'fill',
+        source: 'vulnerability-basins-source',
+        paint: {
+          'fill-color': '#0284c7',
+          'fill-opacity': layerOpacity * 0.25
+        }
+      });
+
+      map.addLayer({
+        id: 'river-basins-line',
+        type: 'line',
+        source: 'vulnerability-basins-source',
+        paint: {
+          'line-color': '#38bdf8',
+          'line-width': 2.0,
+          'line-opacity': 0.8
+        }
+      });
+
+      map.addLayer({
+        id: 'slope-zones-line',
+        type: 'line',
+        source: 'vulnerability-basins-source',
+        paint: {
+          'line-color': '#06b6d4',
+          'line-width': 2.5,
+          'line-dasharray': [2, 2],
+          'line-opacity': 0.9
+        }
+      });
+
       // Add HTML markers for threat centroids with dynamic hazard badges (Cyclone, Wind Squall, Heat Dome, Rain Cell)
       threatObjects.forEach((threat: ThreatObject) => {
         const el = document.createElement('div');
@@ -876,10 +1030,34 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
           .addTo(map);
       });
 
+      // Click interaction for River Basins
+      map.on('click', 'river-basins-fill', (e) => {
+        if (!e.features?.length) return;
+        const props = (e.features[0] as any).properties;
+        if (!props) return;
+
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <div style="font-family: sans-serif; font-size: 12px; padding: 4px;">
+              <div style="font-weight: bold; color: #06b6d4; font-size: 13px; margin-bottom: 4px;">🌊 ${props.name}</div>
+              <div><strong>Catchment Basin:</strong> ${props.basin}</div>
+              <div><strong>Slope Vulnerability:</strong> <span style="color: #38bdf8; font-weight: bold;">${props.vulnerability}</span></div>
+            </div>
+          `)
+          .addTo(map);
+      });
+
       map.on('mouseenter', 'rain-isohyets-fill', () => {
         map.getCanvas().style.cursor = 'pointer';
       });
       map.on('mouseleave', 'rain-isohyets-fill', () => {
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('mouseenter', 'river-basins-fill', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'river-basins-fill', () => {
         map.getCanvas().style.cursor = '';
       });
 
@@ -921,7 +1099,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
     });
   }, [currentRegion, is3DEnabled]);
 
-  // Sync layer visibilities dynamically
+  // Sync layer visibilities dynamically for ALL 8 GIS LAYERS
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
@@ -933,7 +1111,8 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       risk_grid_5km: ['risk-grid-3d', 'risk-grid-flat', 'risk-grid-outline'],
       threat_footprint: ['threat-fill', 'threat-outline', 'threat-3d'],
       trajectory: ['trajectory-line', 'waypoint-circles'],
-      wind_extremes: ['wind-extremes-fill', 'wind-extremes-line'],
+      admin_boundaries: ['admin-districts-line', 'admin-states-line'],
+      vulnerability: ['river-basins-fill', 'river-basins-line', 'slope-zones-line'],
     };
 
     Object.entries(layerMap).forEach(([key, mapboxLayers]) => {
