@@ -829,6 +829,10 @@ class ChatReq(BaseModel):
     context: dict = None
 
 def handle_dynamic_weather_query(raw_msg: str):
+    """
+    Parses location weather queries and resolves live meteorological data 
+    via Open-Meteo & Nominatim APIs for any district across India.
+    """
     import re
     msg = raw_msg.lower().strip()
     
@@ -841,7 +845,6 @@ def handle_dynamic_weather_query(raw_msg: str):
         'please', 'sir', 'bhai', 'bro', 'info', 'kaha', 'kahan', 'bataiye'
     }
     
-    # Pre-checks for common Indian cities if explicitly mentioned
     known_cities = {
         "shahajahanpur": ("Shahjahanpur", "Uttar Pradesh", 27.8804, 79.9056),
         "shahjahanpur": ("Shahjahanpur", "Uttar Pradesh", 27.8804, 79.9056),
@@ -864,25 +867,24 @@ def handle_dynamic_weather_query(raw_msg: str):
     }
 
     lat, lon, city_name, state_name = None, None, None, None
-    for k, v in known_cities.items():
-        if k in msg:
-            city_name, state_name, lat, lon = v
+    for key, val in known_cities.items():
+        if key in msg:
+            city_name, state_name, lat, lon = val
             break
 
     if not city_name:
         tokens = [w for w in re.findall(r'[a-zA-Z0-9]+', msg) if w.lower() not in stop_words]
-        city_candidate = ' '.join(tokens).strip() if tokens else 'Shahjahanpur'
+        city_candidate = ' '.join(tokens).strip() if tokens else 'Lucknow'
         headers = {'User-Agent': 'StormTraceAI/2.0'}
         resolved = False
         if city_candidate:
             try:
                 url = f"https://nominatim.openstreetmap.org/search?q={city_candidate}, India&countrycodes=in&format=json&addressdetails=1&limit=1"
-                r = requests.get(url, headers=headers, timeout=3)
-                if r.ok and r.json():
-                    data = r.json()[0]
-                    lat = float(data['lat'])
-                    lon = float(data['lon'])
-                    addr = data.get('address', {})
+                res = requests.get(url, headers=headers, timeout=3)
+                if res.ok and res.json():
+                    item = res.json()[0]
+                    lat, lon = float(item['lat']), float(item['lon'])
+                    addr = item.get('address', {})
                     city_name = addr.get('city') or addr.get('town') or addr.get('village') or addr.get('state_district') or addr.get('county') or city_candidate.title()
                     state_name = addr.get('state', 'India')
                     resolved = True
@@ -892,30 +894,30 @@ def handle_dynamic_weather_query(raw_msg: str):
             if not resolved:
                 try:
                     url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_candidate}&count=1&language=en&format=json"
-                    r = requests.get(url, headers=headers, timeout=3)
-                    if r.ok and r.json().get('results'):
-                        res = r.json()['results'][0]
-                        lat, lon = float(res['latitude']), float(res['longitude'])
-                        city_name = res['name']
-                        state_name = res.get('admin1', 'India')
+                    res = requests.get(url, headers=headers, timeout=3)
+                    if res.ok and res.json().get('results'):
+                        item = res.json()['results'][0]
+                        lat, lon = float(item['latitude']), float(item['longitude'])
+                        city_name = item['name']
+                        state_name = item.get('admin1', 'India')
                         resolved = True
                 except Exception:
                     pass
 
         if not resolved:
-            lat, lon, city_name, state_name = 27.8804, 79.9056, 'Shahjahanpur', 'Uttar Pradesh'
+            lat, lon, city_name, state_name = 26.8467, 80.9462, 'Lucknow', 'Uttar Pradesh'
 
-    current_temp, humidity, rain_24h = 27.5, 84, 18.5
+    current_temp, humidity, rain_24h = 27.2, 84, 18.5
     rain_stop_msg = 'Intermittent rainfall forecasted for the next 3 to 4 hours.'
     severity = 'MODERATE'
     
     try:
         fcst_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=precipitation,rain,showers,temperature_2m,relative_humidity_2m&current_weather=true&timezone=Asia/Kolkata"
-        r = requests.get(fcst_url, timeout=3)
-        if r.ok:
-            data = r.json()
+        res = requests.get(fcst_url, timeout=3)
+        if res.ok:
+            data = res.json()
             cw = data.get('current_weather', {})
-            current_temp = cw.get('temperature', 27.5)
+            current_temp = cw.get('temperature', 27.2)
             hourly = data.get('hourly', {})
             precip = hourly.get('precipitation', [])[:24]
             rel_hum = hourly.get('relative_humidity_2m', [84])[:24]
