@@ -12,7 +12,7 @@ import {
   LogIn,
   Wifi,
   WifiOff,
-  Sparkles,
+  BookOpen
 } from 'lucide-react';
 
 import { INDIA_REGION_PRESETS } from '../data/mockData';
@@ -41,7 +41,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState('');
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [isLive, setIsLive] = useState(false);
 
@@ -118,11 +117,12 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           <span>🗺️ Map</span>
         </button>
         <button
-          onClick={() => setShowHelpModal(true)}
-          className="px-2.5 py-1.5 min-h-[36px] rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-[11px] flex items-center gap-1 border border-cyan-400/40 shadow-md hover:scale-105 transition shrink-0"
-          title="Aasan Bhasha Mein Samjhein Guide"
+          onClick={() => onNavigateToTab && onNavigateToTab('how-it-works')}
+          className="px-2.5 py-1.5 min-h-[36px] rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] flex items-center gap-1 border border-slate-200 dark:border-slate-700 transition shrink-0"
+          title="Open How It Works & User Guide"
         >
-          <span>💡 Easy Guide</span>
+          <BookOpen className="h-3.5 w-3.5 text-cyan-400" />
+          <span>Guide</span>
         </button>
       </div>
 
@@ -227,79 +227,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           <span className="hidden sm:inline">Sign In</span>
         </button>
       </div>
-
-      {/* ── AASAN BHASHA MEIN SAMJHEIN (EASY GUIDE MODAL) ── */}
-      {showHelpModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="w-full max-w-lg bg-[#0b1329] border border-cyan-500/50 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-4 max-h-[85vh] overflow-y-auto text-slate-100 relative z-[101]">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 text-cyan-400">
-                <Sparkles className="h-5 w-5 animate-pulse" />
-                <h3 className="font-black text-sm sm:text-base text-white">💡 Aasan Bhasha Mein Samjhein Guide</h3>
-              </div>
-              <button 
-                onClick={() => setShowHelpModal(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs leading-relaxed">
-              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-cyan-300 block text-xs uppercase tracking-wider">🔴 Khatra (Risk Colors) Meaning:</span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-                  <div className="p-2 rounded-lg bg-red-950/40 border border-red-800/40 text-red-300">
-                    <strong className="block text-red-400 font-bold">🔴 Red (Critical):</strong>
-                    Atyadhik Bhaari Baarish (&gt;150mm). Surakshit jagah rahein!
-                  </div>
-                  <div className="p-2 rounded-lg bg-orange-950/40 border border-orange-800/40 text-orange-300">
-                    <strong className="block text-orange-400 font-bold">🟠 Orange (Severe):</strong>
-                    Bhaari Baarish (100-150mm). Zaroori kaam par hi niklein.
-                  </div>
-                  <div className="p-2 rounded-lg bg-amber-950/40 border border-amber-800/40 text-amber-300">
-                    <strong className="block text-amber-400 font-bold">🟡 Yellow (Moderate):</strong>
-                    Madhyam Baarish (50-100mm). Alert rahein.
-                  </div>
-                  <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-800/40 text-emerald-300">
-                    <strong className="block text-emerald-400 font-bold">🟢 Green (Normal):</strong>
-                    Normal mausam (&lt;50mm rain). No danger.
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-cyan-300 block text-xs uppercase tracking-wider">🌀 Key Features & How To Use:</span>
-                <ul className="space-y-1.5 text-slate-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-base shrink-0">🌀</span>
-                    <span><strong>Cyclone Tracker:</strong> Windy-style animated track. Weather models (IMD, ECMWF, GFS, UKM, StormTrace AI) se toofan ki exact direction dekhein.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-base shrink-0">🗺️</span>
-                    <span><strong>Live Weather Map:</strong> Doppler radar layers aur 5km sub-grid rainfall predictions live visual map par.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-base shrink-0">👁️</span>
-                    <span><strong>Eye Button (Map Toggle):</strong> Click karke map ke sabhi floating panels ko hid/show karein.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-800/40 text-blue-200 text-center font-bold">
-                📱 Mobile phone users top menu se kisi bhi feature ko 1-tap me access kar sakte hain!
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowHelpModal(false)}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs shadow-lg transition"
-            >
-              Samajh Gaya (Close)
-            </button>
-          </div>
-        </div>
-      )}
 
     </header>
   );

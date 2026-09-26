@@ -1,19 +1,109 @@
 import React from 'react';
-import { BookOpen, Cpu, ShieldAlert, Sparkles, Map, Info } from 'lucide-react';
+import { 
+  BookOpen, 
+  Cpu, 
+  ShieldAlert, 
+  Sparkles, 
+  Map, 
+  Info, 
+  Eye, 
+  Compass, 
+  Smartphone
+} from 'lucide-react';
 
 export const HowItWorks: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
-      <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-        <div className="flex items-center gap-3 mb-2">
-          <BookOpen className="h-8 w-8 text-cyan-400" />
+      {/* Top Banner Header */}
+      <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-3 bg-gradient-to-r from-slate-900 via-[#0f172a] to-[#1e1b4b] shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0 shadow-inner">
+            <BookOpen className="h-6 w-6" />
+          </div>
           <div>
-            <h2 className="text-2xl font-black text-slate-100">How It Works: SIH26078 Guide</h2>
-            <p className="text-sm text-slate-400">Documentation on the architecture, workflows, and modules of StormTrace AI.</p>
+            <h2 className="text-2xl font-black text-white tracking-tight">How It Works & User Guide</h2>
+            <p className="text-xs text-slate-300">Complete documentation on system architecture, risk level indicators, GIS map controls, and mobile navigation.</p>
           </div>
         </div>
       </div>
 
+      {/* ── 0. AASAN BHASHA MEIN SAMJHEIN & HOW TO USE GUIDE ── */}
+      <div className="glass-panel p-6 rounded-2xl border border-cyan-500/30 bg-[#090f1f]/90 space-y-5 shadow-2xl">
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <Sparkles className="h-5 w-5 text-cyan-400 animate-pulse" />
+          <h3 className="text-lg font-black text-white">💡 Aasan Bhasha Mein Samjhein Guide (How to Use)</h3>
+        </div>
+
+        {/* Risk Color Legend Cards */}
+        <div className="space-y-2">
+          <span className="text-xs font-bold text-cyan-300 uppercase tracking-wider block">🔴 Khatra Levels (Risk Color Codes):</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-red-950/50 border border-red-800/60 text-red-200 space-y-1 shadow-md">
+              <strong className="block text-red-400 font-bold text-sm">🔴 Red (Critical Khatra):</strong>
+              <p className="text-[11px] text-red-300">Atyadhik Bhaari Baarish (&gt;150mm). Flood & Landslide threat. Surakshit jagah par rahein!</p>
+            </div>
+            <div className="p-3 rounded-xl bg-orange-950/50 border border-orange-800/60 text-orange-200 space-y-1 shadow-md">
+              <strong className="block text-orange-400 font-bold text-sm">🟠 Orange (Severe Savdhan):</strong>
+              <p className="text-[11px] text-orange-300">Bhaari Baarish (100-150mm). Zaroori kaam hone par hi bahar niklein.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-950/50 border border-amber-800/60 text-amber-200 space-y-1 shadow-md">
+              <strong className="block text-amber-400 font-bold text-sm">🟡 Yellow (Moderate Alert):</strong>
+              <p className="text-[11px] text-amber-300">Madhyam Baarish (50-100mm). Weather updates ke liye alert rahein.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/60 text-emerald-200 space-y-1 shadow-md">
+              <strong className="block text-emerald-400 font-bold text-sm">🟢 Green (Normal Weather):</strong>
+              <p className="text-[11px] text-emerald-300">Normal mausam (&lt;50mm rain). No danger or disruption expected.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Usage Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          
+          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
+              <Compass className="h-4 w-4 text-cyan-400" />
+              <span>🌀 Cyclone Tracker (Windy Style)</span>
+            </div>
+            <p className="text-slate-300 leading-relaxed text-[11px]">
+              Multi-model forecast tracks (IMD, ECMWF, GFS, UKMET, StormTrace AI) se toofan ki exact direction, pressure hPa, wind knots aur estimated landfall ETA check karein. Timeline scrubber drag karke historical vs forecast hours dekhein.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
+              <Map className="h-4 w-4 text-cyan-400" />
+              <span>🗺️ Live Weather GIS Map</span>
+            </div>
+            <p className="text-slate-300 leading-relaxed text-[11px]">
+              Real-time Doppler rain radar, EFI climatology anomalies, 5km sub-grid risk cells, district boundaries aur river basin flood zones overlay karein. 3D Globe mode switch karke elevation view dekhein.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
+              <Eye className="h-4 w-4 text-cyan-400" />
+              <span>👁️ Independent Eye Buttons</span>
+            </div>
+            <p className="text-slate-300 leading-relaxed text-[11px]">
+              Left Eye button (`top-left`) se Left Layer Panel ko hide/show karein. Right Eye button (`top-right`) se 5km Sub-Grid Cell Inspection Panel ko independently toggle karein taaki full map cleanly visible rahe.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
+              <Smartphone className="h-4 w-4 text-cyan-400" />
+              <span>📱 Mobile Phone 1-Tap Access</span>
+            </div>
+            <p className="text-slate-300 leading-relaxed text-[11px]">
+              Smartphone users top bar quick pills (`🌀 Cyclone`, `🗺️ Map`) ya mobile menu (`☰`) se 1-tap me kisi bhi screen par navigate kar sakte hain. Sub-grid cards mobile screen par auto-fit hote hain.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── TECHNICAL ARCHITECTURE & MODULE SECTIONS ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="glass-panel p-6 rounded-xl border border-slate-800 space-y-4">
           <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2">
@@ -140,3 +230,5 @@ export const HowItWorks: React.FC = () => {
     </div>
   );
 };
+
+export default HowItWorks;
