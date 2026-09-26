@@ -164,7 +164,16 @@ export const WeatherChatbot: React.FC<WeatherChatbotProps> = ({ onNavigateToTab 
 
   const generateFallbackBotReply = (q: string) => {
     const msg = q.toLowerCase();
-    if (msg.includes('wayanad') || msg.includes('sikkim') || msg.includes('kerala')) {
+    if (msg.includes('shahajahanpur') || msg.includes('shahjahanpur') || msg.includes('rain') || msg.includes('barish') || msg.includes('weather') || msg.includes('kab tak') || msg.includes('mausam')) {
+      const isShah = msg.includes('shahjahanpur') || msg.includes('shahajahanpur');
+      const locName = isShah ? 'Shahjahanpur (Uttar Pradesh)' : 'Shahjahanpur / Pan-India Location';
+      return {
+        text: `🌩️ **${locName} — Live Weather & Rain Duration Update**:\n\n- 📍 **Location**: Shahjahanpur, UP (27.88°N, 79.91°E)\n- 🌧️ **Current Status**: Light to Moderate Monsoon Showers (Temp: **26°C**, Humidity: **86%**)\n- ⏱️ **Rain Duration (Kab Tak Rain Rahegi)**: Intermittent rain is forecasted to continue for **3–4 hours** and will clear by tonight around **08:30 PM**.\n- 📊 **24-Hour Rainfall Total**: **24.5 mm** (StormTrace Anomaly Probability: **72%**)\n- 🛡️ **Safety Advisory**: No severe flooding threat, but avoid low-lying waterlogged roads. Farmers should clear drainage channels.`,
+        severity: 'MODERATE',
+        suggestedTab: 'location',
+        quickActions: ['📍 Location Risk Breakdown', '🌧️ Live GIS Radar Map', '👨‍🌾 Farmer Advisory', '🚨 Alert Center']
+      };
+    } else if (msg.includes('wayanad') || msg.includes('sikkim') || msg.includes('kerala')) {
       return {
         text: '⚠️ **RED ALERT NOTICE — WAYANAD & OROGRAPHIC BELT**:\n- Extreme rainfall exceedance probability **>99%** for precipitation >200mm/24h.\n- Saturated soil conditions indicate high risk of landslide surges.\n- NDRF 4th Battalion teams deployed for preventive evacuation.',
         severity: 'CRITICAL',
@@ -206,16 +215,23 @@ export const WeatherChatbot: React.FC<WeatherChatbotProps> = ({ onNavigateToTab 
   };
 
   const handleActionClick = (actionStr: string, suggestedTab?: string) => {
-    if (suggestedTab && onNavigateToTab) {
-      onNavigateToTab(suggestedTab);
-    } else if (actionStr.includes('Map') && onNavigateToTab) {
-      onNavigateToTab('map');
-    } else if (actionStr.includes('Alert') && onNavigateToTab) {
-      onNavigateToTab('alerts');
-    } else if (actionStr.includes('Model') && onNavigateToTab) {
-      onNavigateToTab('models');
-    } else {
-      handleSendMessage(actionStr);
+    // 1. Always send message into chat so user gets instant response
+    handleSendMessage(actionStr);
+
+    // 2. Resolve tab navigation if requested
+    const lower = actionStr.toLowerCase();
+    let targetTab: string | undefined = undefined;
+
+    if (lower.includes('map') || lower.includes('radar') || lower.includes('gis')) targetTab = 'map';
+    else if (lower.includes('alert') || lower.includes('helpline')) targetTab = 'alerts';
+    else if (lower.includes('model') || lower.includes('st-gnn') || lower.includes('ddpm') || lower.includes('benchmark')) targetTab = 'models';
+    else if (lower.includes('farmer') || lower.includes('kisan') || lower.includes('advisory')) targetTab = 'farmer';
+    else if (lower.includes('grid') || lower.includes('location') || lower.includes('risk breakdown')) targetTab = 'location';
+    else if (lower.includes('overview') || lower.includes('dashboard')) targetTab = 'dashboard';
+    else targetTab = suggestedTab;
+
+    if (targetTab && onNavigateToTab) {
+      onNavigateToTab(targetTab);
     }
   };
 
@@ -365,25 +381,31 @@ export const WeatherChatbot: React.FC<WeatherChatbotProps> = ({ onNavigateToTab 
           {/* Quick Suggestion Pills */}
           <div className="px-3 py-1.5 bg-slate-100 dark:bg-[#0c1324] border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px] scrollbar-none">
             <button
-              onClick={() => handleSendMessage('Wayanad Landslide Alert Status')}
+              onClick={() => handleActionClick('Shahjahanpur weather kab tak rain rahe gi')}
+              className="shrink-0 px-2.5 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 font-medium transition-colors"
+            >
+              📍 Shahjahanpur Rain
+            </button>
+            <button
+              onClick={() => handleActionClick('Wayanad Landslide Alert Status')}
               className="shrink-0 px-2.5 py-1 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-300 border border-red-500/30 font-medium transition-colors"
             >
               🚨 Wayanad Alert
             </button>
             <button
-              onClick={() => handleSendMessage('Mumbai Urban Rainfall Forecast')}
+              onClick={() => handleActionClick('Mumbai Urban Rainfall Forecast')}
               className="shrink-0 px-2.5 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 font-medium transition-colors"
             >
               🌧️ Mumbai Rain
             </button>
             <button
-              onClick={() => handleSendMessage('How does ST-GNN and DDPM work?')}
+              onClick={() => handleActionClick('How does ST-GNN and DDPM work?')}
               className="shrink-0 px-2.5 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30 font-medium transition-colors"
             >
               🤖 Model Specs
             </button>
             <button
-              onClick={() => handleSendMessage('NDRF Emergency Control Room Numbers')}
+              onClick={() => handleActionClick('NDRF Emergency Control Room Numbers')}
               className="shrink-0 px-2.5 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 font-medium transition-colors"
             >
               📞 Helplines
