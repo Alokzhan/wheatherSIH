@@ -52,6 +52,19 @@ export interface ThreatObject {
     timestamp: string;
     forecastHour: number;
     riskLevel: RiskLevel;
+    speedKmH?: number;
+    bearingDeg?: number;
+    intensityMmH?: number;
+    etaMinutes?: number;
+  }[];
+  etaBreakdown?: {
+    locationName: string;
+    distanceKm: number;
+    etaMinutes: number;
+    etaTimestamp: string;
+    expectedIntensityMmH: number;
+    riskLevel: RiskLevel;
+    recommendedAction: string;
   }[];
   affectedVillages: string[];
   affectedPopulationEstimate: number;
