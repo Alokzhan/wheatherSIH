@@ -229,6 +229,7 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [is3DEnabled, setIs3DEnabled] = useState<boolean>(true);
   const [showLayerPanel, setShowLayerPanel] = useState<boolean>(true);
+  const [showCellPanel, setShowCellPanel] = useState<boolean>(true);
   const [threatObjects, setThreatObjects] = useState<ThreatObject[]>([]);
   const [mapStyle, setMapStyle] = useState<'dark' | 'satellite'>('dark');
 
@@ -887,7 +888,10 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
         const props = (e.features[0] as any).properties;
         if (!props) return;
         const cell = riskGrid.find((c: GridCell5km) => c.id === props.id);
-        if (cell) setSelectedCell(cell);
+        if (cell) {
+          setSelectedCell(cell);
+          setShowCellPanel(true);
+        }
       });
     });
 
@@ -1125,28 +1129,42 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
       <div className="relative flex-1 w-full h-full min-h-[500px] bg-[#060a14] overflow-hidden">
         <div ref={mapContainerRef} className="absolute inset-0 z-0 w-full h-full" />
 
-        {/* Layer Panel Toggle */}
+        {/* Left Layer Panel Toggle (Left Eye Button) */}
         <button
           onClick={() => setShowLayerPanel(!showLayerPanel)}
-          className="absolute top-4 left-4 z-10 p-2 rounded-lg bg-[#0a0f1e]/90 backdrop-blur-lg border border-[#1e2d48] text-slate-300 hover:text-white transition-all"
+          className="absolute top-4 left-4 z-10 p-1.5 rounded-lg bg-[#0a0f1e]/90 backdrop-blur-lg border border-[#1e2d48] text-slate-300 hover:text-white transition-all shadow-lg flex items-center gap-1.5 text-xs font-semibold"
+          title={showLayerPanel ? 'Hide Left Layer Panel' : 'Show Left Layer Panel'}
         >
-          {showLayerPanel ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          {showLayerPanel ? <EyeOff className="h-3.5 w-3.5 text-cyan-400" /> : <Eye className="h-3.5 w-3.5 text-cyan-400" />}
+          <span className="hidden sm:inline text-[10px] text-slate-300">Layers</span>
         </button>
 
-        {/* Floating Layer Controls */}
+        {/* Right Cell Panel Toggle (Right Eye Button) */}
+        {selectedCell && (
+          <button
+            onClick={() => setShowCellPanel(!showCellPanel)}
+            className="absolute top-4 right-4 z-10 p-1.5 rounded-lg bg-[#0a0f1e]/90 backdrop-blur-lg border border-cyan-500/40 text-cyan-300 hover:text-white transition-all shadow-lg flex items-center gap-1.5 text-xs font-semibold"
+            title={showCellPanel ? 'Hide Right Cell Panel' : 'Show Right Cell Panel'}
+          >
+            {showCellPanel ? <EyeOff className="h-3.5 w-3.5 text-cyan-400" /> : <Eye className="h-3.5 w-3.5 text-cyan-400" />}
+            <span className="hidden sm:inline text-[10px] text-cyan-300">Cell Details</span>
+          </button>
+        )}
+
+        {/* Left Floating Layer Controls Panel (Compact Size) */}
         {showLayerPanel && (
-          <div className="absolute top-14 left-4 z-10 w-[calc(100vw-2.5rem)] max-w-xs sm:w-72 bg-[#0a0f1e]/92 backdrop-blur-xl p-3 rounded-xl border border-[#1e2d48] max-h-[75vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#1e2d48]">
-              <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <Layers className="h-4 w-4 text-cyan-400" />
-                Active GIS Map Layers
+          <div className="absolute top-12 left-4 z-10 w-56 sm:w-64 bg-[#0a0f1e]/95 backdrop-blur-xl p-2.5 rounded-xl border border-[#1e2d48] max-h-[60vh] overflow-y-auto shadow-2xl space-y-1.5 text-[11px]">
+            <div className="flex items-center justify-between pb-1.5 border-b border-[#1e2d48]">
+              <span className="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-cyan-400" />
+                Active GIS Layers
               </span>
-              <span className="text-[10px] text-cyan-400 font-mono">
+              <span className="text-[9px] text-cyan-400 font-mono">
                 {activeCount}/8 Active
               </span>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {(Object.keys(layerLabels) as MapLayerId[]).map(layerId => {
                 const info = layerLabels[layerId];
                 if (!info) return null;
@@ -1155,43 +1173,43 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
                   <button
                     key={layerId}
                     onClick={() => toggleLayer(layerId)}
-                    className={`w-full text-left px-2.5 py-2 min-h-[40px] rounded-lg text-xs flex items-center justify-between transition-all ${
+                    className={`w-full text-left px-2 py-1.5 rounded-md text-[11px] flex items-center justify-between transition-all ${
                       isChecked
                         ? 'bg-cyan-950/60 border border-cyan-500/30 text-cyan-200 font-medium'
                         : 'bg-[#111827]/60 border border-[#1e2d48]/80 text-slate-400 hover:text-slate-200 hover:bg-[#151d33]'
                     }`}
                   >
-                    <div className="flex items-center gap-2 truncate">
-                      <span>{info.icon}</span>
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="text-xs">{info.icon}</span>
                       <span className="truncate">{info.label}</span>
                     </div>
-                    {isChecked && <Check className="h-3.5 w-3.5 text-cyan-400 shrink-0" />}
+                    {isChecked && <Check className="h-3 w-3 text-cyan-400 shrink-0" />}
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-[#1e2d48] text-[11px]">
-              <span className="text-slate-400 block font-semibold mb-1">Precipitation Severity (Aasan Bhasha):</span>
-              <div className="grid grid-cols-4 gap-1 text-[10px] text-center font-bold">
-                <div className="py-1 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">&lt;50mm<br/><span className="text-[8px] opacity-75">Safe</span></div>
-                <div className="py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">50-100mm<br/><span className="text-[8px] opacity-75">Moderate</span></div>
-                <div className="py-1 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">100-150mm<br/><span className="text-[8px] opacity-75">Savdhan</span></div>
-                <div className="py-1 rounded bg-red-950/60 text-red-400 border border-red-800/40">&gt;150mm<br/><span className="text-[8px] opacity-75">Khatra</span></div>
+            <div className="mt-2 pt-1.5 border-t border-[#1e2d48] text-[10px]">
+              <span className="text-slate-400 block font-semibold mb-1">Precipitation Legend:</span>
+              <div className="grid grid-cols-4 gap-1 text-[9px] text-center font-bold">
+                <div className="py-0.5 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">&lt;50mm</div>
+                <div className="py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/40">50-100</div>
+                <div className="py-0.5 rounded bg-orange-950/60 text-orange-400 border border-orange-800/40">100-150</div>
+                <div className="py-0.5 rounded bg-red-950/60 text-red-400 border border-red-800/40">&gt;150mm</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Selected Cell Inspection Panel - Toggles with Eye button */}
-        {showLayerPanel && selectedCell && (
-          <div className="absolute top-14 right-4 sm:top-4 z-10 w-[calc(100vw-2.5rem)] max-w-xs sm:w-80 bg-[#0a0f1e]/92 backdrop-blur-xl p-3.5 rounded-xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/5 space-y-2">
-            <div className="flex items-center justify-between pb-2 border-b border-[#1e2d48]">
+        {/* Right Selected Cell Inspection Panel (Compact Size, Independent Eye Control) */}
+        {showCellPanel && selectedCell && (
+          <div className="absolute top-12 right-4 z-10 w-60 sm:w-64 bg-[#0a0f1e]/95 backdrop-blur-xl p-2.5 rounded-xl border border-cyan-500/30 shadow-2xl space-y-1.5 text-[11px]">
+            <div className="flex items-center justify-between pb-1 border-b border-[#1e2d48]">
               <div>
-                <span className="text-[10px] font-mono text-cyan-400 block uppercase tracking-wider">5 KM DOWNSCALED CELL</span>
-                <h4 className="font-bold text-slate-100 text-sm">{selectedCell.tehsil} ({selectedCell.district})</h4>
+                <span className="text-[9px] font-mono text-cyan-400 block uppercase tracking-wider">5 KM SUB-GRID CELL</span>
+                <h4 className="font-bold text-slate-100 text-xs truncate max-w-[150px]">{selectedCell.tehsil} ({selectedCell.district})</h4>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase ${
+              <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase ${
                 selectedCell.riskLevel === 'critical' ? 'bg-red-600 text-white' :
                 selectedCell.riskLevel === 'severe' ? 'bg-orange-600 text-white' : 'bg-amber-600 text-slate-900'
               }`}>
@@ -1199,28 +1217,28 @@ export const LiveRiskMap: React.FC<LiveRiskMapProps> = ({ selectedRegion = 'all'
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-[#111827]/80 p-2 rounded-lg border border-[#1e2d48]">
-                <span className="text-slate-500 block text-[10px]">Coordinates</span>
-                <span className="text-slate-200 font-mono text-[11px]">{selectedCell.lat}°N, {selectedCell.lng}°E</span>
+            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+              <div className="bg-[#111827]/80 p-1.5 rounded-md border border-[#1e2d48]">
+                <span className="text-slate-500 block text-[9px]">Coordinates</span>
+                <span className="text-slate-200 font-mono text-[10px]">{selectedCell.lat}°N, {selectedCell.lng}°E</span>
               </div>
-              <div className="bg-[#111827]/80 p-2 rounded-lg border border-[#1e2d48]">
-                <span className="text-slate-500 block text-[10px]">Rainfall (24h)</span>
-                <span className="text-cyan-300 font-bold text-xs">{selectedCell.rainfallForecastMm} mm</span>
+              <div className="bg-[#111827]/80 p-1.5 rounded-md border border-[#1e2d48]">
+                <span className="text-slate-500 block text-[9px]">Rainfall (24h)</span>
+                <span className="text-cyan-300 font-bold text-[11px]">{selectedCell.rainfallForecastMm} mm</span>
               </div>
-              <div className="bg-[#111827]/80 p-2 rounded-lg border border-[#1e2d48]">
-                <span className="text-slate-500 block text-[10px]">EFI Percentile</span>
-                <span className="text-amber-400 font-bold text-xs">{selectedCell.anomalyPercentile}th</span>
+              <div className="bg-[#111827]/80 p-1.5 rounded-md border border-[#1e2d48]">
+                <span className="text-slate-500 block text-[9px]">EFI Percentile</span>
+                <span className="text-amber-400 font-bold text-[11px]">{selectedCell.anomalyPercentile}th</span>
               </div>
-              <div className="bg-[#111827]/80 p-2 rounded-lg border border-[#1e2d48]">
-                <span className="text-slate-500 block text-[10px]">Prob &gt; 50mm</span>
-                <span className="text-red-400 font-bold text-xs">{selectedCell.probabilityGt50mm}%</span>
+              <div className="bg-[#111827]/80 p-1.5 rounded-md border border-[#1e2d48]">
+                <span className="text-slate-500 block text-[9px]">Prob &gt; 50mm</span>
+                <span className="text-red-400 font-bold text-[11px]">{selectedCell.probabilityGt50mm}%</span>
               </div>
             </div>
 
-            <div className="text-[11px] text-slate-300 bg-[#111827]/60 p-2 rounded border border-[#1e2d48] flex justify-between">
-              <span>DEM Elevation: <strong>{selectedCell.elevationMeters}m</strong></span>
-              <span>Flood Index: <strong className="text-cyan-400">{selectedCell.vulnerabilityIndex}</strong></span>
+            <div className="text-[10px] text-slate-300 bg-[#111827]/60 p-1.5 rounded-md border border-[#1e2d48] flex justify-between">
+              <span>DEM Elev: <strong>{selectedCell.elevationMeters}m</strong></span>
+              <span>Flood Idx: <strong className="text-cyan-400">{selectedCell.vulnerabilityIndex}</strong></span>
             </div>
           </div>
         )}
