@@ -35,16 +35,16 @@ export const HowItWorks: React.FC = () => {
         <div className="glass-panel p-6 rounded-xl border border-slate-800 space-y-4">
           <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2">
             <Sparkles className="h-5 w-5 text-blue-400" />
-            2. Gen AI & Agentic Workflows
+            2. StormTrace Copilot & Gen AI Chatbot
           </h3>
           <ul className="space-y-3 text-sm text-slate-300">
             <li>
-              <strong className="text-cyan-300 block">Gen AI Incident Copilot</strong>
-              Located in the <span className="font-mono bg-slate-900 px-1 rounded">4D Anomaly Tracking</span> tab. A generative LLM analyzes the current threat parameters and auto-generates a detailed incident report.
+              <strong className="text-cyan-300 block">StormTrace Copilot AI Weather Chatbot</strong>
+              Interactive floating assistant powered by Web Speech Voice Recognition, Text-to-Speech, and FastAPI backend (<span className="font-mono bg-slate-900 px-1 rounded text-cyan-300">/api/v1/chatbot/query</span>). Automatically parses location queries in English/Hinglish (e.g. <em>"shahajahanpur weather kab tak rain rahe gi"</em>, <em>"lucknow weather"</em>) and calculates exact rain duration & clearing times.
             </li>
             <li>
-              <strong className="text-cyan-300 block">Agentic Resource Dispatch</strong>
-              An autonomous AI agent negotiates SDRF team availability and triggers autonomous dispatch of disaster management resources to affected tehsils.
+              <strong className="text-cyan-300 block">Gen AI Incident Briefing & Dispatch</strong>
+              Generates multi-hazard incident briefings and coordinates NDRF/SDRF disaster response battalion dispatches for downstream tehsils.
             </li>
           </ul>
         </div>
