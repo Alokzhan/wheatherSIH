@@ -128,15 +128,53 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
         <div className="flex items-center gap-3 shrink-0">
           <button
+            onClick={() => onNavigate('cyclone')}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs flex items-center gap-2 transition-all shadow-lg shadow-red-600/30 hover:scale-105"
+          >
+            <span className="animate-spin text-sm" style={{ animationDuration: '4s' }}>🌀</span>
+            Windy Cyclone Tracker
+            <span className="bg-white/20 text-white px-1.5 py-0.5 rounded text-[10px] uppercase font-mono">Chinta ki baat?</span>
+          </button>
+          <button
             onClick={() => onNavigate('map')}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30"
           >
             <Layers className="h-4 w-4" />
-            Open 3D GIS Map
+            Open GIS Map
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
 
+      </div>
+
+      {/* Windy Cyclone Tracking Callout Card */}
+      <div 
+        onClick={() => onNavigate('cyclone')}
+        className="p-5 rounded-2xl bg-gradient-to-r from-[#0f172a] via-[#1e1b4b] to-[#311228] border border-red-500/40 shadow-xl cursor-pointer hover:border-red-400 transition-all flex flex-col md:flex-row items-center justify-between gap-4 group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-2xl bg-red-600/20 border border-red-500/50 flex items-center justify-center text-3xl shrink-0 animate-pulse">
+            🌀
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 border border-red-500/40 text-[10px] font-black uppercase">
+                Active Cyclone Alert
+              </span>
+              <span className="text-xs text-slate-400 font-mono">BOB-02 Bay of Bengal</span>
+            </div>
+            <h3 className="text-base font-black text-white mt-1 group-hover:text-red-300 transition">
+              Chinta ki Baat hai 😳? Severe Cyclonic Storm REMAL Multi-Model Track
+            </h3>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Live trajectory, cone of uncertainty, wind knots, pressure hPa popups, and IMD vs UKM vs ECMWF vs StormTrace AI comparison!
+            </p>
+          </div>
+        </div>
+        <div className="shrink-0 flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition">
+          <span>Launch Windy Tracker</span>
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
 
 

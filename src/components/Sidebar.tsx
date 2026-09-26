@@ -18,6 +18,7 @@ import {
   Radio,
   BookOpen,
   LogIn,
+  Compass,
   X
 } from 'lucide-react';
 
@@ -38,6 +39,7 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'core' },
+  { id: 'cyclone', label: 'Cyclone Tracker', icon: Compass, badge: 'Windy 🌀', section: 'core' },
   { id: 'map', label: 'Weather Map', icon: Map, badge: 'Live', section: 'core' },
   { id: 'event', label: '4D Anomaly Tracking', icon: Target, section: 'core' },
   { id: 'location', label: 'Location Risk', icon: ShieldAlert, section: 'analysis' },

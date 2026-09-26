@@ -11,6 +11,7 @@ import HistoricalAnalysis from './components/HistoricalAnalysis';
 
 // Lazy loading tab components for code splitting & performance
 const LiveRiskMap = lazy(() => import('./components/LiveRiskMap').then(m => ({ default: m.LiveRiskMap })));
+const CycloneTracker = lazy(() => import('./components/CycloneTracker').then(m => ({ default: m.CycloneTracker })));
 const LocalityExplorer = lazy(() => import('./components/LocalityExplorer').then(m => ({ default: m.LocalityExplorer })));
 const AiModelHub = lazy(() => import('./components/AiModelHub').then(m => ({ default: m.AiModelHub })));
 const LocationRisk = lazy(() => import('./components/LocationRisk').then(m => ({ default: m.LocationRisk })));
@@ -137,6 +138,10 @@ export function App() {
             onSelectThreat={handleSelectThreatFromMap}
           />
         );
+      case 'cyclone':
+      case 'cyclone-tracker':
+      case 'windy':
+        return <CycloneTracker />;
       case 'locality':
       case 'search':
         return <LocalityExplorer initialSearchQuery={topSearchQuery} />;
@@ -240,7 +245,7 @@ export function App() {
         <main 
           id="main-content" 
           className={`flex-1 min-h-0 ${
-            activeTab === 'map' 
+            activeTab === 'map' || activeTab === 'cyclone' || activeTab === 'cyclone-tracker' || activeTab === 'windy' 
               ? 'p-0 overflow-hidden flex flex-col h-full w-full max-w-none' 
               : 'overflow-y-auto px-4 sm:px-6 py-6 max-w-7xl w-full mx-auto'
           }`}

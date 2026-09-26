@@ -58,7 +58,7 @@ However, predicting localized extreme weather anomalies (cyclones, cloudbursts, 
 
 ## 🤖 2. Machine Learning Architecture & Model Breakdown
 
-StormTrace AI incorporates **4 specialized ML engines** working in tandem:
+StormTrace AI incorporates **5 specialized ML & Simulation engines** working in tandem:
 
 ### 1️⃣ Model 1: PyTorch Spherical Spatio-Temporal GNN (`st_gnn_model.py` & `st_gnn_checkpoint.pt`)
 - **Architecture**: 3D Geodesic Icosahedral Mesh Graph ($\mathbb{S}^2$) at Level-3 resolution ($N=642$ spherical nodes, $E=3,840$ edges) with Multi-Head Spherical Graph Attention (`GATv2`, 4 heads, 64 hidden channels) and a Temporal Transformer.
@@ -79,13 +79,16 @@ StormTrace AI incorporates **4 specialized ML engines** working in tandem:
 ### 3️⃣ Model 3: 5-Law Physics-Informed Conservation Loss Engine (`physics_loss.py`)
 - **Conservation Laws Enforced**:
   1. **Mass Conservation (Continuity Equation)**: $\nabla \cdot \vec{v} = 0$
-  2. **Moisture Flux Convergence**: $\frac{\partial q}{\partial t} + \vec{v} \cdot \nabla q = S_q$
+  2. **Moisture Flux Divergence**: $\frac{\partial q}{\partial t} + \vec{v} \cdot \nabla q = S_q$
   3. **Thermodynamic Energy Conservation**: $\rho c_p \frac{dT}{dt} = k \nabla^2 T + Q_L$
   4. **Vorticity Dynamics Conservation**: $\frac{D\omega}{Dt} = (\vec{\omega} \cdot \nabla)\vec{v} + \nu \nabla^2 \vec{\omega}$
   5. **Spectral Wavenumber Fourier Loss**: Preserves high-wavenumber power spectral density ($E(k)$).
 
 ### 4️⃣ Model 4: Extended Kalman Filter (EKF) & Bipartite Tracker (`tracker.py`)
 - **Mechanism**: Combines EKF state estimation with Hungarian Bipartite Assignment to track multi-target storm centroids across 50 ensemble members from $T+0$ to $T+240\text{h}$.
+
+### 5️⃣ Engine 5: Windy-Style Multi-Model Trajectory & Ensemble Engine (`CycloneTracker.tsx` & `ensemble_engine.py`)
+- **Mechanism**: Interactive trajectory track rendering, cone of uncertainty swaths, multi-model forecast overlays (**IMD**, **UKM**, **ECMWF**, **GFS**, **StormTrace AI**), node speed badges, floating popup callout cards, and date/time scrubber animation slider.
 
 ---
 
@@ -126,16 +129,16 @@ graph TD
         C4["Quantitative Verification Metrics (evaluation_metrics.py)"]
     end
 
-    subgraph Layer4 ["4. FastAPI Backend Engine"]
+    subgraph Layer4 ["4. FastAPI Backend Engine & Operational Database"]
         D1["FastAPI Server (backend/api/main.py)"]
         D2["SQLite Operations DB (backend/data/stormtrace.db)"]
         D3["Model Checkpoint Inspector (backend/models/inspector.py)"]
-        D4["Chatbot Query Endpoint (/api/v1/chatbot/query)"]
+        D4["50-Member EPS CRPS & Exceedance Engine (ensemble_engine.py)"]
     end
 
-    subgraph Layer5 ["5. Interactive GIS Frontend"]
+    subgraph Layer5 ["5. Interactive GIS Frontend & Command Center"]
         E1["React 19 + Mapbox GL 3D Globe (LiveRiskMap.tsx)"]
-        E2["NDRF Operations & Alert Center (AlertCenter.tsx)"]
+        E2["Windy-Style Interactive Cyclone Tracker (CycloneTracker.tsx)"]
         E3["StormTrace AI Copilot Chatbot (WeatherChatbot.tsx)"]
         E4["Tehsil Velocity & ETA Matrix Tracker (EventDetail.tsx)"]
     end
@@ -144,7 +147,7 @@ graph TD
     A2 --> B2
     A3 --> B3
     B1 --> B2
-    B2 -->|EFI Anomaly Trigger| B3
+    B2 --> B3
     B3 --> B4
     B4 --> C1
     C1 --> C2
@@ -167,10 +170,10 @@ graph TD
 ```mermaid
 graph LR
     User["Disaster Authorities / NDRF / Public User"] <-->|"Voice/Text Chat Query & Coordinates"| StormTrace["StormTrace AI Core System"]
-    OpenMeteo["Open-Meteo ECMWF Live Weather API"] <-->|"Real-time Live Precipitation & Wind Data"| StormTrace
-    Nominatim["OpenStreetMap Nominatim API"] <-->|"Live GIS Geocoding"| StormTrace
-    RainViewer["RainViewer Radar Cache"] -->|"Doppler Precipitation Tile Streams"| StormTrace
-    StormTrace -->|"ETA Timestamps, Rain Clearing Time & 5km Risk Alerts"| User
+    OpenMeteo["Open-Meteo & ERA5 Live Weather API"] <-->|"Real-time Live Weather & Reanalysis Fields"| StormTrace
+    Nominatim["OpenStreetMap Nominatim Geocoder API"] <-->|"Live GIS Geocoding"| StormTrace
+    Mapbox["Mapbox Vector Tiles API"] -->|"High-Res 3D Globe & Dark Basemaps"| StormTrace
+    StormTrace -->|"Windy Trajectories, 5km Downscaled Maps & Rain Duration Alerts"| User
 ```
 
 ---
@@ -179,13 +182,34 @@ graph LR
 
 ```mermaid
 graph TD
-    P1["1.0 User Voice/Text Query & Geocoding"] -->|Location Name / Coordinates| P2["2.0 Live Open-Meteo & ERA5 Data Retrieval"]
-    P2 -->|3D Weather Grids & Climatology| P3["3.0 SciPy EFI Anomaly & GNN Tracking"]
+    P1["1.0 User Query & Geocoding Module"] -->|Location & Coordinates| P2["2.0 Live Open-Meteo & ERA5 Data Retrieval"]
+    P2 -->|3D Weather Grids & Climatology| P3["3.0 SciPy EFI Anomaly & GNN Tracking (Stage 1)"]
     P3 -->|4D Anomaly BBoxes & Velocity Vector| P4["4.0 Tehsil Speed & ETA Calculation"]
-    P3 -->|Coarse Anomaly Footprint| P5["5.0 PyTorch DDPM 5km Downscaling"]
-    P5 -->|Physics Loss Constrained Grid| P6["6.0 Multi-Hazard & Rain Duration Assistant"]
+    P3 -->|Coarse Anomaly Footprint| P5["5.0 PyTorch DDPM 5km Downscaling (Stage 2)"]
+    P5 -->|Physics Loss Constrained Grid| P6["6.0 50-Member Ensemble NWP & Risk Engine"]
     P4 --> P6
-    P6 -->|JSON Payload & Render Stream| P7["7.0 3D GIS Map & StormTrace AI Copilot UI"]
+    P6 -->|Multi-Model JSON Payload & Render Stream| P7["7.0 Windy Cyclone Tracker & 3D GIS Command Center UI"]
+```
+
+---
+
+### 🔄 Level 2 Data Flow Diagram (Sub-Process Breakdown DFD)
+
+```mermaid
+graph TD
+    subgraph P3_Detail ["Process 3.0: Stage 1 ST-GNN Tracking Sub-Processes"]
+        P3_1["3.1 Spherical Mesh Tessellation (Level-3, 642 nodes)"] --> P3_2["3.2 EFI Anomaly Integral Calculation"]
+        P3_2 --> P3_3["3.3 GATv2 Spatial Attention + Temporal Transformer"]
+        P3_3 --> P3_4["3.4 Dynamic Centroid & Kinematic Vector Extraction"]
+    end
+
+    subgraph P5_Detail ["Process 5.0: Stage 2 Physics DDPM Downscaling Sub-Processes"]
+        P5_1["5.1 Sinusoidal Timestep Conditioning"] --> P5_2["5.2 UNet Stochastic Denoising (12km -> 5km)"]
+        P5_2 --> P5_3["5.3 Mass, Moisture, Energy & Vorticity Law Loss"]
+        P5_3 --> P5_4["5.4 2D Fourier Spectral Power Preservation"]
+    end
+
+    P3_4 -->|Coarse Anomaly Bounding Box| P5_1
 ```
 
 ---
