@@ -107,40 +107,88 @@ StormTrace AI features an **intelligent Voice-Enabled Assistant (`WeatherChatbot
 
 ### 🏗️ Complete System Architecture Diagram
 
+```
++-----------------------------------------------------------------------------------+
+|                        1. DATA INGESTION & CLIMATOLOGY STREAM                    |
+| +-------------------------+ +---------------------------+ +---------------------+ |
+| | NCMRWF/ECMWF 50-Member  | | 30-Year Copernicus ERA5   | | Copernicus ERA5     | |
+| | EPS Stream              | | Climatology Quantiles     | | 4-Stream Archive    | |
+| +------------+------------+ +-------------+-------------+ +----------+----------+ |
++--------------|----------------------------|--------------------------|------------+
+               |                            |                          |
+               v                            v                          v
++-----------------------------------------------------------------------------------+
+|                    2. STAGE 1: PYTORCH SPHERICAL ST-GNN TRACKING                  |
+| +-------------------------+ +---------------------------+ +---------------------+ |
+| | 3D Geodesic Icosahedral | | SciPy Grid-Wide Extreme   | | Spherical GATv2 +   | |
+| | Spherical Mesh (S²)     | | Forecast Index (EFI)     | | Temporal Transformer| |
+| +------------+------------+ +-------------+-------------+ +----------+----------+ |
++--------------|----------------------------|--------------------------|------------+
+               |                            |                          |
+               v                            v                          v
++-----------------------------------------------------------------------------------+
+|                  3. STAGE 2: GENERATIVE DDPM DIFFUSION DOWNSCALING                |
+| +-------------------------+ +---------------------------+ +---------------------+ |
+| | PyTorch Conditional     | | 5-Law Physics Constraint  | | 12km -> 5km Spatial | |
+| | DDPM UNet Downscaler    | | (Mass, Moisture, Energy)  | | Grid Reconstruction | |
+| +------------+------------+ +-------------+-------------+ +----------+----------+ |
++--------------|----------------------------|--------------------------|------------+
+               |                            |                          |
+               v                            v                          v
++-----------------------------------------------------------------------------------+
+|                     4. FASTAPI BACKEND & OPERATIONAL DATABASE                     |
+| +-------------------------+ +---------------------------+ +---------------------+ |
+| | FastAPI Engine Core     | | SQLite Operations DB      | | 50-Member Ensemble  | |
+| | (/api/v1/...)           | | (backend/data/...)        | | CRPS & Brier Engine | |
+| +------------+------------+ +-------------+-------------+ +----------+----------+ |
++--------------|----------------------------|--------------------------|------------+
+               |                            |                          |
+               v                            v                          v
++-----------------------------------------------------------------------------------+
+|               5. INTERACTIVE GIS FRONTEND & DISASTER COMMAND CENTER               |
+| +-------------------------+ +---------------------------+ +---------------------+ |
+| | React 19 Mapbox 3D Globe| | Windy-Style Interactive   | | Copilot Weather     | |
+| | (LiveRiskMap.tsx)       | | Cyclone Tracker           | | AI Chatbot          | |
+| +-------------------------+ +---------------------------+ +---------------------+ |
++-----------------------------------------------------------------------------------+
+```
+
+#### 🔄 Interactive Flowchart (Mermaid Rendering):
+
 ```mermaid
-graph TD
-    subgraph Layer1 ["1. Data Ingestion & ERA5 Climatology Stream"]
-        A1["NCMRWF / ECMWF 50-Member Ensemble Loader (nwp_loader.py)"]
-        A2["30-Year Copernicus ERA5 Baseline Quantiles (climatology.py)"]
-        A3["Copernicus ERA5 4-Stream Downloader (download_copernicus_era5.py)"]
+flowchart TD
+    subgraph L1 [1. Data Ingestion Stream]
+        A1[NCMRWF / ECMWF 50-Member EPS Loader]
+        A2[30-Year Copernicus ERA5 Quantiles]
+        A3[Copernicus ERA5 4-Stream Archive]
     end
 
-    subgraph Layer2 ["2. Stage 1: PyTorch Spherical ST-GNN Tracking"]
-        B1["3D Spherical Icosahedral Mesh Graph (icosahedral_mesh.py)"]
-        B2["SciPy Grid-Wide EFI Anomaly Integral Solver (efi_compute.py)"]
-        B3["Spherical GATv2 + Temporal Transformer (st_gnn_model.py)"]
-        B4["Extended Kalman Filter + Hungarian Matching (tracker.py)"]
+    subgraph L2 [2. Stage 1: PyTorch Spherical ST-GNN Tracking]
+        B1[3D Spherical Icosahedral Mesh Graph]
+        B2[SciPy Grid-Wide EFI Anomaly Solver]
+        B3[Spherical GATv2 + Temporal Transformer]
+        B4[Extended Kalman Filter + Hungarian Matcher]
     end
 
-    subgraph Layer3 ["3. Stage 2: Generative Diffusion Downscaling"]
-        C1["PyTorch Conditional DDPM UNet (ddpm.py)"]
-        C2["12km -> 5km Spatial Grid Reconstruction"]
-        C3["5-Law Physics Constraint Engine (physics_loss.py)"]
-        C4["Quantitative Verification Metrics (evaluation_metrics.py)"]
+    subgraph L3 [3. Stage 2: Generative DDPM Diffusion Downscaling]
+        C1[PyTorch Conditional DDPM UNet]
+        C2[12km to 5km Spatial Grid Downscaler]
+        C3[5-Law Physics Loss Constraint Engine]
+        C4[Quantitative Benchmark Metrics]
     end
 
-    subgraph Layer4 ["4. FastAPI Backend Engine & Operational Database"]
-        D1["FastAPI Server (backend/api/main.py)"]
-        D2["SQLite Operations DB (backend/data/stormtrace.db)"]
-        D3["Model Checkpoint Inspector (backend/models/inspector.py)"]
-        D4["50-Member EPS CRPS & Exceedance Engine (ensemble_engine.py)"]
+    subgraph L4 [4. FastAPI Backend Engine & Operational Database]
+        D1[FastAPI Server Engine]
+        D2[SQLite Operations Database]
+        D3[Model Checkpoint Inspector]
+        D4[50-Member Ensemble CRPS & Brier Engine]
     end
 
-    subgraph Layer5 ["5. Interactive GIS Frontend & Command Center"]
-        E1["React 19 + Mapbox GL 3D Globe (LiveRiskMap.tsx)"]
-        E2["Windy-Style Interactive Cyclone Tracker (CycloneTracker.tsx)"]
-        E3["StormTrace AI Copilot Chatbot (WeatherChatbot.tsx)"]
-        E4["Tehsil Velocity & ETA Matrix Tracker (EventDetail.tsx)"]
+    subgraph L5 [5. Interactive GIS Frontend & Disaster Command Center]
+        E1[React 19 + Mapbox GL 3D Globe]
+        E2[Windy-Style Interactive Cyclone Tracker]
+        E3[StormTrace Copilot AI Weather Chatbot]
+        E4[Tehsil Velocity & ETA Matrix Tracker]
     end
 
     A1 --> B1
@@ -168,12 +216,12 @@ graph TD
 ### 🔄 Level 0 Data Flow Diagram (Context DFD)
 
 ```mermaid
-graph LR
-    User["Disaster Authorities / NDRF / Public User"] <-->|"Voice/Text Chat Query & Coordinates"| StormTrace["StormTrace AI Core System"]
-    OpenMeteo["Open-Meteo & ERA5 Live Weather API"] <-->|"Real-time Live Weather & Reanalysis Fields"| StormTrace
-    Nominatim["OpenStreetMap Nominatim Geocoder API"] <-->|"Live GIS Geocoding"| StormTrace
-    Mapbox["Mapbox Vector Tiles API"] -->|"High-Res 3D Globe & Dark Basemaps"| StormTrace
-    StormTrace -->|"Windy Trajectories, 5km Downscaled Maps & Rain Duration Alerts"| User
+flowchart LR
+    User([Disaster Authorities / NDRF / Public User]) <-->|Voice/Text Query & Coordinates| StormTrace[StormTrace AI Core Engine]
+    OpenMeteo[(Open-Meteo & ERA5 Live Data)] <-->|Real-time Weather & Reanalysis Fields| StormTrace
+    Nominatim[(OpenStreetMap Nominatim Geocoder)] <-->|Live GIS Geocoding| StormTrace
+    Mapbox[(Mapbox Vector Tiles Service)] -->|High-Res 3D Globe & Dark Basemaps| StormTrace
+    StormTrace -->|Windy Trajectories, 5km Downscaled Maps & Alerts| User
 ```
 
 ---
@@ -181,14 +229,14 @@ graph LR
 ### 🔄 Level 1 Data Flow Diagram (Detailed Processing DFD)
 
 ```mermaid
-graph TD
-    P1["1.0 User Query & Geocoding Module"] -->|Location & Coordinates| P2["2.0 Live Open-Meteo & ERA5 Data Retrieval"]
-    P2 -->|3D Weather Grids & Climatology| P3["3.0 SciPy EFI Anomaly & GNN Tracking (Stage 1)"]
-    P3 -->|4D Anomaly BBoxes & Velocity Vector| P4["4.0 Tehsil Speed & ETA Calculation"]
-    P3 -->|Coarse Anomaly Footprint| P5["5.0 PyTorch DDPM 5km Downscaling (Stage 2)"]
-    P5 -->|Physics Loss Constrained Grid| P6["6.0 50-Member Ensemble NWP & Risk Engine"]
+flowchart TD
+    P1[1.0 User Query & Geocoding Module] -->|Location & Coordinates| P2[2.0 Live Open-Meteo & ERA5 Data Retrieval]
+    P2 -->|3D Weather Grids & Climatology| P3[3.0 SciPy EFI Anomaly & GNN Tracking Stage 1]
+    P3 -->|4D Anomaly BBoxes & Velocity Vector| P4[4.0 Tehsil Speed & ETA Calculation]
+    P3 -->|Coarse Anomaly Footprint| P5[5.0 PyTorch DDPM 5km Downscaling Stage 2]
+    P5 -->|Physics Loss Constrained Grid| P6[6.0 50-Member Ensemble NWP & Risk Engine]
     P4 --> P6
-    P6 -->|Multi-Model JSON Payload & Render Stream| P7["7.0 Windy Cyclone Tracker & 3D GIS Command Center UI"]
+    P6 -->|Multi-Model JSON Payload & Render Stream| P7[7.0 Windy Cyclone Tracker & 3D GIS Command Center]
 ```
 
 ---
@@ -196,17 +244,17 @@ graph TD
 ### 🔄 Level 2 Data Flow Diagram (Sub-Process Breakdown DFD)
 
 ```mermaid
-graph TD
-    subgraph P3_Detail ["Process 3.0: Stage 1 ST-GNN Tracking Sub-Processes"]
-        P3_1["3.1 Spherical Mesh Tessellation (Level-3, 642 nodes)"] --> P3_2["3.2 EFI Anomaly Integral Calculation"]
-        P3_2 --> P3_3["3.3 GATv2 Spatial Attention + Temporal Transformer"]
-        P3_3 --> P3_4["3.4 Dynamic Centroid & Kinematic Vector Extraction"]
+flowchart TD
+    subgraph P3_Detail [Process 3.0: Stage 1 ST-GNN Tracking Sub-Processes]
+        P3_1[3.1 Spherical Mesh Tessellation - Level 3, 642 nodes] --> P3_2[3.2 EFI Anomaly Integral Calculation]
+        P3_2 --> P3_3[3.3 GATv2 Spatial Attention + Temporal Transformer]
+        P3_3 --> P3_4[3.4 Dynamic Centroid & Kinematic Vector Extraction]
     end
 
-    subgraph P5_Detail ["Process 5.0: Stage 2 Physics DDPM Downscaling Sub-Processes"]
-        P5_1["5.1 Sinusoidal Timestep Conditioning"] --> P5_2["5.2 UNet Stochastic Denoising (12km -> 5km)"]
-        P5_2 --> P5_3["5.3 Mass, Moisture, Energy & Vorticity Law Loss"]
-        P5_3 --> P5_4["5.4 2D Fourier Spectral Power Preservation"]
+    subgraph P5_Detail [Process 5.0: Stage 2 Physics DDPM Downscaling Sub-Processes]
+        P5_1[5.1 Sinusoidal Timestep Conditioning] --> P5_2[5.2 UNet Stochastic Denoising - 12km to 5km]
+        P5_2 --> P5_3[5.3 Mass, Moisture, Energy & Vorticity Law Loss]
+        P5_3 --> P5_4[5.4 2D Fourier Spectral Power Preservation]
     end
 
     P3_4 -->|Coarse Anomaly Bounding Box| P5_1
